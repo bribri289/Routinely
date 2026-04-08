@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:background="@drawable/card_bg2" android:orientation="vertical"
+    android:padding="14dp" android:layout_marginBottom="10dp">
+
+    <!-- Row 1: number, emoji, name, remove -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp">
+        <TextView android:id="@+id/tv_step_num" android:layout_width="28dp" android:layout_height="28dp"
+            android:background="@drawable/circle_orange" android:textColor="@color/text_primary"
+            android:textSize="13sp" android:gravity="center" android:fontFamily="sans-serif-medium" android:layout_marginEnd="8dp"/>
+        <EditText android:id="@+id/et_step_emoji" android:layout_width="48dp" android:layout_height="44dp"
+            android:background="@drawable/input_bg" android:textSize="22sp" android:gravity="center"
+            android:padding="4dp" android:layout_marginEnd="8dp"/>
+        <EditText android:id="@+id/et_step_name" android:layout_width="0dp" android:layout_height="44dp"
+            android:layout_weight="1" android:hint="Step name" android:textColor="@color/text_primary"
+            android:textColorHint="@color/text_muted" android:background="@drawable/input_bg"
+            android:padding="10dp" android:textSize="14sp" android:layout_marginEnd="8dp"/>
+        <Button android:id="@+id/btn_remove_step" android:layout_width="36dp" android:layout_height="36dp"
+            android:text="✕" android:background="@drawable/card_bg" android:textColor="@color/red"
+            android:textSize="14sp" android:padding="0dp"/>
+    </LinearLayout>
+
+    <!-- Description -->
+    <EditText android:id="@+id/et_step_desc" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:hint="Description (optional)"
+        android:textColor="@color/text_primary" android:textColorHint="@color/text_muted"
+        android:background="@drawable/input_bg" android:padding="10dp" android:textSize="13sp"
+        android:layout_marginBottom="10dp" android:minLines="2"/>
+
+    <!-- Duration: H M S -->
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="DURATION" android:textColor="@color/text_muted" android:textSize="10sp"
+        android:letterSpacing="0.08" android:layout_marginBottom="6dp"/>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="10dp">
+        <EditText android:id="@+id/et_step_hours" android:layout_width="56dp" android:layout_height="44dp"
+            android:inputType="number" android:textColor="@color/text_primary" android:background="@drawable/input_bg"
+            android:padding="8dp" android:textSize="16sp" android:gravity="center" android:hint="0"/>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="h" android:textColor="@color/text_muted" android:textSize="13sp" android:layout_marginStart="4dp" android:layout_marginEnd="10dp"/>
+        <EditText android:id="@+id/et_step_mins" android:layout_width="56dp" android:layout_height="44dp"
+            android:inputType="number" android:textColor="@color/text_primary" android:background="@drawable/input_bg"
+            android:padding="8dp" android:textSize="16sp" android:gravity="center" android:hint="5"/>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="m" android:textColor="@color/text_muted" android:textSize="13sp" android:layout_marginStart="4dp" android:layout_marginEnd="10dp"/>
+        <EditText android:id="@+id/et_step_secs" android:layout_width="56dp" android:layout_height="44dp"
+            android:inputType="number" android:textColor="@color/text_primary" android:background="@drawable/input_bg"
+            android:padding="8dp" android:textSize="16sp" android:gravity="center" android:hint="0"/>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="s" android:textColor="@color/text_muted" android:textSize="13sp" android:layout_marginStart="4dp"/>
+    </LinearLayout>
+
+    <!-- Recurrence -->
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="RECURRENCE" android:textColor="@color/text_muted" android:textSize="10sp"
+        android:letterSpacing="0.08" android:layout_marginBottom="6dp"/>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp">
+        <Spinner android:id="@+id/spinner_recurrence" android:layout_width="0dp" android:layout_height="44dp"
+            android:layout_weight="1" android:background="@drawable/input_bg"
+            android:popupBackground="@color/card2" android:layout_marginEnd="8dp"/>
+        <EditText android:id="@+id/et_step_interval" android:layout_width="56dp" android:layout_height="44dp"
+            android:inputType="number" android:textColor="@color/text_primary" android:background="@drawable/input_bg"
+            android:padding="8dp" android:textSize="14sp" android:gravity="center" android:hint="1"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+    <!-- Day chips (shown for custom days) -->
+    <LinearLayout android:id="@+id/step_days_row" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:orientation="horizontal"
+        android:layout_marginBottom="8dp" android:visibility="gone"/>
+
+    <!-- Linked habit -->
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="LINKED HABIT" android:textColor="@color/text_muted" android:textSize="10sp"
+        android:letterSpacing="0.08" android:layout_marginBottom="6dp"/>
+    <Spinner android:id="@+id/spinner_habit" android:layout_width="match_parent" android:layout_height="44dp"
+        android:background="@drawable/input_bg" android:popupBackground="@color/card2"/>
+</LinearLayout>

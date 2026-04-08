@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+    <uses-feature android:name="android.hardware.camera" android:required="false"/>
+
+    <application
+        android:name=".RoutinelyApp"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="Routinely"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:hardwareAccelerated="true">
+
+        <!-- ZXing barcode scanner - override screenOrientation conflict -->
+        <activity
+            android:name="com.journeyapps.barcodescanner.CaptureActivity"
+            android:screenOrientation="fullSensor"
+            tools:replace="android:screenOrientation"/>
+
+        <activity android:name=".ui.MainActivity" android:exported="true"
+            android:launchMode="singleTask" android:screenOrientation="portrait"
+            android:showWhenLocked="true" android:turnScreenOn="true"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="routinely"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".ui.EditRoutineActivity" android:exported="false"
+            android:windowSoftInputMode="adjustResize"/>
+        <activity android:name=".ui.RunRoutineActivity" android:exported="false"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.EditHabitActivity" android:exported="false"
+            android:windowSoftInputMode="adjustResize"/>
+        <activity android:name=".ui.EditAlarmActivity" android:exported="false"
+            android:windowSoftInputMode="adjustResize"/>
+        <activity android:name=".ui.AlarmRingActivity" android:exported="true"
+            android:launchMode="singleInstance"
+            android:showWhenLocked="true" android:turnScreenOn="true"
+            android:screenOrientation="portrait" android:excludeFromRecents="true"/>
+        <activity android:name=".ui.MissionActivity" android:exported="false"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.WakeCheckActivity" android:exported="false"
+            android:screenOrientation="portrait"/>
+
+        <receiver android:name=".receivers.AlarmReceiver" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="com.routinely.ALARM_TRIGGER"/>
+                <action android:name="com.routinely.ALARM_SNOOZE"/>
+                <action android:name="com.routinely.ALARM_DISMISS"/>
+            </intent-filter>
+        </receiver>
+
+        <service android:name=".services.AlarmService" android:exported="false"
+            android:foregroundServiceType="mediaPlayback"/>
+
+    </application>
+</manifest>
