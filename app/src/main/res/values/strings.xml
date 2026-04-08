@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name">Routinely</string>
-    <string name="alarm_channel">routinely_alarms</string>
-    <string name="habit_channel">routinely_habits</string>
-</resources>
