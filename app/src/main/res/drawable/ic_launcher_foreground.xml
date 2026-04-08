@@ -4,13 +4,48 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
+
+  <!-- Outer green arc (~300° of circle, r=30) -->
   <path
-      android:fillColor="#F97316"
-      android:pathData="M0,0h108v108H0z"/>
+      android:strokeColor="#10B981"
+      android:strokeWidth="7"
+      android:strokeLineCap="round"
+      android:fillColor="@android:color/transparent"
+      android:trimPathEnd="0.835"
+      android:trimPathOffset="0.12"
+      android:pathData="M 54,24 a 30,30 0 1,1 -0.001,0"/>
+
+  <!-- Middle yellow/orange arc (~270° of circle, r=22) -->
   <path
-      android:fillColor="#FFFFFF"
-      android:pathData="M54,20 C35.2,20 20,35.2 20,54 C20,72.8 35.2,88 54,88 C72.8,88 88,72.8 88,54 C88,35.2 72.8,20 54,20Z M54,30 C67.3,30 78,40.7 78,54 C78,67.3 67.3,78 54,78 C40.7,78 30,67.3 30,54 C30,40.7 40.7,30 54,30Z"/>
+      android:strokeColor="#F59E0B"
+      android:strokeWidth="7"
+      android:strokeLineCap="round"
+      android:fillColor="@android:color/transparent"
+      android:trimPathEnd="0.75"
+      android:trimPathOffset="0.18"
+      android:pathData="M 54,32 a 22,22 0 1,1 -0.001,0"/>
+
+  <!-- Inner orange/red arc (~240° of circle, r=14) -->
   <path
-      android:fillColor="#FFFFFF"
-      android:pathData="M46,38 L46,70 L58,70 C64.6,70 70,64.6 70,58 C70,53.8 67.6,50.2 64,48.4 C65.2,46.8 66,44.8 66,42.5 C66,40 63.5,38 60,38 Z M52,44 L59,44 C60.1,44 61,44.9 61,46 C61,47.1 60.1,48 59,48 L52,48 Z M52,54 L60,54 C62.2,54 64,55.8 64,58 C64,60.2 62.2,62 60,62 L52,62 Z"/>
+      android:strokeColor="#F97316"
+      android:strokeWidth="7"
+      android:strokeLineCap="round"
+      android:fillColor="@android:color/transparent"
+      android:trimPathEnd="0.67"
+      android:trimPathOffset="0.24"
+      android:pathData="M 54,40 a 14,14 0 1,1 -0.001,0"/>
+
+  <!-- Center yellow dot -->
+  <path
+      android:fillColor="#F59E0B"
+      android:pathData="M 54,50 a 4,4 0 1,1 -0.001,0"/>
+
+  <!-- Small stem above center dot -->
+  <path
+      android:strokeColor="#F59E0B"
+      android:strokeWidth="2.5"
+      android:strokeLineCap="round"
+      android:fillColor="@android:color/transparent"
+      android:pathData="M 54,46 L 54,42"/>
+
 </vector>

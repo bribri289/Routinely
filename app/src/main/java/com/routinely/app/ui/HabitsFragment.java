@@ -72,7 +72,7 @@ public class HabitsFragment extends Fragment {
                 final int habitIdx=h; final int dayIdx=d;
                 View dot=new View(getContext());
                 boolean done=(d<6)||habit.completedToday;
-                dot.setBackgroundResource(done?R.drawable.circle_orange:R.drawable.circle_bg3);
+                dot.setBackgroundResource(done?R.drawable.circle_primary:R.drawable.circle_bg3);
                 LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,44,1);
                 lp.setMargins(4,4,4,4); dot.setLayoutParams(lp);
                 dot.setOnClickListener(x->{

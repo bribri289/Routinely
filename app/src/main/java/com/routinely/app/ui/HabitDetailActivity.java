@@ -139,7 +139,7 @@ public class HabitDetailActivity extends AppCompatActivity {
             for(int d=0;d<7;d++){
                 String dateStr=sdf.format(cal.getTime());
                 View dot=new View(this);
-                dot.setBackgroundResource(loggedDates.contains(dateStr)?R.drawable.circle_orange:R.drawable.circle_bg3);
+                dot.setBackgroundResource(loggedDates.contains(dateStr)?R.drawable.circle_primary:R.drawable.circle_bg3);
                 LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,28,1);
                 lp.setMargins(3,3,3,3); dot.setLayoutParams(lp);
                 weekRow.addView(dot);

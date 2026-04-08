@@ -103,7 +103,7 @@ public class AlarmFragment extends Fragment {
             TextView tv=new TextView(getContext()); tv.setText(DAY_LABELS[d]);
             tv.setTextSize(11); tv.setGravity(android.view.Gravity.CENTER);
             tv.setTextColor(display[d]?0xFFFFFFFF:0xFF6B7280);
-            tv.setBackground(getContext().getDrawable(display[d]?R.drawable.circle_orange:R.drawable.circle_bg3));
+            tv.setBackground(getContext().getDrawable(display[d]?R.drawable.circle_primary:R.drawable.circle_bg3));
             LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,36,1);
             lp.setMargins(3,0,3,0); tv.setLayoutParams(lp);
             row.addView(tv);

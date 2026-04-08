@@ -89,7 +89,7 @@
                         android:text="Wake up check" android:textColor="@color/text_primary"
                         android:textSize="14sp"/>
                     <Switch android:id="@+id/sw_wake_check" android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" android:thumbTint="@color/orange"
+                        android:layout_height="wrap_content" android:thumbTint="@color/primary"
                         android:trackTint="#3F3F46" android:layout_marginTop="4dp"/>
                 </LinearLayout>
                 <TextView android:id="@+id/tv_wc_delay_label" android:layout_width="wrap_content"
@@ -137,10 +137,10 @@
                     android:layout_marginBottom="8dp">
                     <SeekBar android:id="@+id/seekbar_volume" android:layout_width="0dp"
                         android:layout_height="wrap_content" android:layout_weight="1"
-                        android:max="100" android:thumbTint="@color/orange"
-                        android:progressTint="@color/orange"/>
+                        android:max="100" android:thumbTint="@color/primary"
+                        android:progressTint="@color/primary"/>
                     <TextView android:id="@+id/tv_volume" android:layout_width="48dp"
-                        android:layout_height="wrap_content" android:textColor="@color/orange"
+                        android:layout_height="wrap_content" android:textColor="@color/primary"
                         android:textSize="14sp" android:gravity="end"/>
                 </LinearLayout>
                 <!-- Use built-in speaker -->
@@ -150,7 +150,7 @@
                         android:layout_weight="1" android:text="Use the built-in speaker"
                         android:textColor="@color/text_primary" android:textSize="14sp"/>
                     <Switch android:id="@+id/sw_ultra_loud" android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" android:thumbTint="@color/orange"
+                        android:layout_height="wrap_content" android:thumbTint="@color/primary"
                         android:trackTint="#3F3F46"/>
                 </LinearLayout>
                 <LinearLayout android:layout_width="match_parent" android:layout_height="48dp"
@@ -159,7 +159,7 @@
                         android:layout_weight="1" android:text="Gradual volume increase"
                         android:textColor="@color/text_primary" android:textSize="14sp"/>
                     <Switch android:id="@+id/sw_gradual" android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" android:thumbTint="@color/orange"
+                        android:layout_height="wrap_content" android:thumbTint="@color/primary"
                         android:trackTint="#3F3F46"/>
                 </LinearLayout>
                 <LinearLayout android:layout_width="match_parent" android:layout_height="48dp"
@@ -168,7 +168,7 @@
                         android:layout_weight="1" android:text="📳 Vibrate"
                         android:textColor="@color/text_primary" android:textSize="14sp"/>
                     <Switch android:id="@+id/sw_vibrate" android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" android:thumbTint="@color/orange"
+                        android:layout_height="wrap_content" android:thumbTint="@color/primary"
                         android:trackTint="#3F3F46"/>
                 </LinearLayout>
             </LinearLayout>
@@ -200,7 +200,7 @@
                         android:text="▶ Sample" android:textColor="@color/text_muted"
                         android:textSize="12sp" android:paddingEnd="8dp"/>
                     <Switch android:id="@+id/sw_prevent_poweroff" android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" android:thumbTint="@color/orange"
+                        android:layout_height="wrap_content" android:thumbTint="@color/primary"
                         android:trackTint="#3F3F46"/>
                 </LinearLayout>
                 <!-- Weather reminder -->
@@ -213,7 +213,7 @@
                         android:text="▶ Sample" android:textColor="@color/text_muted"
                         android:textSize="12sp" android:paddingEnd="8dp"/>
                     <Switch android:id="@+id/sw_play_screen_off" android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" android:thumbTint="@color/orange"
+                        android:layout_height="wrap_content" android:thumbTint="@color/primary"
                         android:trackTint="#3F3F46"/>
                 </LinearLayout>
                 <!-- Label reminder -->
@@ -226,7 +226,7 @@
                         android:text="▶ Sample" android:textColor="@color/text_muted"
                         android:textSize="12sp" android:paddingEnd="8dp"/>
                     <Switch android:id="@+id/sw_vibrate2" android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" android:thumbTint="@color/orange"
+                        android:layout_height="wrap_content" android:thumbTint="@color/primary"
                         android:trackTint="#3F3F46"/>
                 </LinearLayout>
             </LinearLayout>
@@ -247,7 +247,7 @@
                             android:layout_weight="1" android:text="🚫 Prevent snooze"
                             android:textColor="@color/text_primary" android:textSize="14sp"/>
                         <Switch android:id="@+id/sw_prevent_snooze" android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" android:thumbTint="@color/orange"
+                            android:layout_height="wrap_content" android:thumbTint="@color/primary"
                             android:trackTint="#3F3F46"/>
                     </LinearLayout>
                     <LinearLayout android:layout_width="match_parent" android:layout_height="48dp"
@@ -256,7 +256,7 @@
                             android:layout_weight="1" android:text="Complete mission to snooze"
                             android:textColor="@color/text_primary" android:textSize="14sp"/>
                         <Switch android:id="@+id/sw_mission_to_snooze" android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" android:thumbTint="@color/orange"
+                            android:layout_height="wrap_content" android:thumbTint="@color/primary"
                             android:trackTint="#3F3F46"/>
                     </LinearLayout>
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
@@ -266,10 +266,10 @@
                         android:orientation="horizontal" android:gravity="center_vertical">
                         <SeekBar android:id="@+id/seekbar_snooze" android:layout_width="0dp"
                             android:layout_height="wrap_content" android:layout_weight="1"
-                            android:max="10" android:thumbTint="@color/orange"
-                            android:progressTint="@color/orange"/>
+                            android:max="10" android:thumbTint="@color/primary"
+                            android:progressTint="@color/primary"/>
                         <TextView android:id="@+id/tv_snooze_count" android:layout_width="40dp"
-                            android:layout_height="wrap_content" android:textColor="@color/orange"
+                            android:layout_height="wrap_content" android:textColor="@color/primary"
                             android:textSize="14sp" android:gravity="end"/>
                     </LinearLayout>
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
@@ -280,9 +280,9 @@
                         <SeekBar android:id="@+id/seekbar_snooze_mins" android:layout_width="0dp"
                             android:layout_height="wrap_content" android:layout_weight="1"
                             android:max="30" android:progress="5"
-                            android:thumbTint="@color/orange" android:progressTint="@color/orange"/>
+                            android:thumbTint="@color/primary" android:progressTint="@color/primary"/>
                         <TextView android:id="@+id/tv_snooze_mins" android:layout_width="56dp"
-                            android:layout_height="wrap_content" android:textColor="@color/orange"
+                            android:layout_height="wrap_content" android:textColor="@color/primary"
                             android:textSize="14sp" android:gravity="end" android:text="5 min"/>
                     </LinearLayout>
                 </LinearLayout>
@@ -336,7 +336,7 @@
                         android:layout_weight="1" android:text="Prevent app uninstall during alarm"
                         android:textColor="@color/text_primary" android:textSize="14sp"/>
                     <Switch android:id="@+id/sw_prevent_snooze2" android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" android:thumbTint="@color/orange"
+                        android:layout_height="wrap_content" android:thumbTint="@color/primary"
                         android:trackTint="#3F3F46"/>
                 </LinearLayout>
             </LinearLayout>
@@ -360,7 +360,7 @@
                             android:textColor="@color/text_muted" android:textSize="11sp"/>
                     </LinearLayout>
                     <Switch android:id="@+id/sw_mission_to_snooze2" android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" android:thumbTint="@color/orange"
+                        android:layout_height="wrap_content" android:thumbTint="@color/primary"
                         android:trackTint="#3F3F46"/>
                 </LinearLayout>
             </LinearLayout>
@@ -388,7 +388,7 @@
                         android:layout_weight="1" android:text="🔋 Prevent power-off"
                         android:textColor="@color/text_primary" android:textSize="14sp"/>
                     <Switch android:id="@+id/sw_wc_delay" android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" android:thumbTint="@color/orange"
+                        android:layout_height="wrap_content" android:thumbTint="@color/primary"
                         android:trackTint="#3F3F46"/>
                 </LinearLayout>
             </LinearLayout>

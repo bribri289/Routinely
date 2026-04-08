@@ -1,10 +1,12 @@
 package com.routinely.app;
 import android.app.*;
 import android.os.Build;
+import androidx.appcompat.app.AppCompatDelegate;
 public class RoutinelyApp extends Application {
     public static final String CH_ALARM="routinely_alarms", CH_HABIT="routinely_habits";
     @Override public void onCreate() {
         super.onCreate();
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManager nm = getSystemService(NotificationManager.class);
             NotificationChannel ac = new NotificationChannel(CH_ALARM,"Routinely Alarms",NotificationManager.IMPORTANCE_HIGH);

@@ -53,11 +53,11 @@ public class MainActivity extends AppCompatActivity {
         switch(idx) { case 1:f=new RoutinesFragment();break; case 2:f=new HabitsFragment();break; case 3:f=new AlarmFragment();break; case 4:f=new ProgressFragment();break; case 5:f=new MindsetFragment();break; case 6:f=new ProfileFragment();break; default:f=new TodayFragment();break; }
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,f).commit();
         int[] navIds={R.id.nav_today,R.id.nav_routines,R.id.nav_habits,R.id.nav_alarm,R.id.nav_progress,R.id.nav_mindset,R.id.nav_profile};
-        int orange=getColor(R.color.orange); int muted=getColor(R.color.text_muted);
+        int primary=getColor(R.color.primary); int muted=getColor(R.color.text_muted);
         for(int i=0;i<navIds.length;i++){
             LinearLayout nav=(LinearLayout)findViewById(navIds[i]);
             boolean active=i==idx;
-            for(int c=0;c<nav.getChildCount();c++){View ch=nav.getChildAt(c);if(ch instanceof TextView)((TextView)ch).setTextColor(active?orange:muted);}
+            for(int c=0;c<nav.getChildCount();c++){View ch=nav.getChildAt(c);if(ch instanceof TextView)((TextView)ch).setTextColor(active?primary:muted);}
         }
     }
 

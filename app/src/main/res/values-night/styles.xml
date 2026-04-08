@@ -4,10 +4,10 @@
         <item name="colorPrimary">#6755C8</item>
         <item name="colorPrimaryVariant">#8B75D7</item>
         <item name="colorOnPrimary">#FFFFFF</item>
-        <item name="android:windowBackground">#F8F9FB</item>
-        <item name="android:statusBarColor">#F8F9FB</item>
-        <item name="android:navigationBarColor">#EDEEF2</item>
-        <item name="android:windowLightStatusBar">true</item>
-        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowBackground">#12101E</item>
+        <item name="android:statusBarColor">#12101E</item>
+        <item name="android:navigationBarColor">#1A1830</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
     </style>
 </resources>

@@ -194,7 +194,7 @@ public class EditAlarmActivity extends AppCompatActivity {
         try{
             java.lang.reflect.Field f=NumberPicker.class.getDeclaredField("mSelectionDivider");
             f.setAccessible(true);
-            f.set(np,new android.graphics.drawable.ColorDrawable(getColor(R.color.orange)));
+            f.set(np,new android.graphics.drawable.ColorDrawable(getColor(R.color.primary)));
         }catch(Exception ignored){}
     }
 
