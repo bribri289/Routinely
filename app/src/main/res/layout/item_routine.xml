@@ -15,29 +15,36 @@
             <TextView android:id="@+id/tv_name" android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:textColor="@color/text_primary"
                 android:textSize="17sp" android:fontFamily="sans-serif-medium"/>
-            <TextView android:id="@+id/tv_category" android:layout_width="wrap_content"
+            <TextView android:id="@+id/tv_time_range" android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:textColor="@color/text_muted"
                 android:textSize="12sp" android:layout_marginTop="2dp"/>
         </LinearLayout>
-        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:orientation="vertical" android:gravity="end">
-            <TextView android:id="@+id/tv_time" android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:textColor="@color/orange"
-                android:textSize="16sp" android:fontFamily="sans-serif-medium"/>
-        </LinearLayout>
+        <!-- Circular play button -->
+        <TextView android:id="@+id/btn_play" android:layout_width="40dp" android:layout_height="40dp"
+            android:text="▶" android:textColor="@color/text_primary" android:textSize="16sp"
+            android:gravity="center" android:background="@drawable/circle_orange"
+            android:layout_marginEnd="10dp"/>
+        <!-- Overflow ⋮ -->
+        <TextView android:id="@+id/btn_overflow" android:layout_width="32dp" android:layout_height="40dp"
+            android:text="⋮" android:textColor="@color/text_muted" android:textSize="20sp"
+            android:gravity="center"/>
     </LinearLayout>
-    <!-- Info row -->
+    <!-- Info row: days · duration · steps -->
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
         android:orientation="horizontal" android:gravity="center_vertical"
-        android:layout_marginBottom="12dp">
+        android:layout_marginBottom="8dp">
         <TextView android:id="@+id/tv_days" android:layout_width="0dp" android:layout_height="wrap_content"
             android:layout_weight="1" android:textColor="@color/text_muted" android:textSize="12sp"/>
+        <TextView android:id="@+id/tv_category" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:textColor="@color/text_muted"
+            android:textSize="12sp" android:layout_marginEnd="8dp"/>
         <TextView android:id="@+id/tv_duration" android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:textColor="@color/text_muted" android:textSize="12sp"/>
+            android:layout_height="wrap_content" android:textColor="@color/text_muted"
+            android:textSize="12sp"/>
     </LinearLayout>
     <!-- Tags row: alarm + habits -->
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:orientation="horizontal" android:layout_marginBottom="14dp">
+        android:orientation="horizontal">
         <TextView android:id="@+id/tv_linked_alarm" android:layout_width="wrap_content"
             android:layout_height="wrap_content" android:textColor="@color/orange"
             android:textSize="12sp" android:background="@drawable/chip_bg"
@@ -49,9 +56,4 @@
             android:paddingStart="10dp" android:paddingEnd="10dp" android:paddingTop="5dp"
             android:paddingBottom="5dp" android:visibility="gone"/>
     </LinearLayout>
-    <!-- Start button -->
-    <Button android:id="@+id/btn_start" android:layout_width="match_parent"
-        android:layout_height="48dp" android:text="▶  Start Routine"
-        android:textColor="@color/text_primary" android:textSize="14sp"
-        android:fontFamily="sans-serif-medium" android:background="@drawable/btn_primary_bg"/>
 </LinearLayout>

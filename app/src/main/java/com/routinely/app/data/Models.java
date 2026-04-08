@@ -2,6 +2,7 @@ package com.routinely.app.data;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 
 public class Models {
 
@@ -13,6 +14,8 @@ public class Models {
         public List<RoutineStep> steps=new ArrayList<>();
         public int linkedAlarmId=0;
         public boolean active=true;
+        public boolean archived=false;
+        public boolean showSuggestions=false;
 
         public String getTimeString(){
             String ap=startHour<12?"AM":"PM";
@@ -67,6 +70,23 @@ public class Models {
         public int reminderHour=8, reminderMinute=0;
         public boolean reminderEnabled=true;
         public int linkedRoutineId=0;
+        // Extended fields
+        public int dailyTarget=1;
+        public int todayCount=0;
+        public List<int[]> reminderTimes=new ArrayList<>(); // each int[2] = {hour, minute}
+        public List<HabitLog> logs=new ArrayList<>();
+        public String createdDate="";
+
+        public List<int[]> getEffectiveReminderTimes(){
+            if(reminderTimes!=null&&!reminderTimes.isEmpty()) return reminderTimes;
+            List<int[]> t=new ArrayList<>(); t.add(new int[]{reminderHour,reminderMinute}); return t;
+        }
+    }
+
+    public static class HabitLog implements Serializable {
+        public String date; // "yyyy-MM-dd"
+        public int count;
+        public HabitLog(String d,int c){date=d;count=c;}
     }
 
     public static class Alarm implements Serializable {
