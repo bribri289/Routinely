@@ -43,7 +43,6 @@ public class RunRoutineActivity extends AppCompatActivity {
         int totalMins=routine.getTotalMinutes();
         String ap=routine.startHour<12?"am":"pm";
         int hh=routine.startHour%12; if(hh==0)hh=12;
-        int totalMins=routine.getTotalMinutes();
         String dur=totalMins>=60?(totalMins/60)+"h "+(totalMins%60)+"m":totalMins+"m";
         ((TextView)findViewById(R.id.tv_routine_subtitle)).setText(
             String.format("%d:%02d%s (%s)",hh,routine.startMinute,ap,dur));
