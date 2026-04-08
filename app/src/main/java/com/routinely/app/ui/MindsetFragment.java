@@ -20,9 +20,11 @@ public class MindsetFragment extends Fragment {
         int idx = (Calendar.getInstance().get(Calendar.DAY_OF_YEAR) - 1) % MindsetData.DAILY_LESSONS.length;
         String lessonTitle = MindsetData.DAILY_LESSONS[idx][0];
         String lessonBody  = MindsetData.DAILY_LESSONS[idx][1];
+        String preview = (lessonBody != null && lessonBody.contains("\n"))
+            ? lessonBody.substring(0, lessonBody.indexOf('\n')) : lessonBody;
         ((TextView) v.findViewById(R.id.tv_lesson_number)).setText("Lesson " + (idx + 1));
         ((TextView) v.findViewById(R.id.tv_lesson_title)).setText(lessonTitle);
-        ((TextView) v.findViewById(R.id.tv_lesson_preview)).setText(lessonBody.split("\n")[0]);
+        ((TextView) v.findViewById(R.id.tv_lesson_preview)).setText(preview != null ? preview : "");
         // Full-card tap → read full lesson
         v.findViewById(R.id.daily_lesson_card).setOnClickListener(x ->
             showReading(lessonTitle, lessonBody));

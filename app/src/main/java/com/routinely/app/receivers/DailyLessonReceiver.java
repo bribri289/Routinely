@@ -18,7 +18,8 @@ public class DailyLessonReceiver extends BroadcastReceiver {
         Calendar cal = Calendar.getInstance();
         int idx = (cal.get(Calendar.DAY_OF_YEAR) - 1) % MindsetData.DAILY_LESSONS.length;
         String title = "☀️ Daily Lesson: " + MindsetData.DAILY_LESSONS[idx][0];
-        String body = MindsetData.DAILY_LESSONS[idx][1].split("\n")[0];
+        String body = MindsetData.DAILY_LESSONS[idx][1];
+        String preview = (body != null && body.contains("\n")) ? body.substring(0, body.indexOf('\n')) : body;
 
         Intent mainIntent = new Intent(ctx, MainActivity.class);
         mainIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -29,8 +30,8 @@ public class DailyLessonReceiver extends BroadcastReceiver {
         NotificationCompat.Builder nb = new NotificationCompat.Builder(ctx, RoutinelyApp.CH_MINDSET)
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle(title)
-            .setContentText(body)
-            .setStyle(new NotificationCompat.BigTextStyle().bigText(body))
+            .setContentText(preview)
+            .setStyle(new NotificationCompat.BigTextStyle().bigText(preview))
             .setContentIntent(pi)
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT);
@@ -51,9 +52,7 @@ public class DailyLessonReceiver extends BroadcastReceiver {
         cal.set(Calendar.MILLISECOND, 0);
         if (cal.getTimeInMillis() <= System.currentTimeMillis()) cal.add(Calendar.DAY_OF_YEAR, 1);
         PendingIntent pi = buildPI(ctx);
-        if (Build.VERSION.SDK_INT >= 31 && am.canScheduleExactAlarms())
-            am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pi);
-        else if (Build.VERSION.SDK_INT >= 23)
+        if (Build.VERSION.SDK_INT >= 23)
             am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pi);
         else
             am.setExact(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pi);
