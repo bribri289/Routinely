@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:orientation="horizontal" android:gravity="center_vertical"
+    android:paddingStart="4dp" android:paddingEnd="4dp"
+    android:paddingTop="14dp" android:paddingBottom="14dp">
+
+    <!-- Step number -->
+    <TextView android:id="@+id/tv_step_num" android:layout_width="24dp"
+        android:layout_height="wrap_content" android:textColor="@color/text_muted"
+        android:textSize="13sp" android:gravity="center" android:layout_marginEnd="8dp"/>
+
+    <!-- Emoji -->
+    <TextView android:id="@+id/tv_step_emoji" android:layout_width="32dp"
+        android:layout_height="32dp" android:textSize="18sp" android:gravity="center"
+        android:layout_marginEnd="10dp"/>
+
+    <!-- Name -->
+    <TextView android:id="@+id/tv_step_name" android:layout_width="0dp"
+        android:layout_height="wrap_content" android:layout_weight="1"
+        android:textColor="@color/text_primary" android:textSize="15sp"
+        android:fontFamily="sans-serif-medium"/>
+
+    <!-- Duration -->
+    <TextView android:id="@+id/tv_step_dur" android:layout_width="wrap_content"
+        android:layout_height="wrap_content" android:textColor="@color/text_muted"
+        android:textSize="13sp" android:layout_marginEnd="10dp"/>
+
+    <!-- Circle checkbox -->
+    <View android:id="@+id/step_check" android:layout_width="24dp" android:layout_height="24dp"
+        android:background="@drawable/circle_bg3"/>
+</LinearLayout>

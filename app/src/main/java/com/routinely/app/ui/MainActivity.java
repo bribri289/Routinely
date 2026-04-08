@@ -43,16 +43,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void setupNav() {
-        int[] ids = {R.id.nav_today,R.id.nav_routines,R.id.nav_habits,R.id.nav_alarm,R.id.nav_profile};
+        int[] ids = {R.id.nav_today,R.id.nav_routines,R.id.nav_habits,R.id.nav_alarm,R.id.nav_progress,R.id.nav_mindset,R.id.nav_profile};
         for (int i=0;i<ids.length;i++) { final int idx=i; findViewById(ids[i]).setOnClickListener(v->switchTab(idx)); }
     }
 
     public void switchTab(int idx) {
         curTab = idx;
         Fragment f;
-        switch(idx) { case 1:f=new RoutinesFragment();break; case 2:f=new HabitsFragment();break; case 3:f=new AlarmFragment();break; case 4:f=new ProfileFragment();break; default:f=new TodayFragment();break; }
+        switch(idx) { case 1:f=new RoutinesFragment();break; case 2:f=new HabitsFragment();break; case 3:f=new AlarmFragment();break; case 4:f=new ProgressFragment();break; case 5:f=new MindsetFragment();break; case 6:f=new ProfileFragment();break; default:f=new TodayFragment();break; }
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,f).commit();
-        int[] navIds={R.id.nav_today,R.id.nav_routines,R.id.nav_habits,R.id.nav_alarm,R.id.nav_profile};
+        int[] navIds={R.id.nav_today,R.id.nav_routines,R.id.nav_habits,R.id.nav_alarm,R.id.nav_progress,R.id.nav_mindset,R.id.nav_profile};
         int orange=getColor(R.color.orange); int muted=getColor(R.color.text_muted);
         for(int i=0;i<navIds.length;i++){
             LinearLayout nav=(LinearLayout)findViewById(navIds[i]);

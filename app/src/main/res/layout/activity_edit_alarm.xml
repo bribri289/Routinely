@@ -2,121 +2,410 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:orientation="vertical" android:background="@color/bg">
-    <LinearLayout android:layout_width="match_parent" android:layout_height="56dp" android:orientation="horizontal" android:gravity="center_vertical" android:padding="12dp" android:background="@color/bg2">
-        <Button android:id="@+id/btn_back" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="← Cancel" android:background="@android:color/transparent" android:textColor="@color/text_secondary" android:textSize="14sp"/>
-        <TextView android:id="@+id/tv_title" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:textColor="@color/text_primary" android:textSize="17sp" android:fontFamily="sans-serif-medium" android:gravity="center"/>
-        <Button android:id="@+id/btn_save" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Save" android:background="@android:color/transparent" android:textColor="@color/orange" android:textSize="15sp"/>
+    <!-- Top bar -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="56dp"
+        android:orientation="horizontal" android:gravity="center_vertical"
+        android:padding="12dp" android:background="@color/bg2">
+        <Button android:id="@+id/btn_back" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:text="← Cancel"
+            android:background="@android:color/transparent"
+            android:textColor="@color/text_secondary" android:textSize="14sp"/>
+        <TextView android:id="@+id/tv_title" android:layout_width="0dp"
+            android:layout_height="wrap_content" android:layout_weight="1"
+            android:textColor="@color/text_primary" android:textSize="17sp"
+            android:fontFamily="sans-serif-medium" android:gravity="center"/>
+        <Button android:id="@+id/btn_save" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:text="Save"
+            android:background="@drawable/btn_primary_bg"
+            android:textColor="@color/text_primary" android:textSize="15sp"
+            android:paddingStart="20dp" android:paddingEnd="20dp"/>
     </LinearLayout>
-    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="20dp">
-            <EditText android:id="@+id/et_label" android:layout_width="match_parent" android:layout_height="52dp" android:hint="Alarm label" android:textColor="@color/text_primary" android:textColorHint="@color/text_muted" android:background="@drawable/input_bg" android:padding="14dp" android:textSize="16sp" android:layout_marginBottom="16dp"/>
-            <TimePicker android:id="@+id/time_picker" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp" android:timePickerMode="spinner"/>
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="REPEAT DAYS" android:textColor="@color/text_muted" android:textSize="11sp" android:layout_marginBottom="8dp"/>
-            <LinearLayout android:id="@+id/days_row" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="20dp"/>
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="SOUND" android:textColor="@color/text_muted" android:textSize="11sp" android:layout_marginBottom="8dp"/>
-            <Spinner android:id="@+id/spinner_sound" android:layout_width="match_parent" android:layout_height="48dp" android:background="@drawable/input_bg" android:popupBackground="@color/card2" android:layout_marginBottom="8dp"/>
-            <TextView android:id="@+id/tv_custom_sound" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="#9CA3AF" android:textSize="12sp" android:layout_marginBottom="8dp" android:text="Using default alarm sound"/>
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="16dp">
-                <Button android:id="@+id/btn_system_alarm" android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1" android:text="🔔 Pick ringtone" android:background="@drawable/chip_bg" android:textColor="@color/text_primary" android:textSize="12sp" android:layout_marginEnd="6dp"/>
-                <Button android:id="@+id/btn_pick_sound" android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1" android:text="📂 Upload sound" android:background="@drawable/chip_bg" android:textColor="@color/text_primary" android:textSize="12sp" android:layout_marginEnd="6dp"/>
-                <Button android:id="@+id/btn_clear_sound" android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1" android:text="✕ Clear" android:background="@drawable/chip_bg" android:textColor="@color/red" android:textSize="12sp"/>
-            </LinearLayout>
-            <!-- Wallpaper -->
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="ALARM WALLPAPER" android:textColor="@color/text_muted" android:textSize="11sp" android:layout_marginBottom="8dp"/>
-            <TextView android:id="@+id/tv_wallpaper" android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:textColor="#9CA3AF" android:textSize="12sp" android:layout_marginBottom="8dp" android:text="No wallpaper"/>
+
+    <ScrollView android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:padding="20dp">
+
+            <!-- Alarm label -->
+            <EditText android:id="@+id/et_label" android:layout_width="match_parent"
+                android:layout_height="52dp" android:hint="Alarm label"
+                android:textColor="@color/text_primary" android:textColorHint="@color/text_muted"
+                android:background="@drawable/input_bg" android:padding="14dp"
+                android:textSize="16sp" android:layout_marginBottom="16dp"/>
+
+            <!-- Drum-roll time picker: three NumberPickers -->
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:orientation="horizontal" android:layout_marginBottom="16dp">
-                <Button android:id="@+id/btn_pick_wallpaper_image" android:layout_width="0dp" android:layout_height="44dp"
-                    android:layout_weight="1" android:text="Image" android:background="@drawable/chip_bg"
-                    android:textColor="@color/text_primary" android:textSize="12sp" android:layout_marginEnd="6dp"/>
-                <Button android:id="@+id/btn_pick_wallpaper_video" android:layout_width="0dp" android:layout_height="44dp"
-                    android:layout_weight="1" android:text="Video" android:background="@drawable/chip_bg"
-                    android:textColor="@color/text_primary" android:textSize="12sp" android:layout_marginEnd="6dp"/>
-                <Button android:id="@+id/btn_clear_wallpaper" android:layout_width="0dp" android:layout_height="44dp"
-                    android:layout_weight="1" android:text="Clear" android:background="@drawable/chip_bg"
-                    android:textColor="@color/red" android:textSize="12sp"/>
+                android:orientation="horizontal" android:gravity="center"
+                android:background="@drawable/card_bg" android:padding="12dp"
+                android:layout_marginBottom="16dp">
+                <NumberPicker android:id="@+id/np_hour" android:layout_width="0dp"
+                    android:layout_height="wrap_content" android:layout_weight="1"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text=":" android:textColor="@color/text_primary" android:textSize="32sp"
+                    android:paddingStart="8dp" android:paddingEnd="8dp"/>
+                <NumberPicker android:id="@+id/np_minute" android:layout_width="0dp"
+                    android:layout_height="wrap_content" android:layout_weight="1"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="  " android:textSize="14sp"/>
+                <NumberPicker android:id="@+id/np_ampm" android:layout_width="0dp"
+                    android:layout_height="wrap_content" android:layout_weight="1"/>
             </LinearLayout>
 
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="VOLUME" android:textColor="@color/text_muted" android:textSize="11sp" android:layout_marginBottom="4dp"/>
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="16dp">
-                <SeekBar android:id="@+id/seekbar_volume" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:max="100" android:thumbTint="@color/orange" android:progressTint="@color/orange"/>
-                <TextView android:id="@+id/tv_volume" android:layout_width="48dp" android:layout_height="wrap_content" android:textColor="@color/orange" android:textSize="14sp" android:gravity="end"/>
+            <!-- Repeat Days -->
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="REPEAT DAYS" android:textColor="@color/text_muted"
+                android:textSize="11sp" android:layout_marginBottom="8dp"/>
+            <LinearLayout android:id="@+id/days_row" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:orientation="horizontal"
+                android:layout_marginBottom="20dp"/>
+
+            <!-- Wake-Up Mission -->
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:text="WAKE-UP MISSION"
+                    android:textColor="@color/text_muted" android:textSize="11sp"/>
+                <TextView android:id="@+id/tv_mission_count"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:textColor="@color/text_muted" android:textSize="11sp"/>
             </LinearLayout>
-            <!-- Switches row 1 -->
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/card_bg2" android:padding="14dp" android:layout_marginBottom="12dp">
-                <LinearLayout android:layout_width="match_parent" android:layout_height="48dp" android:orientation="horizontal" android:gravity="center_vertical">
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Gradual volume increase" android:textColor="@color/text_primary" android:textSize="14sp"/>
-                    <Switch android:id="@+id/sw_gradual" android:layout_width="wrap_content" android:layout_height="wrap_content" android:thumbTint="@color/orange" android:trackTint="#3F3F46"/>
-                </LinearLayout>
-                <LinearLayout android:layout_width="match_parent" android:layout_height="48dp" android:orientation="horizontal" android:gravity="center_vertical">
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="📳 Vibrate" android:textColor="@color/text_primary" android:textSize="14sp"/>
-                    <Switch android:id="@+id/sw_vibrate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:thumbTint="@color/orange" android:trackTint="#3F3F46"/>
-                </LinearLayout>
-                <LinearLayout android:layout_width="match_parent" android:layout_height="48dp" android:orientation="horizontal" android:gravity="center_vertical">
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="🔺 Ultra-loud" android:textColor="@color/text_primary" android:textSize="14sp"/>
-                    <Switch android:id="@+id/sw_ultra_loud" android:layout_width="wrap_content" android:layout_height="wrap_content" android:thumbTint="@color/orange" android:trackTint="#3F3F46"/>
-                </LinearLayout>
-            </LinearLayout>
-            <!-- Snooze -->
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="SNOOZE SETTINGS" android:textColor="@color/text_muted" android:textSize="11sp" android:layout_marginBottom="8dp"/>
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/card_bg2" android:padding="14dp" android:layout_marginBottom="12dp">
-                <LinearLayout android:layout_width="match_parent" android:layout_height="48dp" android:orientation="horizontal" android:gravity="center_vertical">
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="🚫 Prevent snooze" android:textColor="@color/text_primary" android:textSize="14sp"/>
-                    <Switch android:id="@+id/sw_prevent_snooze" android:layout_width="wrap_content" android:layout_height="wrap_content" android:thumbTint="@color/orange" android:trackTint="#3F3F46"/>
-                </LinearLayout>
-                <LinearLayout android:layout_width="match_parent" android:layout_height="48dp" android:orientation="horizontal" android:gravity="center_vertical">
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Complete mission to snooze" android:textColor="@color/text_primary" android:textSize="14sp"/>
-                    <Switch android:id="@+id/sw_mission_to_snooze" android:layout_width="wrap_content" android:layout_height="wrap_content" android:thumbTint="@color/orange" android:trackTint="#3F3F46"/>
-                </LinearLayout>
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Max snoozes" android:textColor="@color/text_muted" android:textSize="12sp" android:layout_marginTop="4dp"/>
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
-                    <SeekBar android:id="@+id/seekbar_snooze" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:max="10" android:thumbTint="@color/orange" android:progressTint="@color/orange"/>
-                    <TextView android:id="@+id/tv_snooze_count" android:layout_width="40dp" android:layout_height="wrap_content" android:textColor="@color/orange" android:textSize="14sp" android:gravity="end"/>
-                </LinearLayout>
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Snooze duration" android:textColor="@color/text_muted" android:textSize="12sp" android:layout_marginTop="8dp"/>
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
-                    <SeekBar android:id="@+id/seekbar_snooze_mins" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:max="30" android:progress="5" android:thumbTint="@color/orange" android:progressTint="@color/orange"/>
-                    <TextView android:id="@+id/tv_snooze_mins" android:layout_width="56dp" android:layout_height="wrap_content" android:textColor="@color/orange" android:textSize="14sp" android:gravity="end" android:text="5 min"/>
-                </LinearLayout>
-            </LinearLayout>
-            <!-- Safety -->
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="SAFETY" android:textColor="@color/text_muted" android:textSize="11sp" android:layout_marginBottom="8dp"/>
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/card_bg2" android:padding="14dp" android:layout_marginBottom="12dp">
-                <LinearLayout android:layout_width="match_parent" android:layout_height="48dp" android:orientation="horizontal" android:gravity="center_vertical">
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="🔋 Prevent power off" android:textColor="@color/text_primary" android:textSize="14sp"/>
-                    <Switch android:id="@+id/sw_prevent_poweroff" android:layout_width="wrap_content" android:layout_height="wrap_content" android:thumbTint="@color/orange" android:trackTint="#3F3F46"/>
-                </LinearLayout>
-                <LinearLayout android:layout_width="match_parent" android:layout_height="48dp" android:orientation="horizontal" android:gravity="center_vertical">
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="📱 Play when screen off" android:textColor="@color/text_primary" android:textSize="14sp"/>
-                    <Switch android:id="@+id/sw_play_screen_off" android:layout_width="wrap_content" android:layout_height="wrap_content" android:thumbTint="@color/orange" android:trackTint="#3F3F46"/>
-                </LinearLayout>
-            </LinearLayout>
-            <!-- Wake check -->
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="WAKE-UP CHECK" android:textColor="@color/text_muted" android:textSize="11sp" android:layout_marginBottom="8dp"/>
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/card_bg2" android:padding="14dp" android:layout_marginBottom="12dp">
-                <LinearLayout android:layout_width="match_parent" android:layout_height="48dp" android:orientation="horizontal" android:gravity="center_vertical">
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="🧠 Enable wake-up check" android:textColor="@color/text_primary" android:textSize="14sp"/>
-                    <Switch android:id="@+id/sw_wake_check" android:layout_width="wrap_content" android:layout_height="wrap_content" android:thumbTint="@color/orange" android:trackTint="#3F3F46"/>
-                </LinearLayout>
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Delay after dismissal" android:textColor="@color/text_muted" android:textSize="12sp"/>
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
-                    <SeekBar android:id="@+id/seekbar_wc_delay" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:max="15" android:thumbTint="@color/orange" android:progressTint="@color/orange"/>
-                    <TextView android:id="@+id/tv_wc_delay" android:layout_width="60dp" android:layout_height="wrap_content" android:textColor="@color/orange" android:textSize="14sp" android:gravity="end"/>
-                </LinearLayout>
-            </LinearLayout>
-            <!-- Missions -->
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="WAKE-UP MISSIONS" android:textColor="@color/text_muted" android:textSize="11sp" android:layout_marginBottom="8dp"/>
-            <LinearLayout android:id="@+id/missions_container" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginBottom="10dp"/>
-            <HorizontalScrollView android:layout_width="match_parent" android:layout_height="wrap_content" android:scrollbars="none" android:layout_marginBottom="16dp">
-                <LinearLayout android:id="@+id/mission_buttons_row" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal"/>
+            <!-- Mission tile row (chips + add chip) -->
+            <HorizontalScrollView android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:scrollbars="none"
+                android:layout_marginBottom="8dp">
+                <LinearLayout android:id="@+id/mission_tiles_row"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:padding="4dp"/>
             </HorizontalScrollView>
-            <Button android:id="@+id/btn_preview_missions" android:layout_width="match_parent" android:layout_height="52dp" android:text="▶ Preview All Missions" android:background="@drawable/btn_secondary_bg" android:textColor="@color/text_primary" android:textSize="14sp" android:layout_marginBottom="10dp"/>
-            <!-- Routine trigger -->
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="TRIGGER ROUTINE AFTER MISSIONS" android:textColor="@color/text_muted" android:textSize="11sp" android:layout_marginBottom="8dp"/>
-            <Spinner android:id="@+id/spinner_routine" android:layout_width="match_parent" android:layout_height="48dp" android:background="@drawable/input_bg" android:popupBackground="@color/card2" android:layout_marginBottom="20dp"/>
-            <Button android:id="@+id/btn_delete" android:layout_width="match_parent" android:layout_height="52dp" android:text="🗑 Delete Alarm" android:background="@drawable/btn_danger_bg" android:textColor="@color/text_primary" android:textSize="14sp"/>
+            <!-- Wake up check row -->
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:background="@drawable/card_bg2" android:orientation="horizontal"
+                android:gravity="center_vertical" android:padding="14dp"
+                android:layout_marginBottom="20dp">
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Wake up check" android:textColor="@color/text_primary"
+                        android:textSize="14sp"/>
+                    <Switch android:id="@+id/sw_wake_check" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:thumbTint="@color/orange"
+                        android:trackTint="#3F3F46" android:layout_marginTop="4dp"/>
+                </LinearLayout>
+                <TextView android:id="@+id/tv_wc_delay_label" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:text="After 2 min ›"
+                    android:textColor="@color/text_muted" android:textSize="13sp"/>
+            </LinearLayout>
+
+            <!-- Volume and Sound -->
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="ALARM SOUND" android:textColor="@color/text_muted"
+                android:textSize="11sp" android:layout_marginBottom="8dp"/>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:background="@drawable/card_bg2" android:orientation="vertical"
+                android:padding="14dp" android:layout_marginBottom="12dp">
+                <Spinner android:id="@+id/spinner_sound" android:layout_width="match_parent"
+                    android:layout_height="48dp" android:background="@drawable/input_bg"
+                    android:popupBackground="@color/card2" android:layout_marginBottom="8dp"/>
+                <TextView android:id="@+id/tv_custom_sound" android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:textColor="#9CA3AF"
+                    android:textSize="12sp" android:layout_marginBottom="8dp"
+                    android:text="Using default alarm sound"/>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:layout_marginBottom="12dp">
+                    <Button android:id="@+id/btn_system_alarm" android:layout_width="0dp"
+                        android:layout_height="44dp" android:layout_weight="1"
+                        android:text="🔔 Ringtone" android:background="@drawable/chip_bg"
+                        android:textColor="@color/text_primary" android:textSize="12sp"
+                        android:layout_marginEnd="6dp"/>
+                    <Button android:id="@+id/btn_pick_sound" android:layout_width="0dp"
+                        android:layout_height="44dp" android:layout_weight="1"
+                        android:text="📂 Upload" android:background="@drawable/chip_bg"
+                        android:textColor="@color/text_primary" android:textSize="12sp"
+                        android:layout_marginEnd="6dp"/>
+                    <Button android:id="@+id/btn_clear_sound" android:layout_width="0dp"
+                        android:layout_height="44dp" android:layout_weight="1"
+                        android:text="✕ Clear" android:background="@drawable/chip_bg"
+                        android:textColor="@color/red" android:textSize="12sp"/>
+                </LinearLayout>
+                <!-- Volume -->
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Volume and Sound" android:textColor="@color/text_muted"
+                    android:textSize="12sp" android:layout_marginBottom="4dp"/>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:layout_marginBottom="8dp">
+                    <SeekBar android:id="@+id/seekbar_volume" android:layout_width="0dp"
+                        android:layout_height="wrap_content" android:layout_weight="1"
+                        android:max="100" android:thumbTint="@color/orange"
+                        android:progressTint="@color/orange"/>
+                    <TextView android:id="@+id/tv_volume" android:layout_width="48dp"
+                        android:layout_height="wrap_content" android:textColor="@color/orange"
+                        android:textSize="14sp" android:gravity="end"/>
+                </LinearLayout>
+                <!-- Use built-in speaker -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="48dp"
+                    android:orientation="horizontal" android:gravity="center_vertical">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:text="Use the built-in speaker"
+                        android:textColor="@color/text_primary" android:textSize="14sp"/>
+                    <Switch android:id="@+id/sw_ultra_loud" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:thumbTint="@color/orange"
+                        android:trackTint="#3F3F46"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="48dp"
+                    android:orientation="horizontal" android:gravity="center_vertical">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:text="Gradual volume increase"
+                        android:textColor="@color/text_primary" android:textSize="14sp"/>
+                    <Switch android:id="@+id/sw_gradual" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:thumbTint="@color/orange"
+                        android:trackTint="#3F3F46"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="48dp"
+                    android:orientation="horizontal" android:gravity="center_vertical">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:text="📳 Vibrate"
+                        android:textColor="@color/text_primary" android:textSize="14sp"/>
+                    <Switch android:id="@+id/sw_vibrate" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:thumbTint="@color/orange"
+                        android:trackTint="#3F3F46"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Gentle Wake-Up / Reminders -->
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="GENTLE WAKE-UP / REMINDERS" android:textColor="@color/text_muted"
+                android:textSize="11sp" android:layout_marginBottom="8dp"/>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:background="@drawable/card_bg2" android:orientation="vertical"
+                android:padding="14dp" android:layout_marginBottom="12dp">
+                <!-- Gentle wake-up row -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="48dp"
+                    android:orientation="horizontal" android:gravity="center_vertical">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:text="Gentle wake-up"
+                        android:textColor="@color/text_primary" android:textSize="14sp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="30 seconds ›" android:textColor="@color/text_muted"
+                        android:textSize="13sp"/>
+                </LinearLayout>
+                <!-- Time reminder -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="48dp"
+                    android:orientation="horizontal" android:gravity="center_vertical">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:text="Time reminder"
+                        android:textColor="@color/text_primary" android:textSize="14sp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="▶ Sample" android:textColor="@color/text_muted"
+                        android:textSize="12sp" android:paddingEnd="8dp"/>
+                    <Switch android:id="@+id/sw_prevent_poweroff" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:thumbTint="@color/orange"
+                        android:trackTint="#3F3F46"/>
+                </LinearLayout>
+                <!-- Weather reminder -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="48dp"
+                    android:orientation="horizontal" android:gravity="center_vertical">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:text="Weather reminder"
+                        android:textColor="@color/text_primary" android:textSize="14sp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="▶ Sample" android:textColor="@color/text_muted"
+                        android:textSize="12sp" android:paddingEnd="8dp"/>
+                    <Switch android:id="@+id/sw_play_screen_off" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:thumbTint="@color/orange"
+                        android:trackTint="#3F3F46"/>
+                </LinearLayout>
+                <!-- Label reminder -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="48dp"
+                    android:orientation="horizontal" android:gravity="center_vertical">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:text="Label reminder"
+                        android:textColor="@color/text_primary" android:textSize="14sp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="▶ Sample" android:textColor="@color/text_muted"
+                        android:textSize="12sp" android:paddingEnd="8dp"/>
+                    <Switch android:id="@+id/sw_vibrate2" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:thumbTint="@color/orange"
+                        android:trackTint="#3F3F46"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Custom Settings -->
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="CUSTOM SETTINGS" android:textColor="@color/text_muted"
+                android:textSize="11sp" android:layout_marginBottom="8dp"/>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:background="@drawable/card_bg2" android:orientation="vertical"
+                android:padding="14dp" android:layout_marginBottom="12dp">
+                <!-- Snooze row -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:layout_marginBottom="8dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="48dp"
+                        android:orientation="horizontal" android:gravity="center_vertical">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1" android:text="🚫 Prevent snooze"
+                            android:textColor="@color/text_primary" android:textSize="14sp"/>
+                        <Switch android:id="@+id/sw_prevent_snooze" android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" android:thumbTint="@color/orange"
+                            android:trackTint="#3F3F46"/>
+                    </LinearLayout>
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="48dp"
+                        android:orientation="horizontal" android:gravity="center_vertical">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1" android:text="Complete mission to snooze"
+                            android:textColor="@color/text_primary" android:textSize="14sp"/>
+                        <Switch android:id="@+id/sw_mission_to_snooze" android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" android:thumbTint="@color/orange"
+                            android:trackTint="#3F3F46"/>
+                    </LinearLayout>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Max snoozes" android:textColor="@color/text_muted"
+                        android:textSize="12sp" android:layout_marginTop="4dp"/>
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="horizontal" android:gravity="center_vertical">
+                        <SeekBar android:id="@+id/seekbar_snooze" android:layout_width="0dp"
+                            android:layout_height="wrap_content" android:layout_weight="1"
+                            android:max="10" android:thumbTint="@color/orange"
+                            android:progressTint="@color/orange"/>
+                        <TextView android:id="@+id/tv_snooze_count" android:layout_width="40dp"
+                            android:layout_height="wrap_content" android:textColor="@color/orange"
+                            android:textSize="14sp" android:gravity="end"/>
+                    </LinearLayout>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Snooze duration" android:textColor="@color/text_muted"
+                        android:textSize="12sp" android:layout_marginTop="8dp"/>
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="horizontal" android:gravity="center_vertical">
+                        <SeekBar android:id="@+id/seekbar_snooze_mins" android:layout_width="0dp"
+                            android:layout_height="wrap_content" android:layout_weight="1"
+                            android:max="30" android:progress="5"
+                            android:thumbTint="@color/orange" android:progressTint="@color/orange"/>
+                        <TextView android:id="@+id/tv_snooze_mins" android:layout_width="56dp"
+                            android:layout_height="wrap_content" android:textColor="@color/orange"
+                            android:textSize="14sp" android:gravity="end" android:text="5 min"/>
+                    </LinearLayout>
+                </LinearLayout>
+                <!-- Alarm wallpaper -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:paddingTop="8dp">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:text="Alarm wallpaper"
+                        android:textColor="@color/text_primary" android:textSize="14sp"/>
+                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <Button android:id="@+id/btn_pick_wallpaper_image" android:layout_width="72dp"
+                            android:layout_height="40dp" android:text="Image"
+                            android:background="@drawable/chip_bg" android:textColor="@color/text_primary"
+                            android:textSize="12sp" android:layout_marginEnd="6dp"/>
+                        <Button android:id="@+id/btn_pick_wallpaper_video" android:layout_width="72dp"
+                            android:layout_height="40dp" android:text="Video"
+                            android:background="@drawable/chip_bg" android:textColor="@color/text_primary"
+                            android:textSize="12sp" android:layout_marginEnd="6dp"/>
+                        <Button android:id="@+id/btn_clear_wallpaper" android:layout_width="60dp"
+                            android:layout_height="40dp" android:text="Clear"
+                            android:background="@drawable/chip_bg" android:textColor="@color/red"
+                            android:textSize="12sp"/>
+                    </LinearLayout>
+                </LinearLayout>
+                <TextView android:id="@+id/tv_wallpaper" android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:textColor="#9CA3AF"
+                    android:textSize="12sp" android:layout_marginTop="4dp"
+                    android:text="No wallpaper"/>
+            </LinearLayout>
+
+            <!-- Alarm Security -->
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="ALARM SECURITY" android:textColor="@color/text_muted"
+                android:textSize="11sp" android:layout_marginBottom="8dp"/>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:background="@drawable/card_bg2" android:orientation="vertical"
+                android:padding="14dp" android:layout_marginBottom="12dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="48dp"
+                    android:orientation="horizontal" android:gravity="center_vertical">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:text="Prevent last-minute edits to alarm"
+                        android:textColor="@color/text_primary" android:textSize="14sp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Off ›" android:textColor="@color/text_muted" android:textSize="13sp"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="48dp"
+                    android:orientation="horizontal" android:gravity="center_vertical">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:text="Prevent app uninstall during alarm"
+                        android:textColor="@color/text_primary" android:textSize="14sp"/>
+                    <Switch android:id="@+id/sw_prevent_snooze2" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:thumbTint="@color/orange"
+                        android:trackTint="#3F3F46"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Upcoming Alarms -->
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="UPCOMING ALARMS" android:textColor="@color/text_muted"
+                android:textSize="11sp" android:layout_marginBottom="8dp"/>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:background="@drawable/card_bg2" android:orientation="vertical"
+                android:padding="14dp" android:layout_marginBottom="12dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="48dp"
+                    android:orientation="horizontal" android:gravity="center_vertical">
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Show next alarm in notification drawer"
+                            android:textColor="@color/text_primary" android:textSize="14sp"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Next alarm will appear as a notification"
+                            android:textColor="@color/text_muted" android:textSize="11sp"/>
+                    </LinearLayout>
+                    <Switch android:id="@+id/sw_mission_to_snooze2" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:thumbTint="@color/orange"
+                        android:trackTint="#3F3F46"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Prevent Power-Off -->
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="PREVENT POWER-OFF" android:textColor="@color/text_muted"
+                android:textSize="11sp" android:layout_marginBottom="8dp"/>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:background="@drawable/card_bg2" android:orientation="vertical"
+                android:padding="14dp" android:layout_marginBottom="12dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="48dp"
+                    android:orientation="horizontal" android:gravity="center_vertical">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:text="Successful block counts"
+                        android:textColor="@color/text_primary" android:textSize="14sp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="0 times" android:textColor="@color/text_muted"
+                        android:textSize="13sp" android:background="@drawable/chip_bg"
+                        android:padding="8dp"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="48dp"
+                    android:orientation="horizontal" android:gravity="center_vertical">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:text="🔋 Prevent power-off"
+                        android:textColor="@color/text_primary" android:textSize="14sp"/>
+                    <Switch android:id="@+id/sw_wc_delay" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:thumbTint="@color/orange"
+                        android:trackTint="#3F3F46"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Trigger Routine -->
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="TRIGGER ROUTINE AFTER MISSIONS"
+                android:textColor="@color/text_muted" android:textSize="11sp"
+                android:layout_marginBottom="8dp"/>
+            <Spinner android:id="@+id/spinner_routine" android:layout_width="match_parent"
+                android:layout_height="48dp" android:background="@drawable/input_bg"
+                android:popupBackground="@color/card2" android:layout_marginBottom="20dp"/>
+
+            <Button android:id="@+id/btn_delete" android:layout_width="match_parent"
+                android:layout_height="52dp" android:text="🗑 Delete Alarm"
+                android:background="@drawable/btn_danger_bg"
+                android:textColor="@color/text_primary" android:textSize="14sp"/>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
