@@ -7,24 +7,32 @@
     <LinearLayout android:layout_width="match_parent" android:layout_height="68dp"
         android:background="@color/bg2" android:orientation="horizontal">
         <LinearLayout android:id="@+id/nav_today" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:padding="4dp">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="⌂" android:textSize="22sp" android:textColor="@color/text_muted"/>
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Today" android:textSize="10sp" android:textColor="@color/text_muted" android:fontFamily="sans-serif-medium"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="⌂" android:textSize="20sp" android:textColor="@color/text_muted"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Today" android:textSize="9sp" android:textColor="@color/text_muted" android:fontFamily="sans-serif-medium"/>
         </LinearLayout>
         <LinearLayout android:id="@+id/nav_routines" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:padding="4dp">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="☰" android:textSize="22sp" android:textColor="@color/text_muted"/>
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Routines" android:textSize="10sp" android:textColor="@color/text_muted" android:fontFamily="sans-serif-medium"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="☰" android:textSize="20sp" android:textColor="@color/text_muted"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Routines" android:textSize="9sp" android:textColor="@color/text_muted" android:fontFamily="sans-serif-medium"/>
         </LinearLayout>
         <LinearLayout android:id="@+id/nav_habits" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:padding="4dp">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📊" android:textSize="22sp" android:textColor="@color/text_muted"/>
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Habits" android:textSize="10sp" android:textColor="@color/text_muted" android:fontFamily="sans-serif-medium"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📋" android:textSize="20sp" android:textColor="@color/text_muted"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Habits" android:textSize="9sp" android:textColor="@color/text_muted" android:fontFamily="sans-serif-medium"/>
         </LinearLayout>
         <LinearLayout android:id="@+id/nav_alarm" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:padding="4dp">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="⏰" android:textSize="22sp" android:textColor="@color/text_muted"/>
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Alarm" android:textSize="10sp" android:textColor="@color/text_muted" android:fontFamily="sans-serif-medium"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="⏰" android:textSize="20sp" android:textColor="@color/text_muted"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Alarm" android:textSize="9sp" android:textColor="@color/text_muted" android:fontFamily="sans-serif-medium"/>
+        </LinearLayout>
+        <LinearLayout android:id="@+id/nav_progress" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:padding="4dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📊" android:textSize="20sp" android:textColor="@color/text_muted"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Progress" android:textSize="9sp" android:textColor="@color/text_muted" android:fontFamily="sans-serif-medium"/>
+        </LinearLayout>
+        <LinearLayout android:id="@+id/nav_mindset" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:padding="4dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🧠" android:textSize="20sp" android:textColor="@color/text_muted"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mindset" android:textSize="9sp" android:textColor="@color/text_muted" android:fontFamily="sans-serif-medium"/>
         </LinearLayout>
         <LinearLayout android:id="@+id/nav_profile" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:padding="4dp">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="👤" android:textSize="22sp" android:textColor="@color/text_muted"/>
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Profile" android:textSize="10sp" android:textColor="@color/text_muted" android:fontFamily="sans-serif-medium"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="👤" android:textSize="20sp" android:textColor="@color/text_muted"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Profile" android:textSize="9sp" android:textColor="@color/text_muted" android:fontFamily="sans-serif-medium"/>
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

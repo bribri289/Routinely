@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.*;
 import android.widget.*;
 import androidx.fragment.app.Fragment;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.routinely.app.R;
 import com.routinely.app.data.*;
 import com.routinely.app.receivers.AlarmReceiver;
@@ -18,60 +19,128 @@ public class AlarmFragment extends Fragment {
     }
     @Override public void onResume(){super.onResume();View v=getView();if(v!=null)buildList(v,AppData.get(requireContext()));}
 
+    static final String[] DAY_LABELS={"S","M","T","W","T","F","S"};
+
     void buildList(View v, AppData db){
         LinearLayout list=v.findViewById(R.id.alarm_list); list.removeAllViews();
         LayoutInflater inf=LayoutInflater.from(getContext());
         if(db.alarms.isEmpty()){
-            View empty=new TextView(getContext());
-            ((TextView)empty).setText("No alarms yet\nTap + to create your first alarm");
-            ((TextView)empty).setTextColor(0xFF6B7280);
-            ((TextView)empty).setTextSize(15);
-            ((TextView)empty).setGravity(android.view.Gravity.CENTER);
-            ((TextView)empty).setPadding(32,80,32,80);
-            list.addView(empty); return;
+            buildEmptyCard(list); return;
         }
         for(Models.Alarm a:db.alarms){
             View item=inf.inflate(R.layout.item_alarm,list,false);
-            // Big time
-            ((TextView)item.findViewById(R.id.tv_time)).setText(a.getTimeString());
-            ((TextView)item.findViewById(R.id.tv_label)).setText(a.label);
-            ((TextView)item.findViewById(R.id.tv_days)).setText(a.getDaysString());
-            // Mission icons
-            LinearLayout missionRow=item.findViewById(R.id.mission_icons_row);
-            missionRow.removeAllViews();
-            for(Models.Mission m:a.missions){
-                TextView icon=new TextView(getContext());
-                icon.setText(m.getEmoji()+"\n"+m.getDisplayName());
-                icon.setTextColor(0xFF9CA3AF); icon.setTextSize(10);
-                icon.setGravity(android.view.Gravity.CENTER);
-                icon.setPadding(12,8,12,8);
-                icon.setBackground(getContext().getDrawable(R.drawable.chip_bg));
-                LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT);
-                lp.setMargins(0,0,8,0); icon.setLayoutParams(lp);
-                missionRow.addView(icon);
-            }
-            missionRow.setVisibility(a.missions.isEmpty()?View.GONE:View.VISIBLE);
-            // Linked routine
-            TextView tvRoutine=item.findViewById(R.id.tv_linked_routine);
-            if(a.linkedRoutineId!=0){
-                Models.Routine r=db.findRoutine(a.linkedRoutineId);
-                if(r!=null){tvRoutine.setText("→ Starts: "+r.emoji+" "+r.name);tvRoutine.setVisibility(View.VISIBLE);}
-                else tvRoutine.setVisibility(View.GONE);
-            } else tvRoutine.setVisibility(View.GONE);
-            // Toggle
-            Switch sw=item.findViewById(R.id.sw_enabled);
-            sw.setChecked(a.enabled);
-            sw.setOnCheckedChangeListener((btn,chk)->{
-                a.enabled=chk; db.save();
-                if(chk)AlarmReceiver.schedule(requireContext(),a);
-                else AlarmReceiver.cancel(requireContext(),a.id);
-            });
-            item.setOnClickListener(x->{
-                Intent i=new Intent(getActivity(),EditAlarmActivity.class);
-                i.putExtra("alarmId",a.id); startActivity(i);
-            });
+            bindAlarmItem(item,a,v,db);
             list.addView(item);
         }
+    }
+
+    void buildEmptyCard(LinearLayout list){
+        // Show styled empty-state card with day initials + 5:45 AM placeholder
+        View item=LayoutInflater.from(getContext()).inflate(R.layout.item_alarm,list,false);
+        // Days dots
+        buildDayDots(item.findViewById(R.id.days_dots_row),new boolean[]{false,false,false,false,false,true,true});
+        ((TextView)item.findViewById(R.id.tv_time)).setText("5:45 AM");
+        ((TextView)item.findViewById(R.id.tv_label)).setText("No upcoming alarms");
+        ((TextView)item.findViewById(R.id.tv_days)).setText("");
+        Switch sw=item.findViewById(R.id.sw_enabled); sw.setChecked(false); sw.setEnabled(false);
+        item.findViewById(R.id.btn_overflow).setVisibility(View.INVISIBLE);
+        item.setOnClickListener(x->startActivity(new Intent(getActivity(),EditAlarmActivity.class)));
+        list.addView(item);
+    }
+
+    void bindAlarmItem(View item, Models.Alarm a, View fragmentView, AppData db){
+        // Days dots row
+        buildDayDots(item.findViewById(R.id.days_dots_row),a.repeatDays);
+        ((TextView)item.findViewById(R.id.tv_time)).setText(a.getTimeString());
+        ((TextView)item.findViewById(R.id.tv_label)).setText(a.label);
+        ((TextView)item.findViewById(R.id.tv_days)).setText(a.getDaysString());
+        // Mission icons
+        LinearLayout missionRow=item.findViewById(R.id.mission_icons_row);
+        missionRow.removeAllViews();
+        for(Models.Mission m:a.missions){
+            TextView icon=new TextView(getContext());
+            icon.setText(m.getEmoji()+"\n"+m.getDisplayName());
+            icon.setTextColor(0xFF9CA3AF); icon.setTextSize(10);
+            icon.setGravity(android.view.Gravity.CENTER);
+            icon.setPadding(12,8,12,8);
+            icon.setBackground(getContext().getDrawable(R.drawable.chip_bg));
+            LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+            lp.setMargins(0,0,8,0); icon.setLayoutParams(lp);
+            missionRow.addView(icon);
+        }
+        missionRow.setVisibility(a.missions.isEmpty()?View.GONE:View.VISIBLE);
+        // Linked routine
+        TextView tvRoutine=item.findViewById(R.id.tv_linked_routine);
+        if(a.linkedRoutineId!=0){
+            Models.Routine r=db.findRoutine(a.linkedRoutineId);
+            if(r!=null){tvRoutine.setText("→ Starts: "+r.emoji+" "+r.name);tvRoutine.setVisibility(View.VISIBLE);}
+            else tvRoutine.setVisibility(View.GONE);
+        } else tvRoutine.setVisibility(View.GONE);
+        // Toggle
+        Switch sw=item.findViewById(R.id.sw_enabled); sw.setChecked(a.enabled);
+        sw.setOnCheckedChangeListener((btn,chk)->{
+            a.enabled=chk; db.save();
+            if(chk) AlarmReceiver.schedule(requireContext(),a);
+            else AlarmReceiver.cancel(requireContext(),a.id);
+        });
+        // Overflow ⋮
+        item.findViewById(R.id.btn_overflow).setOnClickListener(x->showAlarmOverflow(a,fragmentView,db));
+        // Tap → edit
+        item.setOnClickListener(x->{
+            Intent i=new Intent(getActivity(),EditAlarmActivity.class);
+            i.putExtra("alarmId",a.id); startActivity(i);
+        });
+    }
+
+    void buildDayDots(LinearLayout row, boolean[] days){
+        row.removeAllViews();
+        // Use Sun=0,Mon=1,...,Sat=6 (SMTWTFS), model is Mon=0..Sun=6 → remap
+        int[] modelToDisplay={6,0,1,2,3,4,5}; // display index for model index
+        boolean[] display=new boolean[7];
+        for(int i=0;i<7;i++) display[modelToDisplay[i]]=days[i];
+        for(int d=0;d<7;d++){
+            TextView tv=new TextView(getContext()); tv.setText(DAY_LABELS[d]);
+            tv.setTextSize(11); tv.setGravity(android.view.Gravity.CENTER);
+            tv.setTextColor(display[d]?0xFFFFFFFF:0xFF6B7280);
+            tv.setBackground(getContext().getDrawable(display[d]?R.drawable.circle_orange:R.drawable.circle_bg3));
+            LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,36,1);
+            lp.setMargins(3,0,3,0); tv.setLayoutParams(lp);
+            row.addView(tv);
+        }
+    }
+
+    void showAlarmOverflow(Models.Alarm a, View fragmentView, AppData db){
+        BottomSheetDialog sheet=new BottomSheetDialog(requireContext());
+        LinearLayout layout=new LinearLayout(getContext());
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setBackgroundResource(R.drawable.card_bg);
+        layout.setPadding(0,16,0,32);
+        String[] opts={"✏️  Edit Alarm","📋  Duplicate","🗑  Delete"};
+        for(String opt:opts){
+            TextView tv=new TextView(getContext()); tv.setText(opt);
+            tv.setTextColor(opt.contains("Delete")?0xFFEF4444:0xFFFFFFFF);
+            tv.setTextSize(15); tv.setPadding(28,28,28,28);
+            tv.setOnClickListener(x->{
+                sheet.dismiss();
+                if(opt.contains("Edit")){Intent i=new Intent(getActivity(),EditAlarmActivity.class);i.putExtra("alarmId",a.id);startActivity(i);}
+                else if(opt.contains("Duplicate")){
+                    Models.Alarm copy=new Models.Alarm();
+                    copy.id=db.newId(); copy.hour=a.hour; copy.minute=a.minute;
+                    copy.label=a.label+" (Copy)"; copy.repeatDays=java.util.Arrays.copyOf(a.repeatDays,7);
+                    copy.enabled=false; db.alarms.add(copy); db.save();
+                    buildList(fragmentView,db);
+                }
+                else if(opt.contains("Delete")){
+                    new android.app.AlertDialog.Builder(getContext()).setTitle("Delete alarm?")
+                        .setPositiveButton("Delete",(d,w)->{
+                            AlarmReceiver.cancel(requireContext(),a.id);
+                            db.alarms.removeIf(al->al.id==a.id); db.save(); buildList(fragmentView,db);
+                        }).setNegativeButton("Cancel",null).show();
+                }
+            });
+            layout.addView(tv);
+        }
+        sheet.setContentView(layout); sheet.show();
     }
 }

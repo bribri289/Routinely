@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:orientation="vertical" android:background="@drawable/card_bg"
+    android:paddingBottom="32dp">
+
+    <!-- Handle bar -->
+    <View android:layout_width="40dp" android:layout_height="4dp"
+        android:background="@color/divider" android:layout_gravity="center"
+        android:layout_marginTop="12dp" android:layout_marginBottom="12dp"/>
+
+    <!-- Title row -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal" android:gravity="center_vertical"
+        android:paddingStart="20dp" android:paddingEnd="20dp" android:paddingBottom="8dp">
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:text="Mission"
+            android:textColor="@color/text_primary" android:textSize="20sp"
+            android:fontFamily="sans-serif-medium"/>
+        <TextView android:id="@+id/btn_close_mission" android:layout_width="36dp"
+            android:layout_height="36dp" android:text="✕"
+            android:textColor="@color/text_muted" android:textSize="18sp"
+            android:gravity="center" android:background="@drawable/circle_bg3"/>
+    </LinearLayout>
+
+    <View android:layout_width="match_parent" android:layout_height="1dp"
+        android:background="@color/divider"/>
+
+    <!-- Wake your brain section -->
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="Wake your brain" android:textColor="@color/text_muted"
+        android:textSize="12sp" android:paddingStart="20dp" android:paddingEnd="20dp"
+        android:paddingTop="16dp" android:paddingBottom="8dp"/>
+
+    <LinearLayout android:id="@+id/brain_row_color" android:layout_width="match_parent"
+        android:layout_height="52dp" android:orientation="horizontal"
+        android:gravity="center_vertical" android:paddingStart="20dp" android:paddingEnd="20dp">
+        <TextView android:layout_width="36dp" android:layout_height="36dp"
+            android:text="🎨" android:textSize="20sp" android:gravity="center"
+            android:background="@drawable/card_bg2" android:layout_marginEnd="14dp"/>
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:text="Find Color Tiles"
+            android:textColor="@color/text_primary" android:textSize="15sp"/>
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/brain_row_typing" android:layout_width="match_parent"
+        android:layout_height="52dp" android:orientation="horizontal"
+        android:gravity="center_vertical" android:paddingStart="20dp" android:paddingEnd="20dp">
+        <TextView android:layout_width="36dp" android:layout_height="36dp"
+            android:text="⌨️" android:textSize="20sp" android:gravity="center"
+            android:background="@drawable/card_bg2" android:layout_marginEnd="14dp"/>
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:text="Typing"
+            android:textColor="@color/text_primary" android:textSize="15sp"/>
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/brain_row_math" android:layout_width="match_parent"
+        android:layout_height="52dp" android:orientation="horizontal"
+        android:gravity="center_vertical" android:paddingStart="20dp" android:paddingEnd="20dp">
+        <TextView android:layout_width="36dp" android:layout_height="36dp"
+            android:text="🔢" android:textSize="20sp" android:gravity="center"
+            android:background="@drawable/card_bg2" android:layout_marginEnd="14dp"/>
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:text="Math"
+            android:textColor="@color/text_primary" android:textSize="15sp"/>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="BEST" android:textColor="#FFFFFF" android:textSize="10sp"
+            android:background="@drawable/chip_bg_yellow" android:paddingStart="6dp"
+            android:paddingEnd="6dp" android:paddingTop="3dp" android:paddingBottom="3dp"/>
+    </LinearLayout>
+
+    <View android:layout_width="match_parent" android:layout_height="1dp"
+        android:background="@color/divider" android:layout_marginTop="8dp"/>
+
+    <!-- Wake your body section -->
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="Wake your body" android:textColor="@color/text_muted"
+        android:textSize="12sp" android:paddingStart="20dp" android:paddingEnd="20dp"
+        android:paddingTop="16dp" android:paddingBottom="8dp"/>
+
+    <LinearLayout android:id="@+id/body_row_step" android:layout_width="match_parent"
+        android:layout_height="52dp" android:orientation="horizontal"
+        android:gravity="center_vertical" android:paddingStart="20dp" android:paddingEnd="20dp"
+        android:alpha="0.6">
+        <TextView android:layout_width="36dp" android:layout_height="36dp"
+            android:text="👣" android:textSize="20sp" android:gravity="center"
+            android:background="@drawable/card_bg2" android:layout_marginEnd="14dp"/>
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:text="Step"
+            android:textColor="@color/text_primary" android:textSize="15sp"/>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="HOT" android:textColor="#FFFFFF" android:textSize="10sp"
+            android:background="@drawable/chip_bg_red" android:paddingStart="6dp"
+            android:paddingEnd="6dp" android:paddingTop="3dp" android:paddingBottom="3dp"
+            android:layout_marginEnd="8dp"/>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="PRO" android:textColor="#FFFFFF" android:textSize="10sp"
+            android:background="@drawable/chip_bg_green" android:paddingStart="6dp"
+            android:paddingEnd="6dp" android:paddingTop="3dp" android:paddingBottom="3dp"/>
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/body_row_qr" android:layout_width="match_parent"
+        android:layout_height="52dp" android:orientation="horizontal"
+        android:gravity="center_vertical" android:paddingStart="20dp" android:paddingEnd="20dp">
+        <TextView android:layout_width="36dp" android:layout_height="36dp"
+            android:text="🔲" android:textSize="20sp" android:gravity="center"
+            android:background="@drawable/card_bg2" android:layout_marginEnd="14dp"/>
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:text="QR/Barcode"
+            android:textColor="@color/text_primary" android:textSize="15sp"/>
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/body_row_shake" android:layout_width="match_parent"
+        android:layout_height="52dp" android:orientation="horizontal"
+        android:gravity="center_vertical" android:paddingStart="20dp" android:paddingEnd="20dp">
+        <TextView android:layout_width="36dp" android:layout_height="36dp"
+            android:text="📳" android:textSize="20sp" android:gravity="center"
+            android:background="@drawable/card_bg2" android:layout_marginEnd="14dp"/>
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:text="Shake"
+            android:textColor="@color/text_primary" android:textSize="15sp"/>
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/body_row_photo" android:layout_width="match_parent"
+        android:layout_height="52dp" android:orientation="horizontal"
+        android:gravity="center_vertical" android:paddingStart="20dp" android:paddingEnd="20dp">
+        <TextView android:layout_width="36dp" android:layout_height="36dp"
+            android:text="📷" android:textSize="20sp" android:gravity="center"
+            android:background="@drawable/card_bg2" android:layout_marginEnd="14dp"/>
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:text="Photo"
+            android:textColor="@color/text_primary" android:textSize="15sp"/>
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/body_row_squat" android:layout_width="match_parent"
+        android:layout_height="52dp" android:orientation="horizontal"
+        android:gravity="center_vertical" android:paddingStart="20dp" android:paddingEnd="20dp"
+        android:alpha="0.6">
+        <TextView android:layout_width="36dp" android:layout_height="36dp"
+            android:text="🦵" android:textSize="20sp" android:gravity="center"
+            android:background="@drawable/card_bg2" android:layout_marginEnd="14dp"/>
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:text="Squat"
+            android:textColor="@color/text_primary" android:textSize="15sp"/>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="PRO" android:textColor="#FFFFFF" android:textSize="10sp"
+            android:background="@drawable/chip_bg_green" android:paddingStart="6dp"
+            android:paddingEnd="6dp" android:paddingTop="3dp" android:paddingBottom="3dp"/>
+    </LinearLayout>
+
+</LinearLayout>

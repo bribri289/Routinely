@@ -55,6 +55,8 @@
 
         <activity android:name=".ui.EditRoutineActivity" android:exported="false"
             android:windowSoftInputMode="adjustResize"/>
+        <activity android:name=".ui.HabitDetailActivity" android:exported="false"
+            android:theme="@style/Theme.Routinely" android:windowSoftInputMode="adjustPan"/>
         <activity android:name=".ui.RunRoutineActivity" android:exported="false"
             android:screenOrientation="portrait"/>
         <activity android:name=".ui.EditHabitActivity" android:exported="false"
