@@ -10,7 +10,7 @@
         <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
             android:text="Habits" android:textColor="@color/text_primary" android:textSize="28sp"
             android:fontFamily="sans-serif-medium"/>
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        <TextView android:id="@+id/tv_compact_label" android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:text="Compact" android:textColor="@color/text_muted" android:textSize="12sp"
             android:layout_marginEnd="6dp"/>
         <Switch android:id="@+id/sw_compact" android:layout_width="wrap_content"
@@ -20,61 +20,92 @@
             android:text="+" android:textSize="24sp" android:textColor="@color/text_primary"
             android:background="@drawable/circle_primary" android:padding="0dp"/>
     </LinearLayout>
+
+    <!-- Section toggle: Habits | Progress -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="44dp"
+        android:orientation="horizontal" android:paddingStart="16dp" android:paddingEnd="16dp"
+        android:paddingTop="4dp" android:paddingBottom="4dp">
+        <TextView android:id="@+id/section_tab_habits" android:layout_width="0dp"
+            android:layout_height="match_parent" android:layout_weight="1"
+            android:text="Habits" android:textColor="#FFFFFF" android:textSize="14sp"
+            android:gravity="center" android:background="@drawable/chip_bg_active"
+            android:layout_marginEnd="8dp"/>
+        <TextView android:id="@+id/section_tab_progress" android:layout_width="0dp"
+            android:layout_height="match_parent" android:layout_weight="1"
+            android:text="Progress" android:textColor="@color/text_muted" android:textSize="14sp"
+            android:gravity="center" android:background="@drawable/chip_bg"/>
+    </LinearLayout>
+
     <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/divider"/>
 
     <ScrollView android:layout_width="match_parent" android:layout_height="0dp"
         android:layout_weight="1" android:scrollbars="none">
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:orientation="vertical" android:padding="16dp">
+            android:orientation="vertical">
 
-            <!-- Score + streak -->
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:orientation="horizontal" android:layout_marginBottom="16dp">
-                <LinearLayout android:layout_width="0dp" android:layout_height="80dp" android:layout_weight="1"
-                    android:background="@drawable/card_bg" android:orientation="vertical" android:gravity="center"
-                    android:layout_marginEnd="8dp">
-                    <TextView android:id="@+id/tv_score" android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" android:textColor="@color/primary"
-                        android:textSize="28sp" android:fontFamily="sans-serif-medium"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="Today" android:textColor="@color/text_muted" android:textSize="12sp"/>
-                </LinearLayout>
-                <LinearLayout android:layout_width="0dp" android:layout_height="80dp" android:layout_weight="1"
-                    android:background="@drawable/card_bg" android:orientation="vertical" android:gravity="center">
-                    <TextView android:id="@+id/tv_streak" android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" android:textColor="@color/primary"
-                        android:textSize="16sp" android:fontFamily="sans-serif-medium"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="Best streak" android:textColor="@color/text_muted" android:textSize="12sp"/>
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- Habit completion grid (scorecard) -->
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="SCORECARD" android:textColor="@color/text_muted" android:textSize="11sp"
-                android:letterSpacing="0.08" android:layout_marginBottom="8dp"/>
-            <LinearLayout android:id="@+id/habit_grid" android:layout_width="match_parent"
+            <!-- HABITS SECTION -->
+            <LinearLayout android:id="@+id/habits_section" android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:orientation="vertical"
-                android:background="@drawable/card_bg" android:padding="12dp"
-                android:layout_marginBottom="20dp"/>
+                android:padding="16dp">
 
-            <!-- Tabs -->
-            <LinearLayout android:layout_width="match_parent" android:layout_height="40dp"
-                android:orientation="horizontal" android:layout_marginBottom="12dp">
-                <TextView android:id="@+id/tab_all" android:layout_width="0dp" android:layout_height="match_parent"
-                    android:layout_weight="1" android:text="All" android:textColor="@color/text_primary"
-                    android:textSize="13sp" android:gravity="center" android:layout_marginEnd="6dp"/>
-                <TextView android:id="@+id/tab_today" android:layout_width="0dp" android:layout_height="match_parent"
-                    android:layout_weight="1" android:text="Remaining" android:textColor="@color/text_primary"
-                    android:textSize="13sp" android:gravity="center" android:layout_marginEnd="6dp"/>
-                <TextView android:id="@+id/tab_streaks" android:layout_width="0dp" android:layout_height="match_parent"
-                    android:layout_weight="1" android:text="Streaks" android:textColor="@color/text_primary"
-                    android:textSize="13sp" android:gravity="center"/>
+                <!-- Score + streak -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:layout_marginBottom="16dp">
+                    <LinearLayout android:layout_width="0dp" android:layout_height="80dp" android:layout_weight="1"
+                        android:background="@drawable/card_bg" android:orientation="vertical" android:gravity="center"
+                        android:layout_marginEnd="8dp">
+                        <TextView android:id="@+id/tv_score" android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" android:textColor="@color/primary"
+                            android:textSize="28sp" android:fontFamily="sans-serif-medium"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Today" android:textColor="@color/text_muted" android:textSize="12sp"/>
+                    </LinearLayout>
+                    <LinearLayout android:layout_width="0dp" android:layout_height="80dp" android:layout_weight="1"
+                        android:background="@drawable/card_bg" android:orientation="vertical" android:gravity="center">
+                        <TextView android:id="@+id/tv_streak" android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" android:textColor="@color/primary"
+                            android:textSize="16sp" android:fontFamily="sans-serif-medium"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Best streak" android:textColor="@color/text_muted" android:textSize="12sp"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Habit completion grid (scorecard) -->
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="SCORECARD" android:textColor="@color/text_muted" android:textSize="11sp"
+                    android:letterSpacing="0.08" android:layout_marginBottom="8dp"/>
+                <LinearLayout android:id="@+id/habit_grid" android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:orientation="vertical"
+                    android:background="@drawable/card_bg" android:padding="12dp"
+                    android:layout_marginBottom="20dp"/>
+
+                <!-- Tabs -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="40dp"
+                    android:orientation="horizontal" android:layout_marginBottom="12dp">
+                    <TextView android:id="@+id/tab_all" android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1" android:text="All" android:textColor="@color/text_primary"
+                        android:textSize="13sp" android:gravity="center" android:layout_marginEnd="6dp"/>
+                    <TextView android:id="@+id/tab_today" android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1" android:text="Remaining" android:textColor="@color/text_primary"
+                        android:textSize="13sp" android:gravity="center" android:layout_marginEnd="6dp"/>
+                    <TextView android:id="@+id/tab_streaks" android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1" android:text="Streaks" android:textColor="@color/text_primary"
+                        android:textSize="13sp" android:gravity="center"/>
+                </LinearLayout>
+
+                <!-- Habit list -->
+                <LinearLayout android:id="@+id/habits_list" android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:orientation="vertical"/>
             </LinearLayout>
 
-            <!-- Habit list -->
-            <LinearLayout android:id="@+id/habits_list" android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:orientation="vertical"/>
+            <!-- PROGRESS SECTION (hidden by default) -->
+            <LinearLayout android:id="@+id/progress_section" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:orientation="vertical"
+                android:padding="16dp" android:visibility="gone">
+                <LinearLayout android:id="@+id/progress_list" android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:orientation="vertical"/>
+            </LinearLayout>
+
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
