@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment;
 import com.routinely.app.R;
 import com.routinely.app.data.AppData;
 import com.routinely.app.data.Models;
+import com.routinely.app.receivers.DailyLessonReceiver;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
         setupNav();
         switchTab(0);
         requestPerms();
+        DailyLessonReceiver.schedule(this);
         handleIntent(getIntent());
     }
     @Override protected void onNewIntent(Intent i) { super.onNewIntent(i); handleIntent(i); }
@@ -37,22 +39,24 @@ public class MainActivity extends AppCompatActivity {
 
     void handleIntent(Intent intent) {
         if (intent==null) return;
+        int tab = intent.getIntExtra("tab", -1);
+        if (tab >= 0 && tab <= 4) { switchTab(tab); return; }
         Uri d = intent.getData(); if (d==null) return;
         String rid = d.getQueryParameter("start"); if(rid==null) rid=d.getQueryParameter("routine");
         if (rid!=null) { try { int id=Integer.parseInt(rid); Models.Routine r=AppData.get(this).findRoutine(id); if(r!=null){Intent i=new Intent(this,RunRoutineActivity.class);i.putExtra("routine",r);startActivity(i);} } catch(Exception ignored){} }
     }
 
     void setupNav() {
-        int[] ids = {R.id.nav_today,R.id.nav_routines,R.id.nav_habits,R.id.nav_alarm,R.id.nav_progress,R.id.nav_mindset,R.id.nav_profile};
+        int[] ids = {R.id.nav_today,R.id.nav_routines,R.id.nav_habits,R.id.nav_alarm,R.id.nav_mindset};
         for (int i=0;i<ids.length;i++) { final int idx=i; findViewById(ids[i]).setOnClickListener(v->switchTab(idx)); }
     }
 
     public void switchTab(int idx) {
         curTab = idx;
         Fragment f;
-        switch(idx) { case 1:f=new RoutinesFragment();break; case 2:f=new HabitsFragment();break; case 3:f=new AlarmFragment();break; case 4:f=new ProgressFragment();break; case 5:f=new MindsetFragment();break; case 6:f=new ProfileFragment();break; default:f=new TodayFragment();break; }
+        switch(idx) { case 1:f=new RoutinesFragment();break; case 2:f=new HabitsFragment();break; case 3:f=new AlarmFragment();break; case 4:f=new MindsetFragment();break; default:f=new TodayFragment();break; }
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,f).commit();
-        int[] navIds={R.id.nav_today,R.id.nav_routines,R.id.nav_habits,R.id.nav_alarm,R.id.nav_progress,R.id.nav_mindset,R.id.nav_profile};
+        int[] navIds={R.id.nav_today,R.id.nav_routines,R.id.nav_habits,R.id.nav_alarm,R.id.nav_mindset};
         int primary=getColor(R.color.primary); int muted=getColor(R.color.text_muted);
         for(int i=0;i<navIds.length;i++){
             LinearLayout nav=(LinearLayout)findViewById(navIds[i]);
