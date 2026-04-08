@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="bg">#0F1117</color>
-    <color name="bg2">#181C24</color>
-    <color name="bg3">#1E232E</color>
-    <color name="card">#1E232E</color>
-    <color name="card2">#252B38</color>
+    <color name="bg">#12101E</color>
+    <color name="bg2">#1A1830</color>
+    <color name="bg3">#22203B</color>
+    <color name="card">#22203B</color>
+    <color name="card2">#2B2947</color>
     <color name="text_primary">#FFFFFF</color>
-    <color name="text_secondary">#9CA3AF</color>
-    <color name="text_muted">#6B7280</color>
-    <color name="divider">#1F2937</color>
-    <color name="input_border">#374151</color>
-    <color name="btn_secondary_bg">#252B38</color>
+    <color name="text_secondary">#A89FC8</color>
+    <color name="text_muted">#7B72A8</color>
+    <color name="divider">#2E2B50</color>
+    <color name="input_border">#3D3666</color>
+    <color name="btn_secondary_bg">#2B2947</color>
 </resources>
