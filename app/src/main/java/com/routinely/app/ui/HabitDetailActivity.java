@@ -39,14 +39,21 @@ public class HabitDetailActivity extends AppCompatActivity {
         });
 
         // Identity statement with underline on key phrases
-        String identity=habit.name.isEmpty()?""+habit.emoji+" "+habit.category:
-            "I will "+habit.name.toLowerCase()+
-            (habit.category.isEmpty()?"":", "+habit.category.toLowerCase())+
-            " so that I can become a more productive person";
+        String identity;
+        if(habit.name.isEmpty()){
+            identity=habit.emoji+" "+habit.category;
+        } else {
+            identity="I will "+habit.name.toLowerCase()+
+                (habit.category.isEmpty()?"":", "+habit.category.toLowerCase())+
+                " so that I can become a more productive person";
+        }
         SpannableString ss=new SpannableString(identity);
-        // Underline first 20 chars (name portion) as key words
-        int end=Math.min(identity.length(),habit.name.length()+2);
-        ss.setSpan(new UnderlineSpan(),2,end,Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        // Underline the habit name portion (skip "I will " prefix = 7 chars)
+        if(!habit.name.isEmpty()){
+            int start=7; // "I will " is 7 chars
+            int end=Math.min(identity.length(),start+habit.name.length());
+            if(start<end) ss.setSpan(new UnderlineSpan(),start,end,Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
         ((TextView)findViewById(R.id.tv_identity)).setText(ss);
 
         // Schedule

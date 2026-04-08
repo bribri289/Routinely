@@ -49,9 +49,9 @@ public class EditAlarmActivity extends AppCompatActivity {
         npMin.setMinValue(0); npMin.setMaxValue(59); npMin.setDisplayedValues(mins); npMin.setWrapSelectorWheel(true);
         // AM/PM
         npAmPm.setMinValue(0); npAmPm.setMaxValue(1); npAmPm.setDisplayedValues(new String[]{"AM","PM"}); npAmPm.setWrapSelectorWheel(false);
-        // Init from alarm
-        pickerAmPm=alarm.hour>=12?1:0;
-        pickerHour=alarm.hour%12; if(pickerHour==0)pickerHour=12;
+        // Init from alarm using helper
+        pickerAmPm=alarmHourToAmPm(alarm.hour);
+        pickerHour=alarmHourTo12h(alarm.hour);
         pickerMinute=alarm.minute;
         npHour.setValue(pickerHour-1); npMin.setValue(pickerMinute); npAmPm.setValue(pickerAmPm);
         npHour.setOnValueChangedListener((p,o,n)->pickerHour=n+1);
@@ -159,8 +159,8 @@ public class EditAlarmActivity extends AppCompatActivity {
         // Save
         findViewById(R.id.btn_save).setOnClickListener(v->{
             alarm.label=etLabel.getText().toString().trim(); if(alarm.label.isEmpty())alarm.label="Alarm";
-            // Reconstruct 24h from drum-roll
-            int h24=pickerHour%12; if(pickerAmPm==1) h24+=12;
+            // Reconstruct 24h from drum-roll using helper
+            int h24=picker12hTo24h(pickerHour,pickerAmPm);
             alarm.hour=h24; alarm.minute=pickerMinute;
             alarm.soundIndex=soundSpin.getSelectedItemPosition();
             alarm.gradualVolume=((Switch)findViewById(R.id.sw_gradual)).isChecked();
@@ -180,6 +180,13 @@ public class EditAlarmActivity extends AppCompatActivity {
         View btnDel=findViewById(R.id.btn_delete); btnDel.setVisibility(isNew?View.GONE:View.VISIBLE);
         btnDel.setOnClickListener(v->{AlarmReceiver.cancel(this,alarm.id);db.alarms.remove(alarm);db.save();finish();});
     }
+
+    /** Returns AM=0 or PM=1 from a 24-hour value */
+    static int alarmHourToAmPm(int h24){ return h24>=12?1:0; }
+    /** Returns 12-hour display value (1–12) from a 24-hour value */
+    static int alarmHourTo12h(int h24){ int h=h24%12; return h==0?12:h; }
+    /** Converts picker (1–12) + ampm (0=AM,1=PM) to 24-hour value */
+    static int picker12hTo24h(int h12, int ampm){ return (h12%12)+(ampm==1?12:0); }
 
     void styleNumberPicker(NumberPicker np){
         np.setTextColor(getColor(R.color.text_primary));
