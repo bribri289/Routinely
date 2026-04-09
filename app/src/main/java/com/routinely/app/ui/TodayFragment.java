@@ -73,7 +73,7 @@ public class TodayFragment extends Fragment {
         fadeIn.setStartOffset(300);
         fadeIn.setFillAfter(true);
         card.startAnimation(fadeIn);
-        card.setAlpha(1f);
+        // Note: setFillAfter(true) maintains alpha=1 after animation completes
     }
 
     void buildHabitsStrip(View v, AppData db) {

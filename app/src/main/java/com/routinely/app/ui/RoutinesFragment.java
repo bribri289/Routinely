@@ -83,11 +83,6 @@ public class RoutinesFragment extends Fragment {
         return String.format("%d:%02d%s",hh,m,ap);
     }
 
-    String fmtTime(int h,int m){
-        String ap=h<12?"am":"pm"; int hh=h%12; if(hh==0)hh=12;
-        return String.format("%d:%02d%s",hh,m,ap);
-    }
-
     /** Show a step summary card list. Tapping a step opens the edit screen. */
     void showStepSummary(Models.Routine r) {
         android.app.Dialog dialog = new android.app.Dialog(requireContext(), android.R.style.Theme_Material_NoTitleBar_Fullscreen);
