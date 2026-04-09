@@ -5,12 +5,14 @@ import android.view.*;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import com.routinely.app.R;
+import com.routinely.app.receivers.RoutineNotificationReceiver;
 import com.routinely.app.data.*;
 import java.util.*;
 
 public class EditRoutineActivity extends AppCompatActivity {
     AppData db; Models.Routine routine; boolean isNew=false;
     LinearLayout stepsContainer;
+    Button btnStartRoutineNow;
     String[] DAYS={"Mon","Tue","Wed","Thu","Fri","Sat","Sun"};
 
     @Override protected void onCreate(Bundle b){
@@ -48,6 +50,7 @@ public class EditRoutineActivity extends AppCompatActivity {
             chip.setOnClickListener(v->{routine.repeatDays[idx]=!routine.repeatDays[idx];chip.setBackground(getDrawable(routine.repeatDays[idx]?R.drawable.chip_bg_active:R.drawable.chip_bg));});
             LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT); lp.setMargins(4,0,4,0); chip.setLayoutParams(lp); daysRow.addView(chip);}
 
+        // TODO: Linked alarm feature has a known glitch. Will be addressed in a later update.
         // Alarm link
         Spinner almSpin=findViewById(R.id.spinner_alarm);
         List<String> almLabels=new ArrayList<>(); almLabels.add("No linked alarm");
@@ -87,6 +90,9 @@ public class EditRoutineActivity extends AppCompatActivity {
                 }
             }
             db.save();
+            // FIX: Schedule routine reminder notification — was missing, causing routine notifications to never fire
+            RoutineNotificationReceiver.cancel(this, routine.id);
+            RoutineNotificationReceiver.schedule(this, routine);
             Toast.makeText(this,"Routine saved!",Toast.LENGTH_SHORT).show();
             finish();
         });
@@ -98,10 +104,39 @@ public class EditRoutineActivity extends AppCompatActivity {
                     db.routines.removeIf(r->r.id==routine.id); db.save(); finish();
                 }).setNegativeButton("Cancel",null).show();
         });
+
+        // Start Routine button with projected end time
+        btnStartRoutineNow = findViewById(R.id.btn_start_routine_now);
+        updateEndTimeButton(btnStartRoutineNow);
+        btnStartRoutineNow.setOnClickListener(v -> {
+            collectStepFields();
+            if (routine.steps.isEmpty()) {
+                Toast.makeText(this, "Add steps first", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            Intent i = new Intent(this, RunRoutineActivity.class);
+            i.putExtra("routine", routine);
+            i.putExtra("autoStart", true);
+            startActivity(i);
+        });
+    }
+
+    /** Calculate and display projected end time on the Start Routine button. */
+    void updateEndTimeButton(Button btn) {
+        int totalMins = 0;
+        for (Models.RoutineStep s : routine.steps) totalMins += Math.max(0, s.durationSeconds / 60);
+        java.util.Calendar end = java.util.Calendar.getInstance();
+        end.add(java.util.Calendar.MINUTE, totalMins);
+        int endH = end.get(java.util.Calendar.HOUR_OF_DAY);
+        int endM = end.get(java.util.Calendar.MINUTE);
+        String ap = endH < 12 ? "AM" : "PM";
+        int hh = endH % 12; if (hh == 0) hh = 12;
+        btn.setText(String.format("▶  Start Routine  •  Ends at %d:%02d %s", hh, endM, ap));
     }
 
     void rebuildSteps(){
         stepsContainer.removeAllViews();
+        if (btnStartRoutineNow != null) updateEndTimeButton(btnStartRoutineNow);
         LayoutInflater inf=LayoutInflater.from(this);
         for(int i=0;i<routine.steps.size();i++){
             Models.RoutineStep step=routine.steps.get(i);

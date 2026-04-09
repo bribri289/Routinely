@@ -1,18 +1,24 @@
 package com.routinely.app.ui;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.*;
+import android.view.animation.AlphaAnimation;
 import android.widget.*;
 import androidx.fragment.app.Fragment;
 import com.routinely.app.R;
 import com.routinely.app.data.AppData;
+import com.routinely.app.data.MotivationalMessages;
 import com.routinely.app.data.Models;
 import java.util.Calendar;
+import java.util.Random;
 
 public class TodayFragment extends Fragment {
     @Override public View onCreateView(LayoutInflater inf, ViewGroup c, Bundle b) {
         View v = inf.inflate(R.layout.fragment_today, c, false);
         AppData db = AppData.get(requireContext());
+        // Motivational message - pick randomly once per day, stored in prefs
+        showMotivationalMessage(v);
         // Greeting
         int hr = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
         String g = hr<12?"Good morning ☀️":hr<17?"Good afternoon ⛅":"Good evening 🌙";
@@ -42,6 +48,32 @@ public class TodayFragment extends Fragment {
         // Activity
         buildActivity(v, db);
         return v;
+    }
+
+    void showMotivationalMessage(View v) {
+        // Pick a new random message each day; store the last-shown date + index
+        SharedPreferences prefs = requireContext().getSharedPreferences("routinely_prefs", android.content.Context.MODE_PRIVATE);
+        String today = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US).format(new java.util.Date());
+        String lastDate = prefs.getString("motiv_date", "");
+        int msgIdx;
+        if (today.equals(lastDate)) {
+            msgIdx = prefs.getInt("motiv_idx", 0);
+        } else {
+            msgIdx = new Random().nextInt(MotivationalMessages.MESSAGES.length);
+            prefs.edit().putString("motiv_date", today).putInt("motiv_idx", msgIdx).apply();
+        }
+        String message = MotivationalMessages.MESSAGES[msgIdx];
+        TextView tvMsg = v.findViewById(R.id.tv_motivational_message);
+        tvMsg.setText(message);
+        // Fade-in animation
+        View card = v.findViewById(R.id.card_motivational);
+        card.setAlpha(0f);
+        AlphaAnimation fadeIn = new AlphaAnimation(0f, 1f);
+        fadeIn.setDuration(800);
+        fadeIn.setStartOffset(300);
+        fadeIn.setFillAfter(true);
+        card.startAnimation(fadeIn);
+        card.setAlpha(1f);
     }
 
     void buildHabitsStrip(View v, AppData db) {

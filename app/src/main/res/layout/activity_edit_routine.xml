@@ -30,4 +30,13 @@
             <Button android:id="@+id/btn_delete" android:layout_width="match_parent" android:layout_height="52dp" android:text="🗑 Delete Routine" android:background="@drawable/btn_danger_bg" android:textColor="@color/text_primary" android:textSize="14sp" android:layout_marginTop="16dp"/>
         </LinearLayout>
     </ScrollView>
+    <!-- Sticky Start Routine button at bottom -->
+    <Button android:id="@+id/btn_start_routine_now"
+        android:layout_width="match_parent" android:layout_height="56dp"
+        android:text="▶  Start Routine • Ends at --:--"
+        android:textColor="@color/text_primary" android:textSize="15sp"
+        android:fontFamily="sans-serif-medium"
+        android:background="@drawable/btn_primary_bg"
+        android:layout_marginStart="16dp" android:layout_marginEnd="16dp"
+        android:layout_marginBottom="12dp"/>
 </LinearLayout>

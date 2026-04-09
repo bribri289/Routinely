@@ -31,8 +31,9 @@ public class HabitsFragment extends Fragment {
             v.findViewById(tabIds[i]).setBackgroundResource(i==sectionIdx?R.drawable.chip_bg_active:R.drawable.chip_bg);
             ((TextView)v.findViewById(tabIds[i])).setTextColor(i==sectionIdx?0xFFFFFFFF:0xFF9CA3AF);
         }
-        v.findViewById(R.id.tv_compact_label).setVisibility(sectionIdx==0?View.VISIBLE:View.GONE);
-        v.findViewById(R.id.sw_compact).setVisibility(sectionIdx==0?View.VISIBLE:View.GONE);
+        // Remove compact toggle — hidden per design update
+        v.findViewById(R.id.tv_compact_label).setVisibility(View.GONE);
+        v.findViewById(R.id.sw_compact).setVisibility(View.GONE);
         v.findViewById(R.id.btn_new_habit).setVisibility(sectionIdx==0?View.VISIBLE:View.GONE);
         if(sectionIdx==2) loadMindsetFragment(v);
         setupTabs(v,db);
@@ -40,12 +41,6 @@ public class HabitsFragment extends Fragment {
         buildHabits(v,db);
         v.findViewById(R.id.btn_new_habit).setOnClickListener(x->
             startActivity(new Intent(getActivity(),EditHabitActivity.class)));
-        Switch swCompact=v.findViewById(R.id.sw_compact);
-        swCompact.setChecked(compactMode);
-        swCompact.setOnCheckedChangeListener((btn,chk)->{
-            compactMode=chk;
-            buildHabits(v,AppData.get(requireContext()));
-        });
         return v;
     }
     @Override public void onResume(){super.onResume();View v=getView();if(v!=null){AppData db=AppData.get(requireContext());buildHabits(v,db);buildScorecard(v,db);if(sectionIdx==1)buildProgress(v,db);}}
@@ -62,8 +57,9 @@ public class HabitsFragment extends Fragment {
                 v.findViewById(R.id.habits_section).setVisibility(idx==0?View.VISIBLE:View.GONE);
                 v.findViewById(R.id.progress_section).setVisibility(idx==1?View.VISIBLE:View.GONE);
                 v.findViewById(R.id.mindset_section).setVisibility(idx==2?View.VISIBLE:View.GONE);
-                v.findViewById(R.id.tv_compact_label).setVisibility(idx==0?View.VISIBLE:View.GONE);
-                v.findViewById(R.id.sw_compact).setVisibility(idx==0?View.VISIBLE:View.GONE);
+                // Compact toggle is hidden — always GONE
+                v.findViewById(R.id.tv_compact_label).setVisibility(View.GONE);
+                v.findViewById(R.id.sw_compact).setVisibility(View.GONE);
                 v.findViewById(R.id.btn_new_habit).setVisibility(idx==0?View.VISIBLE:View.GONE);
                 if(idx==1) buildProgress(v,AppData.get(requireContext()));
                 if(idx==2) loadMindsetFragment(v);

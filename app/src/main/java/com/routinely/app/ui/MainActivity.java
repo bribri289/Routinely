@@ -18,6 +18,8 @@ import com.routinely.app.R;
 import com.routinely.app.data.AppData;
 import com.routinely.app.data.Models;
 import com.routinely.app.receivers.DailyLessonReceiver;
+import com.routinely.app.receivers.HabitNotificationReceiver;
+import com.routinely.app.receivers.RoutineNotificationReceiver;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +34,10 @@ public class MainActivity extends AppCompatActivity {
         switchTab(0);
         requestPerms();
         DailyLessonReceiver.schedule(this);
+        // FIX: Schedule habit and routine notifications on first launch (were never scheduled before)
+        AppData appData = AppData.get(this);
+        for (Models.Habit h : appData.habits) if (h.reminderEnabled) HabitNotificationReceiver.schedule(this, h);
+        for (Models.Routine r : appData.routines) if (!r.archived) RoutineNotificationReceiver.schedule(this, r);
         handleIntent(getIntent());
     }
     @Override protected void onNewIntent(Intent i) { super.onNewIntent(i); handleIntent(i); }

@@ -2,6 +2,7 @@ package com.routinely.app;
 import android.app.*;
 import android.os.Build;
 import androidx.appcompat.app.AppCompatDelegate;
+import com.routinely.app.receivers.RoutineNotificationReceiver;
 public class RoutinelyApp extends Application {
     public static final String CH_ALARM="routinely_alarms", CH_HABIT="routinely_habits", CH_MINDSET="routinely_mindset";
     @Override public void onCreate() {
@@ -14,6 +15,8 @@ public class RoutinelyApp extends Application {
             nm.createNotificationChannel(ac);
             nm.createNotificationChannel(new NotificationChannel(CH_HABIT,"Habit Reminders",NotificationManager.IMPORTANCE_DEFAULT));
             nm.createNotificationChannel(new NotificationChannel(CH_MINDSET,"Daily Lessons",NotificationManager.IMPORTANCE_DEFAULT));
+            // FIX: Added missing Routine Reminders channel — previously absent, causing routine notifications to silently fail
+            nm.createNotificationChannel(new NotificationChannel(RoutineNotificationReceiver.CH_ROUTINE,"Routine Reminders",NotificationManager.IMPORTANCE_HIGH));
         }
     }
 }
