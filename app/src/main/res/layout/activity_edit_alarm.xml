@@ -313,6 +313,10 @@
                     android:layout_height="wrap_content" android:textColor="#9CA3AF"
                     android:textSize="12sp" android:layout_marginTop="4dp"
                     android:text="No wallpaper"/>
+                <ImageView android:id="@+id/iv_wallpaper_preview" android:layout_width="match_parent"
+                    android:layout_height="120dp" android:scaleType="centerCrop"
+                    android:adjustViewBounds="true" android:layout_marginTop="8dp"
+                    android:background="@drawable/card_bg2" android:visibility="gone"/>
             </LinearLayout>
 
             <!-- Alarm Security -->
@@ -401,6 +405,12 @@
             <Spinner android:id="@+id/spinner_routine" android:layout_width="match_parent"
                 android:layout_height="48dp" android:background="@drawable/input_bg"
                 android:popupBackground="@color/card2" android:layout_marginBottom="20dp"/>
+
+            <Button android:id="@+id/btn_preview_alarm" android:layout_width="match_parent"
+                android:layout_height="52dp" android:text="▶ Preview Alarm"
+                android:background="@drawable/chip_bg_active"
+                android:textColor="@color/text_primary" android:textSize="14sp"
+                android:layout_marginBottom="12dp"/>
 
             <Button android:id="@+id/btn_delete" android:layout_width="match_parent"
                 android:layout_height="52dp" android:text="🗑 Delete Alarm"

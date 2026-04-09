@@ -12,6 +12,7 @@ import com.routinely.app.services.AlarmService;
 
 public class AlarmRingActivity extends AppCompatActivity {
     int alarmId; AppData db; Models.Alarm alarm;
+    boolean isPreview=false;
     Handler tickHandler=new Handler(Looper.getMainLooper());
     Runnable tickRunnable;
 
@@ -26,6 +27,7 @@ public class AlarmRingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_alarm_ring);
         db=AppData.get(this);
         alarmId=getIntent().getIntExtra("alarmId",-1);
+        isPreview=getIntent().getBooleanExtra("preview",false);
         alarm=db.findAlarm(alarmId);
         if(alarm==null){finish();return;}
         setupWallpaper();
@@ -112,6 +114,7 @@ public class AlarmRingActivity extends AppCompatActivity {
     void setupButtons(){
         // Dismiss
         findViewById(R.id.btn_dismiss).setOnClickListener(v->{
+            if(isPreview){ finish(); return; }
             stopAlarmService();
             if(!alarm.missions.isEmpty()){
                 Intent i=new Intent(this,MissionActivity.class);
@@ -168,5 +171,5 @@ public class AlarmRingActivity extends AppCompatActivity {
         tickHandler.removeCallbacks(tickRunnable);
         super.onDestroy();
     }
-    @Override public void onBackPressed(){} // Block back button like Alarmy
+    @Override public void onBackPressed(){ if(isPreview) finish(); } // Allow back only in preview mode
 }
