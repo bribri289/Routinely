@@ -72,6 +72,9 @@
         <activity android:name=".ui.WakeCheckActivity" android:exported="false"
             android:screenOrientation="portrait"/>
 
+        <receiver android:name=".receivers.HabitNotificationReceiver" android:exported="false"/>
+        <receiver android:name=".receivers.RoutineNotificationReceiver" android:exported="false"/>
+
         <receiver android:name=".receivers.AlarmReceiver" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>

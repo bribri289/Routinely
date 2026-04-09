@@ -118,8 +118,45 @@
                     android:background="@drawable/btn_secondary_bg"
                     android:textColor="@color/text_secondary" android:textSize="14sp"/>
             </LinearLayout>
+            <!-- Auto-next toggle + End Routine row -->
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:gravity="center_vertical"
+                android:visibility="gone" android:id="@+id/auto_next_row"
+                android:layout_marginTop="6dp">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Auto-Next Step" android:textColor="@color/text_muted"
+                    android:textSize="13sp"/>
+                <Switch android:id="@+id/sw_auto_next" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="@color/primary" android:trackTint="#3F3F46"
+                    android:layout_marginEnd="12dp"/>
+                <Button android:id="@+id/btn_end_routine" android:layout_width="wrap_content"
+                    android:layout_height="36dp" android:text="End" android:textSize="12sp"
+                    android:textColor="@color/text_secondary" android:background="@drawable/btn_secondary_bg"
+                    android:paddingStart="14dp" android:paddingEnd="14dp"/>
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
+
+    <!-- 3-second countdown overlay -->
+    <FrameLayout android:id="@+id/countdown_overlay"
+        android:layout_width="match_parent" android:layout_height="match_parent"
+        android:background="#CC000000" android:gravity="center"
+        android:visibility="gone">
+        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:orientation="vertical" android:gravity="center"
+            android:layout_gravity="center">
+            <TextView android:id="@+id/tv_countdown" android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3" android:textColor="@color/primary"
+                android:textSize="96sp" android:fontFamily="sans-serif-medium"
+                android:gravity="center"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Get ready..." android:textColor="@color/text_muted"
+                android:textSize="18sp" android:gravity="center" android:layout_marginTop="8dp"/>
+        </LinearLayout>
+    </FrameLayout>
 
     <!-- FAB + button (yellow, bottom center) -->
     <TextView android:id="@+id/fab_add_step" android:layout_width="56dp" android:layout_height="56dp"

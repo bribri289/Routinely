@@ -1,18 +1,27 @@
 package com.routinely.app.ui;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.*;
+import android.speech.tts.TextToSpeech;
 import android.view.*;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import com.routinely.app.R;
 import com.routinely.app.data.*;
+import java.util.Locale;
 
 public class RunRoutineActivity extends AppCompatActivity {
     Models.Routine routine; AppData db;
     int curStep=0; int secLeft=0; int secTotal=0;
     boolean paused=false; boolean running=false;
+    boolean autoNext=false;
+    boolean overtime=false;
+    int overtimeSec=0;
     CountDownTimer timer;
+    CountDownTimer overtimeTimer;
     ProgressBar progressBar;
+    TextToSpeech tts;
+    private static final String PREFS = "routinely_prefs";
 
     @Override protected void onCreate(Bundle b){
         super.onCreate(b); setContentView(R.layout.activity_run_routine);
@@ -24,8 +33,8 @@ public class RunRoutineActivity extends AppCompatActivity {
         progressBar.setProgress(0);
         setupHeader();
         buildPreviewList();
-        // Start button switches to run mode
-        findViewById(R.id.btn_start_run).setOnClickListener(v->startRun());
+        // Start button switches to run mode (with 3-second countdown)
+        findViewById(R.id.btn_start_run).setOnClickListener(v->showCountdown(()->startRun()));
         // FAB: add step inline
         findViewById(R.id.fab_add_step).setOnClickListener(v->{
             if(!running){ promptAddStep(); }
@@ -36,6 +45,14 @@ public class RunRoutineActivity extends AppCompatActivity {
         });
         // Menu ⋯
         findViewById(R.id.btn_menu).setOnClickListener(v->showMenu());
+        // Auto-start if launched from the Start Routine button
+        if (getIntent().getBooleanExtra("autoStart", false) && !routine.steps.isEmpty()) {
+            showCountdown(()->startRun());
+        }
+        // Init TTS for voice guidance
+        tts = new TextToSpeech(this, status -> {
+            if (status == TextToSpeech.SUCCESS) tts.setLanguage(Locale.getDefault());
+        });
     }
 
     void setupHeader(){
@@ -46,6 +63,30 @@ public class RunRoutineActivity extends AppCompatActivity {
         String dur=totalMins>=60?(totalMins/60)+"h "+(totalMins%60)+"m":totalMins+"m";
         ((TextView)findViewById(R.id.tv_routine_subtitle)).setText(
             String.format("%d:%02d%s (%s)",hh,routine.startMinute,ap,dur));
+    }
+
+    /** Show 3-second animated countdown, then call onFinished. */
+    void showCountdown(Runnable onFinished) {
+        View overlay = findViewById(R.id.countdown_overlay);
+        TextView tvCount = overlay.findViewById(R.id.tv_countdown);
+        overlay.setVisibility(View.VISIBLE);
+        final int[] count = {3};
+        Handler handler = new Handler(Looper.getMainLooper());
+        Runnable tick = new Runnable() {
+            @Override public void run() {
+                if (count[0] <= 0) {
+                    overlay.setVisibility(View.GONE);
+                    onFinished.run();
+                    return;
+                }
+                tvCount.setText(String.valueOf(count[0]));
+                tvCount.setAlpha(1f);
+                tvCount.animate().alpha(0f).scaleX(1.6f).scaleY(1.6f).setDuration(900).start();
+                count[0]--;
+                handler.postDelayed(this, 1000);
+            }
+        };
+        handler.post(tick);
     }
 
     void buildPreviewList(){
@@ -125,6 +166,19 @@ public class RunRoutineActivity extends AppCompatActivity {
         findViewById(R.id.btn_complete).setVisibility(View.VISIBLE);
         findViewById(R.id.skip_pause_row).setVisibility(View.VISIBLE);
         findViewById(R.id.fab_add_step).setVisibility(View.GONE);
+        // Show auto-next toggle row; restore saved state
+        View autoNextRow = findViewById(R.id.auto_next_row);
+        autoNextRow.setVisibility(View.VISIBLE);
+        Switch swAutoNext = findViewById(R.id.sw_auto_next);
+        autoNext = getSharedPreferences(PREFS, MODE_PRIVATE).getBoolean("auto_next", false);
+        swAutoNext.setChecked(autoNext);
+        swAutoNext.setOnCheckedChangeListener((b,c)->{
+            autoNext = c;
+            getSharedPreferences(PREFS, MODE_PRIVATE).edit().putBoolean("auto_next", c).apply();
+        });
+        // End Routine button
+        Button btnEnd = findViewById(R.id.btn_end_routine);
+        btnEnd.setOnClickListener(v -> showExitDialog());
         startStep(0);
     }
 
@@ -132,13 +186,17 @@ public class RunRoutineActivity extends AppCompatActivity {
         curStep=idx;
         if(idx>=routine.steps.size()){onRoutineComplete();return;}
         Models.RoutineStep step=routine.steps.get(idx);
+        // Progress bar: use step index / total steps
         progressBar.setMax(routine.steps.size());
         progressBar.setProgress(idx+1);
+        // Animate step transition: fade in run panel
+        View runPanel = findViewById(R.id.run_panel);
+        runPanel.setAlpha(0f); runPanel.animate().alpha(1f).setDuration(300).start();
         ((TextView)findViewById(R.id.tv_step_emoji)).setText(step.emoji);
         ((TextView)findViewById(R.id.tv_step_name)).setText(step.name);
         ((TextView)findViewById(R.id.tv_step_description)).setText(step.description);
         secTotal=step.durationSeconds>0?step.durationSeconds:(step.durationMinutes>0?step.durationMinutes*60:300);
-        secLeft=secTotal; paused=false;
+        secLeft=secTotal; paused=false; overtime=false; overtimeSec=0;
         updateTimer(); startTimer();
         View habPanel=findViewById(R.id.habit_panel);
         if(step.linkedHabitId!=0){
@@ -151,41 +209,90 @@ public class RunRoutineActivity extends AppCompatActivity {
         findViewById(R.id.btn_skip).setOnClickListener(v->skipStep());
         Button btnPause=findViewById(R.id.btn_pause);
         btnPause.setText("⏸ Pause"); btnPause.setOnClickListener(v->togglePause());
+        // Voice guidance: announce step name via TTS
+        if (tts != null) {
+            tts.speak("Next step: " + step.name, TextToSpeech.QUEUE_FLUSH, null, "step_" + idx);
+        }
     }
 
     void startTimer(){
         if(timer!=null)timer.cancel();
+        if(overtimeTimer!=null)overtimeTimer.cancel();
+        overtime=false; overtimeSec=0;
         timer=new CountDownTimer(secLeft*1000L,1000){
             public void onTick(long ms){secLeft=(int)(ms/1000);updateTimer();}
-            public void onFinish(){secLeft=0;updateTimer();completeStep();}
+            public void onFinish(){
+                secLeft=0; updateTimer();
+                if(autoNext) {
+                    // Auto-next: advance immediately
+                    completeStep();
+                } else {
+                    // Manual mode: enter overtime
+                    startOvertime();
+                }
+            }
+        }.start();
+    }
+
+    /** Overtime: timer counts up negatively. Used when auto-next is off. */
+    void startOvertime(){
+        overtime=true; overtimeSec=0;
+        overtimeTimer=new CountDownTimer(Long.MAX_VALUE,1000){
+            public void onTick(long ms){overtimeSec++;updateOvertimeTimer();}
+            public void onFinish(){}
         }.start();
     }
 
     void updateTimer(){
         int m=secLeft/60, s=secLeft%60;
-        ((TextView)findViewById(R.id.tv_timer)).setText(String.format("%d:%02d",m,s));
+        TextView tvTimer=findViewById(R.id.tv_timer);
+        tvTimer.setText(String.format("%d:%02d",m,s));
+        tvTimer.setTextColor(0xFF8B5CF6); // primary purple
         int prog=secTotal>0?(int)((1f-(float)secLeft/secTotal)*100):0;
         ProgressBar ring=findViewById(R.id.timer_ring); ring.setProgress(prog);
+    }
+
+    void updateOvertimeTimer(){
+        int m=overtimeSec/60, s=overtimeSec%60;
+        TextView tvTimer=findViewById(R.id.tv_timer);
+        tvTimer.setText(String.format("–%d:%02d",m,s));
+        tvTimer.setTextColor(0xFFEF4444); // red during overtime
+        ProgressBar ring=findViewById(R.id.timer_ring); ring.setProgress(100);
     }
 
     void togglePause(){
         paused=!paused;
         Button btn=findViewById(R.id.btn_pause);
-        if(paused){if(timer!=null)timer.cancel();btn.setText("▶ Resume");}
-        else{startTimer();btn.setText("⏸ Pause");}
+        if(paused){
+            if(timer!=null)timer.cancel();
+            if(overtimeTimer!=null)overtimeTimer.cancel();
+            btn.setText("▶ Resume");
+        } else {
+            if(overtime) startOvertime(); else startTimer();
+            btn.setText("⏸ Pause");
+        }
     }
 
     void completeStep(){
         if(timer!=null)timer.cancel();
+        if(overtimeTimer!=null)overtimeTimer.cancel();
+        overtime=false;
         Models.RoutineStep step=routine.steps.get(curStep);
         if(step.linkedHabitId!=0){Models.Habit h=db.findHabit(step.linkedHabitId);if(h!=null&&!h.completedToday){h.completedToday=true;h.streak++;db.save();}}
         startStep(curStep+1);
     }
 
-    void skipStep(){if(timer!=null)timer.cancel();startStep(curStep+1);}
+    void skipStep(){
+        if(timer!=null)timer.cancel();
+        if(overtimeTimer!=null)overtimeTimer.cancel();
+        overtime=false;
+        startStep(curStep+1);
+    }
 
     void onRoutineComplete(){
         if(timer!=null)timer.cancel();
+        if(overtimeTimer!=null)overtimeTimer.cancel();
+        if(tts!=null){tts.stop();tts.shutdown();}
         db.logActivity(routine.name,true);
         setContentView(R.layout.activity_routine_complete);
         ((TextView)findViewById(R.id.tv_complete_emoji)).setText(routine.emoji);
@@ -199,11 +306,23 @@ public class RunRoutineActivity extends AppCompatActivity {
     void showExitDialog(){
         new android.app.AlertDialog.Builder(this)
             .setTitle("Stop routine?").setMessage("Your progress will be lost.")
-            .setPositiveButton("Stop",(d,w)->{if(timer!=null)timer.cancel();finish();})
+            .setPositiveButton("Stop",(d,w)->{
+                if(timer!=null)timer.cancel();
+                if(overtimeTimer!=null)overtimeTimer.cancel();
+                if(tts!=null){tts.stop();tts.shutdown();}
+                finish();
+            })
             .setNegativeButton("Continue",null).show();
     }
 
     @Override public void onBackPressed(){
         if(running) showExitDialog(); else finish();
+    }
+
+    @Override protected void onDestroy(){
+        super.onDestroy();
+        if(timer!=null)timer.cancel();
+        if(overtimeTimer!=null)overtimeTimer.cancel();
+        if(tts!=null){tts.stop();tts.shutdown();}
     }
 }

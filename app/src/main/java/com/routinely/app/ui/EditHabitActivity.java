@@ -5,6 +5,7 @@ import android.view.*;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import com.routinely.app.R;
+import com.routinely.app.receivers.HabitNotificationReceiver;
 import com.routinely.app.data.*;
 import java.util.*;
 
@@ -66,6 +67,9 @@ public class EditHabitActivity extends AppCompatActivity {
                 }
             }
             db.save();
+            // FIX: Schedule habit reminder notification — was missing, causing habit notifications to never fire
+            HabitNotificationReceiver.cancel(this, habit.id);
+            if (habit.reminderEnabled) HabitNotificationReceiver.schedule(this, habit);
             Toast.makeText(this,"Habit saved!",Toast.LENGTH_SHORT).show();
             finish();
         });

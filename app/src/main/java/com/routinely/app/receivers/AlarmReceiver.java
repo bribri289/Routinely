@@ -12,6 +12,11 @@ public class AlarmReceiver extends BroadcastReceiver {
         if(Intent.ACTION_BOOT_COMPLETED.equals(action)){
             AppData db=AppData.get(ctx);
             for(Models.Alarm a:db.alarms) if(a.enabled) schedule(ctx,a);
+            // FIX: Reschedule habit and routine notifications on boot (were never rescheduled before)
+            for(Models.Habit h:db.habits) if(h.reminderEnabled)
+                com.routinely.app.receivers.HabitNotificationReceiver.schedule(ctx,h);
+            for(Models.Routine r:db.routines) if(!r.archived)
+                com.routinely.app.receivers.RoutineNotificationReceiver.schedule(ctx,r);
             return;
         }
         int alarmId=intent.getIntExtra("alarmId",-1);

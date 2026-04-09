@@ -46,6 +46,8 @@ public class RoutinesFragment extends Fragment {
             ((TextView)item.findViewById(R.id.tv_time_range)).setText(startStr+" – "+endStr+" ("+dur+")");
             ((TextView)item.findViewById(R.id.tv_days)).setText(r.getDaysString());
             ((TextView)item.findViewById(R.id.tv_category)).setText(r.category);
+            // Hide category box per new design requirement
+            item.findViewById(R.id.tv_category).setVisibility(View.GONE);
             ((TextView)item.findViewById(R.id.tv_duration)).setText(r.steps.size()+" steps");
             // Linked alarm
             TextView tvAlarm=item.findViewById(R.id.tv_linked_alarm);
@@ -60,19 +62,18 @@ public class RoutinesFragment extends Fragment {
             TextView tvHabits=item.findViewById(R.id.tv_habit_count);
             if(habitCount>0){tvHabits.setText("🌱 "+habitCount+" habits");tvHabits.setVisibility(View.VISIBLE);}
             else tvHabits.setVisibility(View.GONE);
-            // Play button
+            // Play button → start routine immediately (no preview screen)
             item.findViewById(R.id.btn_play).setOnClickListener(x->{
                 if(r.steps.isEmpty()){Toast.makeText(getContext(),"Add steps first",Toast.LENGTH_SHORT).show();return;}
                 Intent i=new Intent(getActivity(),RunRoutineActivity.class);
-                i.putExtra("routine",r); startActivity(i);
+                i.putExtra("routine",r);
+                i.putExtra("autoStart",true);
+                startActivity(i);
             });
             // Overflow ⋮
             item.findViewById(R.id.btn_overflow).setOnClickListener(x->showOverflow(r,v,db));
-            // Tap card → edit
-            item.setOnClickListener(x->{
-                Intent i=new Intent(getActivity(),EditRoutineActivity.class);
-                i.putExtra("routine",r); startActivity(i);
-            });
+            // Tap card → show step summary dialog; from there user can edit
+            item.setOnClickListener(x->showStepSummary(r));
             list.addView(item);
         }
     }
@@ -80,6 +81,107 @@ public class RoutinesFragment extends Fragment {
     String fmtTime(int h,int m){
         String ap=h<12?"am":"pm"; int hh=h%12; if(hh==0)hh=12;
         return String.format("%d:%02d%s",hh,m,ap);
+    }
+
+    /** Show a step summary card list. Tapping a step opens the edit screen. */
+    void showStepSummary(Models.Routine r) {
+        android.app.Dialog dialog = new android.app.Dialog(requireContext(), android.R.style.Theme_Material_NoTitleBar_Fullscreen);
+        LinearLayout root = new LinearLayout(getContext());
+        root.setOrientation(LinearLayout.VERTICAL);
+        root.setBackgroundColor(0xFF111827);
+
+        // Header row
+        LinearLayout header = new LinearLayout(getContext());
+        header.setOrientation(LinearLayout.HORIZONTAL);
+        header.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        header.setPadding(20, 48, 20, 12);
+        header.setBackgroundColor(0xFF111827);
+        TextView tvClose = new TextView(getContext()); tvClose.setText("✕");
+        tvClose.setTextColor(0xFF9CA3AF); tvClose.setTextSize(20); tvClose.setPadding(8, 8, 8, 8);
+        tvClose.setOnClickListener(x -> dialog.dismiss());
+        header.addView(tvClose);
+        LinearLayout titleCol = new LinearLayout(getContext()); titleCol.setOrientation(LinearLayout.VERTICAL);
+        titleCol.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+        titleCol.setPadding(12, 0, 0, 0);
+        TextView tvName = new TextView(getContext()); tvName.setText(r.emoji + "  " + r.name);
+        tvName.setTextColor(0xFFFFFFFF); tvName.setTextSize(17); tvName.setTypeface(null, android.graphics.Typeface.BOLD);
+        titleCol.addView(tvName);
+        TextView tvSub = new TextView(getContext()); tvSub.setText(r.steps.size() + " steps · " + r.getTotalMinutes() + " min");
+        tvSub.setTextColor(0xFF9CA3AF); tvSub.setTextSize(12); tvSub.setPadding(0, 2, 0, 0);
+        titleCol.addView(tvSub);
+        header.addView(titleCol);
+        // Edit button
+        Button btnEdit = new Button(getContext()); btnEdit.setText("✏️ Edit");
+        btnEdit.setTextColor(0xFFFFFFFF); btnEdit.setTextSize(13);
+        btnEdit.setBackgroundResource(R.drawable.chip_bg);
+        btnEdit.setOnClickListener(x -> { dialog.dismiss(); Intent i = new Intent(getActivity(), EditRoutineActivity.class); i.putExtra("routine", r); startActivity(i); });
+        header.addView(btnEdit);
+        root.addView(header);
+
+        // Divider
+        View div = new View(getContext()); div.setBackgroundColor(0xFF1F2937);
+        div.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1));
+        root.addView(div);
+
+        // Steps list
+        ScrollView scroll = new ScrollView(getContext());
+        scroll.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1));
+        LinearLayout stepsList = new LinearLayout(getContext());
+        stepsList.setOrientation(LinearLayout.VERTICAL);
+        stepsList.setPadding(16, 8, 16, 80);
+
+        if (r.steps.isEmpty()) {
+            TextView empty = new TextView(getContext()); empty.setText("No steps yet. Tap Edit to add steps.");
+            empty.setTextColor(0xFF6B7280); empty.setTextSize(14); empty.setGravity(android.view.Gravity.CENTER); empty.setPadding(32, 64, 32, 64);
+            stepsList.addView(empty);
+        } else {
+            for (int i = 0; i < r.steps.size(); i++) {
+                Models.RoutineStep step = r.steps.get(i);
+                LinearLayout card = new LinearLayout(getContext()); card.setOrientation(LinearLayout.HORIZONTAL);
+                card.setBackgroundResource(R.drawable.card_bg); card.setGravity(android.view.Gravity.CENTER_VERTICAL);
+                card.setPadding(16, 14, 16, 14);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                lp.setMargins(0, 0, 0, 8); card.setLayoutParams(lp);
+
+                // Icon
+                TextView tvEmoji = new TextView(getContext()); tvEmoji.setText(step.emoji);
+                tvEmoji.setTextSize(22); tvEmoji.setPadding(0, 0, 14, 0); card.addView(tvEmoji);
+                // Name + duration
+                LinearLayout col = new LinearLayout(getContext()); col.setOrientation(LinearLayout.VERTICAL);
+                col.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+                TextView tvStepName = new TextView(getContext()); tvStepName.setText(step.name);
+                tvStepName.setTextColor(0xFFFFFFFF); tvStepName.setTextSize(15); col.addView(tvStepName);
+                int sm = step.durationSeconds / 60;
+                String durStr = sm > 0 ? sm + " min" : step.durationSeconds + "s";
+                TextView tvDur = new TextView(getContext()); tvDur.setText(durStr);
+                tvDur.setTextColor(0xFF9CA3AF); tvDur.setTextSize(12); col.addView(tvDur);
+                card.addView(col);
+                // Step number badge
+                TextView tvNum = new TextView(getContext()); tvNum.setText(String.valueOf(i + 1));
+                tvNum.setTextColor(0xFF6B7280); tvNum.setTextSize(12); card.addView(tvNum);
+
+                stepsList.addView(card);
+            }
+        }
+        scroll.addView(stepsList);
+        root.addView(scroll);
+
+        // Bottom: Start Routine button
+        Button btnStart = new Button(getContext()); btnStart.setText("▶  Start Routine");
+        btnStart.setTextColor(0xFFFFFFFF); btnStart.setTextSize(15);
+        btnStart.setBackgroundResource(R.drawable.btn_primary_bg);
+        LinearLayout.LayoutParams btnLp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 56 * (int)getResources().getDisplayMetrics().density);
+        btnLp.setMargins(16, 8, 16, 24); btnStart.setLayoutParams(btnLp);
+        btnStart.setOnClickListener(x -> {
+            dialog.dismiss();
+            if (r.steps.isEmpty()) { Toast.makeText(getContext(), "Add steps first", Toast.LENGTH_SHORT).show(); return; }
+            Intent i = new Intent(getActivity(), RunRoutineActivity.class);
+            i.putExtra("routine", r); i.putExtra("autoStart", true); startActivity(i);
+        });
+        root.addView(btnStart);
+
+        dialog.setContentView(root);
+        dialog.show();
     }
 
     void showOverflow(Models.Routine r, View fragmentView, AppData db){
