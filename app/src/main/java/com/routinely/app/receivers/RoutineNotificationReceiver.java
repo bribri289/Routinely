@@ -25,6 +25,11 @@ public class RoutineNotificationReceiver extends BroadcastReceiver {
     private static final String EXTRA_ROUTINE_ID = "routineId";
     // Dedicated notification channel for routine reminders
     public static final String CH_ROUTINE = "routinely_routines";
+    /**
+     * Maps Calendar.DAY_OF_WEEK (1=Sun…7=Sat) to our repeatDays index (0=Mon…6=Sun).
+     * Example: Calendar.SUNDAY=1 → index 6, Calendar.MONDAY=2 → index 0.
+     */
+    private static final int[] DOW_TO_INDEX = {6, 0, 1, 2, 3, 4, 5};
 
     @Override
     public void onReceive(Context ctx, Intent intent) {
@@ -36,9 +41,7 @@ public class RoutineNotificationReceiver extends BroadcastReceiver {
         // Only fire if today is a repeat day
         Calendar now = Calendar.getInstance();
         int dow = now.get(Calendar.DAY_OF_WEEK); // 1=Sun … 7=Sat
-        // repeatDays[0]=Mon … [6]=Sun; convert Calendar DOW to our index
-        int[] dowMap = {6, 0, 1, 2, 3, 4, 5}; // Calendar.SUNDAY=1 → index 6, MONDAY=2 → index 0, etc.
-        int idx = dowMap[dow - 1];
+        int idx = DOW_TO_INDEX[dow - 1];
         if (!routine.repeatDays[idx]) {
             // Not scheduled today — reschedule for next occurrence
             scheduleNext(ctx, routine);

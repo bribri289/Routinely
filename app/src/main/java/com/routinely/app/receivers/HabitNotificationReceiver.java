@@ -23,6 +23,8 @@ import java.util.Calendar;
 public class HabitNotificationReceiver extends BroadcastReceiver {
 
     private static final String EXTRA_HABIT_ID = "habitId";
+    /** Maximum number of reminder times per habit; used when cancelling all alarms. */
+    private static final int MAX_REMINDER_TIMES = 10;
 
     @Override
     public void onReceive(Context ctx, Intent intent) {
@@ -93,8 +95,8 @@ public class HabitNotificationReceiver extends BroadcastReceiver {
     public static void cancel(Context ctx, int habitId) {
         AlarmManager am = (AlarmManager) ctx.getSystemService(Context.ALARM_SERVICE);
         if (am == null) return;
-        // Cancel alarms for reminder-time indices 0–9 (covers all practical reminder counts)
-        for (int t = 0; t < 10; t++) {
+        // Cancel alarms for all possible reminder-time indices
+        for (int t = 0; t < MAX_REMINDER_TIMES; t++) {
             am.cancel(buildPI(ctx, habitId, t));
         }
     }

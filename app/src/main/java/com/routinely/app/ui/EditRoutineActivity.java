@@ -50,7 +50,9 @@ public class EditRoutineActivity extends AppCompatActivity {
             chip.setOnClickListener(v->{routine.repeatDays[idx]=!routine.repeatDays[idx];chip.setBackground(getDrawable(routine.repeatDays[idx]?R.drawable.chip_bg_active:R.drawable.chip_bg));});
             LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT); lp.setMargins(4,0,4,0); chip.setLayoutParams(lp); daysRow.addView(chip);}
 
-        // TODO: Linked alarm feature has a known glitch. Will be addressed in a later update.
+        // TODO: Linked alarm feature has a known glitch — the alarm spinner selection does not
+        // reliably persist and the alarm link is not always applied when the routine fires.
+        // Will be addressed in a later update once the alarm scheduling engine is stabilized.
         // Alarm link
         Spinner almSpin=findViewById(R.id.spinner_alarm);
         List<String> almLabels=new ArrayList<>(); almLabels.add("No linked alarm");

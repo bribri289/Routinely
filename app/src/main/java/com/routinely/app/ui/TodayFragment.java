@@ -65,7 +65,8 @@ public class TodayFragment extends Fragment {
         String message = MotivationalMessages.MESSAGES[msgIdx];
         TextView tvMsg = v.findViewById(R.id.tv_motivational_message);
         tvMsg.setText(message);
-        // Fade-in animation
+        // Fade-in animation: view starts at alpha=0 and animates to alpha=1.
+        // setFillAfter(true) preserves the animation's final state (alpha=1) after it completes.
         View card = v.findViewById(R.id.card_motivational);
         card.setAlpha(0f);
         AlphaAnimation fadeIn = new AlphaAnimation(0f, 1f);
@@ -73,7 +74,6 @@ public class TodayFragment extends Fragment {
         fadeIn.setStartOffset(300);
         fadeIn.setFillAfter(true);
         card.startAnimation(fadeIn);
-        // Note: setFillAfter(true) maintains alpha=1 after animation completes
     }
 
     void buildHabitsStrip(View v, AppData db) {
