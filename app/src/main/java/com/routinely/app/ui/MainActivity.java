@@ -54,7 +54,17 @@ public class MainActivity extends AppCompatActivity {
     public void switchTab(int idx) {
         curTab = idx;
         Fragment f;
-        switch(idx) { case 1:f=new RoutinesFragment();break; case 2:f=new HabitsFragment();break; case 3:f=new AlarmFragment();break; case 4:f=new MindsetFragment();break; default:f=new TodayFragment();break; }
+        switch(idx) { 
+            case 1:f=new RoutinesFragment();break; 
+            case 2:f=new HabitsFragment();break; 
+            case 3:f=new AlarmFragment();break; 
+            case 4:{
+                HabitsFragment hf=new HabitsFragment();
+                android.os.Bundle args=new android.os.Bundle(); args.putInt("section",2); hf.setArguments(args);
+                f=hf;break;
+            }
+            default:f=new TodayFragment();break; 
+        }
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,f).commit();
         int[] navIds={R.id.nav_today,R.id.nav_routines,R.id.nav_habits,R.id.nav_alarm,R.id.nav_mindset};
         int primary=getColor(R.color.primary); int muted=getColor(R.color.text_muted);

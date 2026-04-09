@@ -75,7 +75,9 @@ public class EditAlarmActivity extends AppCompatActivity {
         // Wake check
         ((Switch)findViewById(R.id.sw_wake_check)).setChecked(alarm.wakeCheckEnabled);
         int wcMin=Math.max(1,alarm.wakeCheckDelay);
-        ((TextView)findViewById(R.id.tv_wc_delay_label)).setText("After "+wcMin+" min ›");
+        TextView tvWcDelay=findViewById(R.id.tv_wc_delay_label);
+        tvWcDelay.setText("After "+wcMin+" min ›");
+        tvWcDelay.setOnClickListener(v->showDelayPickerDialog(tvWcDelay));
 
         // ── Sound ──
         Spinner soundSpin=findViewById(R.id.spinner_sound);
@@ -118,8 +120,13 @@ public class EditAlarmActivity extends AppCompatActivity {
 
         // Wallpaper
         TextView tvWallpaper=findViewById(R.id.tv_wallpaper);
+        ImageView ivWallpaperPreview=findViewById(R.id.iv_wallpaper_preview);
         if(alarm.wallpaperUri!=null&&!alarm.wallpaperUri.isEmpty()){
             tvWallpaper.setText(alarm.wallpaperIsVideo?"Video set":"Image set"); tvWallpaper.setTextColor(0xFF10B981);
+            if(!alarm.wallpaperIsVideo){
+                ivWallpaperPreview.setVisibility(View.VISIBLE);
+                ivWallpaperPreview.setImageURI(android.net.Uri.parse(alarm.wallpaperUri));
+            }
         }
         findViewById(R.id.btn_pick_wallpaper_image).setOnClickListener(v->{
             Intent i=new Intent(Intent.ACTION_OPEN_DOCUMENT); i.addCategory(Intent.CATEGORY_OPENABLE); i.setType("image/*"); startActivityForResult(i,601);
@@ -130,6 +137,7 @@ public class EditAlarmActivity extends AppCompatActivity {
         findViewById(R.id.btn_clear_wallpaper).setOnClickListener(v->{
             alarm.wallpaperUri=""; alarm.wallpaperIsVideo=false;
             tvWallpaper.setText("No wallpaper"); tvWallpaper.setTextColor(0xFF9CA3AF);
+            ivWallpaperPreview.setVisibility(View.GONE); ivWallpaperPreview.setImageURI(null);
         });
 
         // Snooze
@@ -179,6 +187,26 @@ public class EditAlarmActivity extends AppCompatActivity {
 
         View btnDel=findViewById(R.id.btn_delete); btnDel.setVisibility(isNew?View.GONE:View.VISIBLE);
         btnDel.setOnClickListener(v->{AlarmReceiver.cancel(this,alarm.id);db.alarms.remove(alarm);db.save();finish();});
+
+        // Preview Alarm
+        final Spinner finalSoundSpin=soundSpin;
+        final EditText finalLabel=etLabel;
+        final Spinner finalRSpin=rSpin;
+        final List<Integer> finalRIds=rIds;
+        findViewById(R.id.btn_preview_alarm).setOnClickListener(v->{
+            // Temporarily apply current settings to alarm object for preview
+            alarm.label=finalLabel.getText().toString().trim(); if(alarm.label.isEmpty())alarm.label="Alarm";
+            alarm.hour=picker12hTo24h(pickerHour,pickerAmPm); alarm.minute=pickerMinute;
+            alarm.soundIndex=finalSoundSpin.getSelectedItemPosition();
+            alarm.linkedRoutineId=finalRIds.get(finalRSpin.getSelectedItemPosition());
+            // Save preview alarm temporarily if new
+            if(isNew&&!db.alarms.contains(alarm)){db.alarms.add(alarm);}
+            db.save();
+            Intent pi=new Intent(this,AlarmRingActivity.class);
+            pi.putExtra("alarmId",alarm.id);
+            pi.putExtra("preview",true);
+            startActivity(pi);
+        });
     }
 
     /** Returns AM=0 or PM=1 from a 24-hour value */
@@ -187,6 +215,16 @@ public class EditAlarmActivity extends AppCompatActivity {
     static int alarmHourTo12h(int h24){ int h=h24%12; return h==0?12:h; }
     /** Converts picker (1–12) + ampm (0=AM,1=PM) to 24-hour value */
     static int picker12hTo24h(int h12, int ampm){ return (h12%12)+(ampm==1?12:0); }
+
+    void showDelayPickerDialog(TextView labelView){
+        NumberPicker np=new NumberPicker(this);
+        np.setMinValue(1); np.setMaxValue(60); np.setValue(Math.max(1,alarm.wakeCheckDelay));
+        new android.app.AlertDialog.Builder(this)
+            .setTitle("Wake check delay (minutes)")
+            .setView(np)
+            .setPositiveButton("OK",(d,w)->{alarm.wakeCheckDelay=np.getValue();labelView.setText("After "+alarm.wakeCheckDelay+" min ›");})
+            .setNegativeButton("Cancel",null).show();
+    }
 
     void styleNumberPicker(NumberPicker np){
         np.setTextColor(getColor(R.color.text_primary));
@@ -208,7 +246,8 @@ public class EditAlarmActivity extends AppCompatActivity {
             LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(80,80); lp.setMargins(0,0,8,0); tile.setLayoutParams(lp);
             TextView icon=new TextView(this); icon.setText(m.getEmoji()); icon.setTextSize(20); icon.setGravity(android.view.Gravity.CENTER); tile.addView(icon);
             TextView name=new TextView(this); name.setText(m.getDisplayName()); name.setTextColor(0xFF9CA3AF); name.setTextSize(9); name.setGravity(android.view.Gravity.CENTER); name.setMaxLines(1); tile.addView(name);
-            // × badge
+            // tap = edit config, long-press = remove
+            tile.setOnClickListener(v->showMissionEditSheet(m,idx));
             tile.setOnLongClickListener(v->{
                 alarm.missions.remove(idx); rebuildMissionTiles();
                 ((TextView)findViewById(R.id.tv_mission_count)).setText(alarm.missions.size()+"/5"); return true;
@@ -237,6 +276,39 @@ public class EditAlarmActivity extends AppCompatActivity {
         sheet.show(getSupportFragmentManager(),"missions");
     }
 
+    void showMissionEditSheet(Models.Mission m, int idx){
+        com.google.android.material.bottomsheet.BottomSheetDialog sheet=new com.google.android.material.bottomsheet.BottomSheetDialog(this);
+        ScrollView sv=new ScrollView(this);
+        LinearLayout layout=new LinearLayout(this); layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setBackgroundResource(R.drawable.card_bg); layout.setPadding(28,16,28,48);
+        // Title
+        TextView tvTitle=new TextView(this); tvTitle.setText(m.getEmoji()+" "+m.getDisplayName());
+        tvTitle.setTextColor(0xFF1A1A2E); tvTitle.setTextSize(17); tvTitle.setTypeface(null,android.graphics.Typeface.BOLD);
+        tvTitle.setPadding(0,0,0,16); layout.addView(tvTitle);
+        // Build config based on type
+        switch(m.type){
+            case Models.Mission.MATH: buildMathConfig(layout,m); break;
+            case Models.Mission.MEMORY: buildMemoryConfig(layout,m); break;
+            case Models.Mission.TYPING: buildTypingConfig(layout,m); break;
+            case Models.Mission.SHAKE: case Models.Mission.SQUATS: case Models.Mission.STEPS: buildCountConfig(layout,m); break;
+            case Models.Mission.BARCODE: buildBarcodeConfig(layout,m); break;
+            default: break;
+        }
+        // Required toggle
+        addLabel(layout,"Required to dismiss");
+        LinearLayout reqRow=new LinearLayout(this); reqRow.setOrientation(LinearLayout.HORIZONTAL); reqRow.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        Switch swReq=new Switch(this); swReq.setChecked(m.required); swReq.setThumbTint(android.content.res.ColorStateList.valueOf(0xFF6755C8)); swReq.setTrackTint(android.content.res.ColorStateList.valueOf(0xFF3F3F46));
+        swReq.setOnCheckedChangeListener((b,c)->m.required=c);
+        TextView tvReq=new TextView(this); tvReq.setText("Mission required"); tvReq.setTextColor(0xFF4B5563); tvReq.setTextSize(14); tvReq.setPadding(12,0,0,0);
+        reqRow.addView(swReq); reqRow.addView(tvReq); layout.addView(reqRow);
+        // Done button
+        Button btnDone=new Button(this); btnDone.setText("Done"); btnDone.setBackgroundResource(R.drawable.btn_primary_bg); btnDone.setTextColor(0xFFFFFFFF);
+        LinearLayout.LayoutParams blp=new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,120); blp.setMargins(0,24,0,0); btnDone.setLayoutParams(blp);
+        btnDone.setOnClickListener(x->{alarm.missions.set(idx,m);rebuildMissionTiles();sheet.dismiss();});
+        layout.addView(btnDone);
+        sv.addView(layout); sheet.setContentView(sv); sheet.show();
+    }
+
     @Override protected void onActivityResult(int req, int res, Intent data){
         super.onActivityResult(req,res,data);
         TextView tvCustomSound=findViewById(R.id.tv_custom_sound);
@@ -263,6 +335,7 @@ public class EditAlarmActivity extends AppCompatActivity {
                 try{getContentResolver().takePersistableUriPermission(uri,Intent.FLAG_GRANT_READ_URI_PERMISSION);}catch(Exception e){}
                 alarm.wallpaperUri=uri.toString(); alarm.wallpaperIsVideo=false;
                 TextView tvW=findViewById(R.id.tv_wallpaper); if(tvW!=null){tvW.setText("Image set");tvW.setTextColor(0xFF10B981);}
+                ImageView iv=findViewById(R.id.iv_wallpaper_preview); if(iv!=null){iv.setImageURI(uri);iv.setVisibility(View.VISIBLE);}
             }
         } else if(req==602&&res==RESULT_OK&&data!=null){
             android.net.Uri uri=data.getData();
@@ -270,6 +343,7 @@ public class EditAlarmActivity extends AppCompatActivity {
                 try{getContentResolver().takePersistableUriPermission(uri,Intent.FLAG_GRANT_READ_URI_PERMISSION);}catch(Exception e){}
                 alarm.wallpaperUri=uri.toString(); alarm.wallpaperIsVideo=true;
                 TextView tvW=findViewById(R.id.tv_wallpaper); if(tvW!=null){tvW.setText("Video set");tvW.setTextColor(0xFF10B981);}
+                ImageView iv=findViewById(R.id.iv_wallpaper_preview); if(iv!=null){iv.setImageURI(null);iv.setVisibility(View.GONE);}
             }
         }
         com.google.zxing.integration.android.IntentResult scanResult=
@@ -335,5 +409,35 @@ public class EditAlarmActivity extends AppCompatActivity {
         Button btn=new Button(this); btn.setText("Take reference photo"); btn.setBackground(getDrawable(R.drawable.chip_bg)); btn.setTextColor(0xFFFFFFFF); btn.setTextSize(12);
         btn.setOnClickListener(v->{Intent i=new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);if(i.resolveActivity(getPackageManager())!=null)startActivityForResult(i,101);});
         l.addView(btn);
+    }
+
+    void buildMemoryConfig(LinearLayout l, Models.Mission m){
+        addLabel(l,"Grid size");
+        LinearLayout row=new LinearLayout(this); row.setOrientation(LinearLayout.HORIZONTAL);
+        for(String g:new String[]{"2x2","2x3","3x4","4x4"}){
+            TextView chip=new TextView(this); chip.setText(g); chip.setPadding(20,10,20,10); chip.setTextColor(0xFFFFFFFF); chip.setTextSize(11);
+            chip.setBackground(getDrawable(m.gridSize.equals(g)?R.drawable.chip_bg_active:R.drawable.chip_bg));
+            chip.setOnClickListener(v->m.gridSize=g);
+            LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT); lp.setMargins(4,0,4,0); chip.setLayoutParams(lp); row.addView(chip);}
+        l.addView(row);
+    }
+
+    void buildTypingConfig(LinearLayout l, Models.Mission m){
+        addLabel(l,"Text length");
+        LinearLayout row=new LinearLayout(this); row.setOrientation(LinearLayout.HORIZONTAL);
+        for(String t:new String[]{"short","medium","long"}){
+            TextView chip=new TextView(this); chip.setText(t); chip.setPadding(20,10,20,10); chip.setTextColor(0xFFFFFFFF); chip.setTextSize(11);
+            chip.setBackground(getDrawable(m.textLength.equals(t)?R.drawable.chip_bg_active:R.drawable.chip_bg));
+            chip.setOnClickListener(v->m.textLength=t);
+            LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT); lp.setMargins(4,0,4,0); chip.setLayoutParams(lp); row.addView(chip);}
+        l.addView(row);
+    }
+
+    void buildCountConfig(LinearLayout l, Models.Mission m){
+        addLabel(l,"Target count (reps / steps)");
+        EditText et=new EditText(this); et.setHint("20"); et.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+        et.setTextColor(0xFFFFFFFF); et.setHintTextColor(0xFF6B7280); et.setBackground(getDrawable(R.drawable.input_bg)); et.setPadding(20,14,20,14); et.setText(String.valueOf(m.targetCount));
+        et.addTextChangedListener(new android.text.TextWatcher(){public void beforeTextChanged(CharSequence s,int a,int b,int c){}public void onTextChanged(CharSequence s,int a,int b,int c){try{m.targetCount=Math.max(1,Integer.parseInt(s.toString()));}catch(Exception ignored){}}public void afterTextChanged(android.text.Editable s){}});
+        LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT); lp.setMargins(0,4,0,8); et.setLayoutParams(lp); l.addView(et);
     }
 }

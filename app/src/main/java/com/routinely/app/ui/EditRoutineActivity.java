@@ -61,6 +61,7 @@ public class EditRoutineActivity extends AppCompatActivity {
         stepsContainer=findViewById(R.id.steps_container);
         rebuildSteps();
         findViewById(R.id.btn_add_step).setOnClickListener(v->{
+            collectStepFields(); // save edits in existing steps before adding
             Models.RoutineStep s=new Models.RoutineStep();
             s.id=db.newId(); s.name="New step"; s.emoji="✅"; s.durationSeconds=300;
             routine.steps.add(s); rebuildSteps();
@@ -168,12 +169,17 @@ public class EditRoutineActivity extends AppCompatActivity {
     void buildStepDayChips(LinearLayout row, Models.RoutineStep step){
         row.removeAllViews();
         String[] DAYS2={"M","T","W","T","F","S","S"};
+        int sizeDp=32;
+        float density=getResources().getDisplayMetrics().density;
+        int sizePx=(int)(sizeDp*density);
         for(int i=0;i<7;i++){final int idx=i;
             TextView chip=new TextView(this); chip.setText(DAYS2[i]);
-            chip.setPadding(16,10,16,10); chip.setTextColor(0xFFFFFFFF); chip.setTextSize(11);
-            chip.setBackground(getDrawable(step.repeatDays[idx]?R.drawable.chip_bg_active:R.drawable.chip_bg));
-            chip.setOnClickListener(v->{step.repeatDays[idx]=!step.repeatDays[idx];chip.setBackground(getDrawable(step.repeatDays[idx]?R.drawable.chip_bg_active:R.drawable.chip_bg));});
-            LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT); lp.setMargins(3,0,3,0); chip.setLayoutParams(lp); row.addView(chip);}
+            chip.setTextColor(step.repeatDays[idx]?0xFFFFFFFF:0xFF6B7280); chip.setTextSize(11);
+            chip.setGravity(android.view.Gravity.CENTER);
+            chip.setBackground(getDrawable(step.repeatDays[idx]?R.drawable.circle_primary:R.drawable.circle_bg3));
+            LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(sizePx,sizePx); lp.setMargins(4,4,4,4); chip.setLayoutParams(lp);
+            chip.setOnClickListener(v->{step.repeatDays[idx]=!step.repeatDays[idx];chip.setBackground(getDrawable(step.repeatDays[idx]?R.drawable.circle_primary:R.drawable.circle_bg3));chip.setTextColor(step.repeatDays[idx]?0xFFFFFFFF:0xFF6B7280);});
+            row.addView(chip);}
     }
 
     void collectStepFields(){
@@ -194,7 +200,7 @@ public class EditRoutineActivity extends AppCompatActivity {
             }catch(Exception ignored){}
             Spinner recSpin=item.findViewById(R.id.spinner_recurrence);
             if(recSpin!=null){
-                String[] types={"daily","weekdays","weekends","custom_days","custom_weeks","custom_months","custom_days"};
+                String[] types={"daily","weekdays","weekends","every_n_days","every_n_weeks","every_n_months","custom_days"};
                 int pos=recSpin.getSelectedItemPosition();
                 step.recurrenceType=pos<types.length?types[pos]:"daily";
             }
@@ -206,8 +212,9 @@ public class EditRoutineActivity extends AppCompatActivity {
     int recurrenceIndex(String type){
         switch(type==null?"daily":type){
             case "weekdays":return 1; case "weekends":return 2;
-            case "custom_days":return 3; case "custom_weeks":return 4;
-            case "custom_months":return 5; default:return 0;
+            case "every_n_days":return 3; case "every_n_weeks":return 4;
+            case "every_n_months":return 5; case "custom_days":return 6;
+            default:return 0;
         }
     }
 }

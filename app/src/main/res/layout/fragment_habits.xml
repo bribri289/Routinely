@@ -21,18 +21,23 @@
             android:background="@drawable/circle_primary" android:padding="0dp"/>
     </LinearLayout>
 
-    <!-- Section toggle: Habits | Progress -->
+    <!-- Section toggle: Habits | Progress | Mindset -->
     <LinearLayout android:layout_width="match_parent" android:layout_height="44dp"
         android:orientation="horizontal" android:paddingStart="16dp" android:paddingEnd="16dp"
         android:paddingTop="4dp" android:paddingBottom="4dp">
         <TextView android:id="@+id/section_tab_habits" android:layout_width="0dp"
             android:layout_height="match_parent" android:layout_weight="1"
-            android:text="Habits" android:textColor="#FFFFFF" android:textSize="14sp"
+            android:text="Habits" android:textColor="#FFFFFF" android:textSize="13sp"
             android:gravity="center" android:background="@drawable/chip_bg_active"
-            android:layout_marginEnd="8dp"/>
+            android:layout_marginEnd="6dp"/>
         <TextView android:id="@+id/section_tab_progress" android:layout_width="0dp"
             android:layout_height="match_parent" android:layout_weight="1"
-            android:text="Progress" android:textColor="@color/text_muted" android:textSize="14sp"
+            android:text="Progress" android:textColor="@color/text_muted" android:textSize="13sp"
+            android:gravity="center" android:background="@drawable/chip_bg"
+            android:layout_marginEnd="6dp"/>
+        <TextView android:id="@+id/section_tab_mindset" android:layout_width="0dp"
+            android:layout_height="match_parent" android:layout_weight="1"
+            android:text="🧠 Mindset" android:textColor="@color/text_muted" android:textSize="13sp"
             android:gravity="center" android:background="@drawable/chip_bg"/>
     </LinearLayout>
 
@@ -48,12 +53,12 @@
                 android:layout_height="wrap_content" android:orientation="vertical"
                 android:padding="16dp">
 
-                <!-- Score + streak -->
+                <!-- Score + streak + completion counter -->
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:orientation="horizontal" android:layout_marginBottom="16dp">
                     <LinearLayout android:layout_width="0dp" android:layout_height="80dp" android:layout_weight="1"
                         android:background="@drawable/card_bg" android:orientation="vertical" android:gravity="center"
-                        android:layout_marginEnd="8dp">
+                        android:layout_marginEnd="6dp">
                         <TextView android:id="@+id/tv_score" android:layout_width="wrap_content"
                             android:layout_height="wrap_content" android:textColor="@color/primary"
                             android:textSize="28sp" android:fontFamily="sans-serif-medium"/>
@@ -61,12 +66,21 @@
                             android:text="Today" android:textColor="@color/text_muted" android:textSize="12sp"/>
                     </LinearLayout>
                     <LinearLayout android:layout_width="0dp" android:layout_height="80dp" android:layout_weight="1"
-                        android:background="@drawable/card_bg" android:orientation="vertical" android:gravity="center">
+                        android:background="@drawable/card_bg" android:orientation="vertical" android:gravity="center"
+                        android:layout_marginEnd="6dp">
                         <TextView android:id="@+id/tv_streak" android:layout_width="wrap_content"
                             android:layout_height="wrap_content" android:textColor="@color/primary"
                             android:textSize="16sp" android:fontFamily="sans-serif-medium"/>
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                             android:text="Best streak" android:textColor="@color/text_muted" android:textSize="12sp"/>
+                    </LinearLayout>
+                    <LinearLayout android:layout_width="0dp" android:layout_height="80dp" android:layout_weight="1"
+                        android:background="@drawable/card_bg" android:orientation="vertical" android:gravity="center">
+                        <TextView android:id="@+id/tv_completed_count" android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" android:textColor="@color/green"
+                            android:textSize="22sp" android:fontFamily="sans-serif-medium"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Done Today" android:textColor="@color/text_muted" android:textSize="12sp"/>
                     </LinearLayout>
                 </LinearLayout>
 
@@ -105,6 +119,11 @@
                 <LinearLayout android:id="@+id/progress_list" android:layout_width="match_parent"
                     android:layout_height="wrap_content" android:orientation="vertical"/>
             </LinearLayout>
+
+            <!-- MINDSET SECTION (hidden by default) -->
+            <LinearLayout android:id="@+id/mindset_section" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:orientation="vertical"
+                android:visibility="gone"/>
 
         </LinearLayout>
     </ScrollView>

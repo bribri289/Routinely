@@ -3,7 +3,6 @@ import android.os.Bundle;
 import android.view.*;
 import android.widget.*;
 import androidx.fragment.app.Fragment;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.routinely.app.R;
 import com.routinely.app.data.MindsetData;
 import java.util.Calendar;
@@ -70,27 +69,67 @@ public class MindsetFragment extends Fragment {
     }
 
     void showReading(String title, String body) {
-        BottomSheetDialog sheet = new BottomSheetDialog(requireContext());
+        android.app.Dialog dialog = new android.app.Dialog(requireContext(), android.R.style.Theme_Material_Light_NoActionBar_Fullscreen);
+        // Build ebook-style reading view
+        LinearLayout root = new LinearLayout(getContext());
+        root.setOrientation(LinearLayout.VERTICAL);
+        root.setBackgroundColor(0xFFFFFDF6); // warm off-white ebook bg
+
+        // Toolbar row
+        LinearLayout toolbar = new LinearLayout(getContext());
+        toolbar.setOrientation(LinearLayout.HORIZONTAL);
+        toolbar.setBackgroundColor(0xFFFFFDF6);
+        toolbar.setPadding(24, 40, 24, 12);
+        toolbar.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        TextView tvClose = new TextView(getContext()); tvClose.setText("✕"); tvClose.setTextSize(20);
+        tvClose.setTextColor(0xFF4B5563); tvClose.setPadding(8,8,8,8);
+        tvClose.setOnClickListener(x -> dialog.dismiss());
+        toolbar.addView(tvClose);
+        TextView tvBar = new TextView(getContext()); tvBar.setText("Reading"); tvBar.setTextColor(0xFF6755C8);
+        tvBar.setTextSize(14); tvBar.setTypeface(null, android.graphics.Typeface.BOLD);
+        tvBar.setPadding(16,0,0,0);
+        toolbar.addView(tvBar);
+        root.addView(toolbar);
+
+        // Divider
+        View divider = new View(getContext()); divider.setBackgroundColor(0xFFE5DCC8);
+        divider.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 1));
+        root.addView(divider);
+
+        // Scrollable content
         ScrollView scroll = new ScrollView(getContext());
-        LinearLayout layout = new LinearLayout(getContext());
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setBackgroundResource(R.drawable.card_bg);
-        layout.setPadding(28, 24, 28, 48);
+        scroll.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
+        LinearLayout content = new LinearLayout(getContext());
+        content.setOrientation(LinearLayout.VERTICAL);
+        content.setPadding(48, 32, 48, 80);
+
         TextView tvTitle = new TextView(getContext());
         tvTitle.setText(title);
         tvTitle.setTextColor(0xFF1A1A2E);
-        tvTitle.setTextSize(18);
-        tvTitle.setTypeface(null, android.graphics.Typeface.BOLD);
-        tvTitle.setPadding(0, 0, 0, 16);
-        layout.addView(tvTitle);
+        tvTitle.setTextSize(22);
+        tvTitle.setTypeface(android.graphics.Typeface.SERIF, android.graphics.Typeface.BOLD);
+        tvTitle.setPadding(0, 0, 0, 24);
+        tvTitle.setLineSpacing(6, 1);
+        content.addView(tvTitle);
+
+        // Decorative rule
+        View rule = new View(getContext()); rule.setBackgroundColor(0xFFD4A853);
+        LinearLayout.LayoutParams rlp = new LinearLayout.LayoutParams(80, 3); rlp.setMargins(0,0,0,24); rule.setLayoutParams(rlp);
+        content.addView(rule);
+
         TextView tvBody = new TextView(getContext());
         tvBody.setText(body);
-        tvBody.setTextColor(0xFF4B5563);
-        tvBody.setTextSize(14);
-        tvBody.setLineSpacing(4, 1);
-        layout.addView(tvBody);
-        scroll.addView(layout);
-        sheet.setContentView(scroll);
-        sheet.show();
+        tvBody.setTextColor(0xFF3B3225);
+        tvBody.setTextSize(16);
+        tvBody.setTypeface(android.graphics.Typeface.SERIF);
+        tvBody.setLineSpacing(8, 1);
+        tvBody.setLetterSpacing(0.01f);
+        content.addView(tvBody);
+
+        scroll.addView(content);
+        root.addView(scroll);
+
+        dialog.setContentView(root);
+        dialog.show();
     }
 }

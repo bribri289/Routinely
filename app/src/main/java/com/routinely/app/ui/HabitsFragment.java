@@ -19,7 +19,22 @@ public class HabitsFragment extends Fragment {
     @Override public View onCreateView(LayoutInflater inf, ViewGroup c, Bundle b){
         View v=inf.inflate(R.layout.fragment_habits,c,false);
         AppData db=AppData.get(requireContext());
+        // Support opening directly to a specific section (e.g. Mindset = 2)
+        if(getArguments()!=null) sectionIdx=getArguments().getInt("section",0);
         setupSectionTabs(v,db);
+        // Apply initial section visibility
+        v.findViewById(R.id.habits_section).setVisibility(sectionIdx==0?View.VISIBLE:View.GONE);
+        v.findViewById(R.id.progress_section).setVisibility(sectionIdx==1?View.VISIBLE:View.GONE);
+        v.findViewById(R.id.mindset_section).setVisibility(sectionIdx==2?View.VISIBLE:View.GONE);
+        int[] tabIds={R.id.section_tab_habits,R.id.section_tab_progress,R.id.section_tab_mindset};
+        for(int i=0;i<tabIds.length;i++){
+            v.findViewById(tabIds[i]).setBackgroundResource(i==sectionIdx?R.drawable.chip_bg_active:R.drawable.chip_bg);
+            ((TextView)v.findViewById(tabIds[i])).setTextColor(i==sectionIdx?0xFFFFFFFF:0xFF9CA3AF);
+        }
+        v.findViewById(R.id.tv_compact_label).setVisibility(sectionIdx==0?View.VISIBLE:View.GONE);
+        v.findViewById(R.id.sw_compact).setVisibility(sectionIdx==0?View.VISIBLE:View.GONE);
+        v.findViewById(R.id.btn_new_habit).setVisibility(sectionIdx==0?View.VISIBLE:View.GONE);
+        if(sectionIdx==2) loadMindsetFragment(v);
         setupTabs(v,db);
         buildScorecard(v,db);
         buildHabits(v,db);
@@ -36,31 +51,24 @@ public class HabitsFragment extends Fragment {
     @Override public void onResume(){super.onResume();View v=getView();if(v!=null){AppData db=AppData.get(requireContext());buildHabits(v,db);buildScorecard(v,db);if(sectionIdx==1)buildProgress(v,db);}}
 
     void setupSectionTabs(View v, AppData db){
-        v.findViewById(R.id.section_tab_habits).setOnClickListener(x->{
-            sectionIdx=0;
-            v.findViewById(R.id.section_tab_habits).setBackgroundResource(R.drawable.chip_bg_active);
-            ((android.widget.TextView)v.findViewById(R.id.section_tab_habits)).setTextColor(0xFFFFFFFF);
-            v.findViewById(R.id.section_tab_progress).setBackgroundResource(R.drawable.chip_bg);
-            ((android.widget.TextView)v.findViewById(R.id.section_tab_progress)).setTextColor(0xFF9CA3AF);
-            v.findViewById(R.id.habits_section).setVisibility(View.VISIBLE);
-            v.findViewById(R.id.progress_section).setVisibility(View.GONE);
-            v.findViewById(R.id.tv_compact_label).setVisibility(View.VISIBLE);
-            v.findViewById(R.id.sw_compact).setVisibility(View.VISIBLE);
-            v.findViewById(R.id.btn_new_habit).setVisibility(View.VISIBLE);
-        });
-        v.findViewById(R.id.section_tab_progress).setOnClickListener(x->{
-            sectionIdx=1;
-            v.findViewById(R.id.section_tab_progress).setBackgroundResource(R.drawable.chip_bg_active);
-            ((android.widget.TextView)v.findViewById(R.id.section_tab_progress)).setTextColor(0xFFFFFFFF);
-            v.findViewById(R.id.section_tab_habits).setBackgroundResource(R.drawable.chip_bg);
-            ((android.widget.TextView)v.findViewById(R.id.section_tab_habits)).setTextColor(0xFF9CA3AF);
-            v.findViewById(R.id.habits_section).setVisibility(View.GONE);
-            v.findViewById(R.id.progress_section).setVisibility(View.VISIBLE);
-            v.findViewById(R.id.tv_compact_label).setVisibility(View.GONE);
-            v.findViewById(R.id.sw_compact).setVisibility(View.GONE);
-            v.findViewById(R.id.btn_new_habit).setVisibility(View.GONE);
-            buildProgress(v,AppData.get(requireContext()));
-        });
+        int[] tabIds={R.id.section_tab_habits, R.id.section_tab_progress, R.id.section_tab_mindset};
+        for(int i=0;i<tabIds.length;i++){final int idx=i;
+            v.findViewById(tabIds[i]).setOnClickListener(x->{
+                sectionIdx=idx;
+                for(int j=0;j<tabIds.length;j++){
+                    v.findViewById(tabIds[j]).setBackgroundResource(j==idx?R.drawable.chip_bg_active:R.drawable.chip_bg);
+                    ((android.widget.TextView)v.findViewById(tabIds[j])).setTextColor(j==idx?0xFFFFFFFF:0xFF9CA3AF);
+                }
+                v.findViewById(R.id.habits_section).setVisibility(idx==0?View.VISIBLE:View.GONE);
+                v.findViewById(R.id.progress_section).setVisibility(idx==1?View.VISIBLE:View.GONE);
+                v.findViewById(R.id.mindset_section).setVisibility(idx==2?View.VISIBLE:View.GONE);
+                v.findViewById(R.id.tv_compact_label).setVisibility(idx==0?View.VISIBLE:View.GONE);
+                v.findViewById(R.id.sw_compact).setVisibility(idx==0?View.VISIBLE:View.GONE);
+                v.findViewById(R.id.btn_new_habit).setVisibility(idx==0?View.VISIBLE:View.GONE);
+                if(idx==1) buildProgress(v,AppData.get(requireContext()));
+                if(idx==2) loadMindsetFragment(v);
+            });
+        }
     }
 
     void setupTabs(View v, AppData db){
@@ -122,6 +130,7 @@ public class HabitsFragment extends Fragment {
         for(Models.Habit h:db.habits){streak=Math.max(streak,h.streak);if(h.completedToday)done++;}
         ((TextView)v.findViewById(R.id.tv_score)).setText(total>0?(done*100/total)+"%":"0%");
         ((TextView)v.findViewById(R.id.tv_streak)).setText(streak+" day streak");
+        ((TextView)v.findViewById(R.id.tv_completed_count)).setText(done+"/"+total);
         if(db.habits.isEmpty()){
             TextView empty=new TextView(getContext());
             empty.setText("No habits yet\nTap + and start building your identity");
@@ -223,6 +232,85 @@ public class HabitsFragment extends Fragment {
         c.reminderHour=src.reminderHour; c.reminderMinute=src.reminderMinute;
         c.reminderEnabled=src.reminderEnabled; c.dailyTarget=src.dailyTarget;
         return c;
+    }
+
+    void loadMindsetFragment(View v){
+        LinearLayout container=(LinearLayout)v.findViewById(R.id.mindset_section);
+        if(container.getTag()!=null) return; // already built
+        container.setTag("loaded");
+        buildMindsetSection(container);
+    }
+
+    void buildMindsetSection(LinearLayout container){
+        container.setPadding(16,16,16,16);
+        int idx=(java.util.Calendar.getInstance().get(java.util.Calendar.DAY_OF_YEAR)-1)
+                 % MindsetData.DAILY_LESSONS.length;
+        String lessonTitle=MindsetData.DAILY_LESSONS[idx][0];
+        String lessonBody=MindsetData.DAILY_LESSONS[idx][1];
+        String preview=(lessonBody!=null&&lessonBody.contains("\n"))
+            ?lessonBody.substring(0,lessonBody.indexOf('\n')):lessonBody;
+
+        // Daily lesson card
+        LinearLayout card=new LinearLayout(getContext()); card.setOrientation(LinearLayout.VERTICAL);
+        card.setBackgroundResource(R.drawable.card_bg_primary); card.setPadding(40,32,40,32);
+        LinearLayout.LayoutParams cardLp=new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT); cardLp.setMargins(0,0,0,20); card.setLayoutParams(cardLp);
+        TextView tvNum=new TextView(getContext()); tvNum.setText("Lesson "+(idx+1));
+        tvNum.setTextColor(0xFFE5E7EB); tvNum.setTextSize(11); tvNum.setBackgroundResource(R.drawable.chip_bg); tvNum.setPadding(12,6,12,6); card.addView(tvNum);
+        TextView tvTitle=new TextView(getContext()); tvTitle.setText(lessonTitle);
+        tvTitle.setTextColor(0xFFFFFFFF); tvTitle.setTextSize(18); tvTitle.setTypeface(null,android.graphics.Typeface.BOLD); tvTitle.setPadding(0,12,0,8); card.addView(tvTitle);
+        TextView tvPrev=new TextView(getContext()); tvPrev.setText(preview!=null?preview:"");
+        tvPrev.setTextColor(0xFFE5E7EB); tvPrev.setTextSize(13); tvPrev.setPadding(0,0,0,16); card.addView(tvPrev);
+        TextView tvTap=new TextView(getContext()); tvTap.setText("Tap to read full lesson ›");
+        tvTap.setTextColor(0xFFE5E7EB); tvTap.setTextSize(13); card.addView(tvTap);
+        card.setOnClickListener(x->showMindsetReading(lessonTitle,lessonBody));
+        container.addView(card);
+
+        // Library section header
+        TextView tvLib=new TextView(getContext()); tvLib.setText("LIBRARY");
+        tvLib.setTextColor(0xFF9CA3AF); tvLib.setTextSize(11); tvLib.setPadding(0,8,0,12); container.addView(tvLib);
+
+        // Library cards
+        for(int s=0;s<MindsetData.LIBRARY.length;s++){
+            String[][] section=MindsetData.LIBRARY[s];
+            for(String[] article:section){
+                final String artTitle=article[0]; final String artBody=article[2];
+                LinearLayout artCard=new LinearLayout(getContext()); artCard.setOrientation(LinearLayout.VERTICAL);
+                artCard.setBackgroundResource(R.drawable.card_bg); artCard.setPadding(20,16,20,16);
+                LinearLayout.LayoutParams aLp=new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT); aLp.setMargins(0,0,0,10); artCard.setLayoutParams(aLp);
+                TextView artTv=new TextView(getContext()); artTv.setText(artTitle);
+                artTv.setTextColor(0xFF1A1A2E); artTv.setTextSize(15); artTv.setTypeface(null,android.graphics.Typeface.BOLD); artCard.addView(artTv);
+                if(article.length>1){TextView artSub=new TextView(getContext());artSub.setText(article[1]);artSub.setTextColor(0xFF9CA3AF);artSub.setTextSize(12);artSub.setPadding(0,4,0,0);artCard.addView(artSub);}
+                artCard.setOnClickListener(x->showMindsetReading(artTitle,artBody));
+                container.addView(artCard);
+            }
+        }
+    }
+
+    void showMindsetReading(String title, String body){
+        android.app.Dialog dialog=new android.app.Dialog(requireContext(),android.R.style.Theme_Material_Light_NoActionBar_Fullscreen);
+        LinearLayout root=new LinearLayout(getContext()); root.setOrientation(LinearLayout.VERTICAL);
+        root.setBackgroundColor(0xFFFFFDF6);
+        // Toolbar
+        LinearLayout toolbar=new LinearLayout(getContext()); toolbar.setOrientation(LinearLayout.HORIZONTAL);
+        toolbar.setBackgroundColor(0xFFFFFDF6); toolbar.setPadding(24,48,24,12); toolbar.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        TextView tvClose=new TextView(getContext()); tvClose.setText("✕"); tvClose.setTextSize(20); tvClose.setTextColor(0xFF4B5563); tvClose.setPadding(8,8,8,8);
+        tvClose.setOnClickListener(x->dialog.dismiss()); toolbar.addView(tvClose);
+        TextView tvBar=new TextView(getContext()); tvBar.setText("Reading"); tvBar.setTextColor(0xFF6755C8); tvBar.setTextSize(14); tvBar.setTypeface(null,android.graphics.Typeface.BOLD); tvBar.setPadding(16,0,0,0);
+        toolbar.addView(tvBar); root.addView(toolbar);
+        // Divider
+        View div=new View(getContext()); div.setBackgroundColor(0xFFE5DCC8); div.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,1)); root.addView(div);
+        // Scrollable content
+        ScrollView scroll=new ScrollView(getContext()); scroll.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,0,1));
+        LinearLayout content=new LinearLayout(getContext()); content.setOrientation(LinearLayout.VERTICAL); content.setPadding(48,32,48,80);
+        TextView tvTitle=new TextView(getContext()); tvTitle.setText(title);
+        tvTitle.setTextColor(0xFF1A1A2E); tvTitle.setTextSize(22); tvTitle.setTypeface(android.graphics.Typeface.SERIF,android.graphics.Typeface.BOLD);
+        tvTitle.setPadding(0,0,0,24); tvTitle.setLineSpacing(6,1); content.addView(tvTitle);
+        View rule=new View(getContext()); rule.setBackgroundColor(0xFFD4A853);
+        LinearLayout.LayoutParams rlp=new LinearLayout.LayoutParams(80,3); rlp.setMargins(0,0,0,24); rule.setLayoutParams(rlp); content.addView(rule);
+        TextView tvBody=new TextView(getContext()); tvBody.setText(body);
+        tvBody.setTextColor(0xFF3B3225); tvBody.setTextSize(16); tvBody.setTypeface(android.graphics.Typeface.SERIF); tvBody.setLineSpacing(8,1); content.addView(tvBody);
+        scroll.addView(content); root.addView(scroll);
+        dialog.setContentView(root); dialog.show();
     }
 
     void buildProgress(View v, AppData db){
