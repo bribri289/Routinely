@@ -3,7 +3,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.*;
+import android.content.res.ColorStateList;
 import androidx.appcompat.app.AppCompatActivity;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.routinely.app.R;
 import com.routinely.app.data.*;
 import com.routinely.app.receivers.AlarmReceiver;
@@ -297,7 +299,7 @@ public class EditAlarmActivity extends AppCompatActivity {
         // Required toggle
         addLabel(layout,"Required to dismiss");
         LinearLayout reqRow=new LinearLayout(this); reqRow.setOrientation(LinearLayout.HORIZONTAL); reqRow.setGravity(android.view.Gravity.CENTER_VERTICAL);
-        Switch swReq=new Switch(this); swReq.setChecked(m.required); swReq.setThumbTint(android.content.res.ColorStateList.valueOf(0xFF6755C8)); swReq.setTrackTint(android.content.res.ColorStateList.valueOf(0xFF3F3F46));
+        SwitchMaterial swReq=new SwitchMaterial(this); swReq.setChecked(m.required); swReq.setThumbTintList(ColorStateList.valueOf(0xFF6755C8)); swReq.setTrackTintList(ColorStateList.valueOf(0xFF3F3F46));
         swReq.setOnCheckedChangeListener((b,c)->m.required=c);
         TextView tvReq=new TextView(this); tvReq.setText("Mission required"); tvReq.setTextColor(0xFF4B5563); tvReq.setTextSize(14); tvReq.setPadding(12,0,0,0);
         reqRow.addView(swReq); reqRow.addView(tvReq); layout.addView(reqRow);
