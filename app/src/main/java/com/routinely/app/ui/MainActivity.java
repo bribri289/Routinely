@@ -46,14 +46,14 @@ public class MainActivity extends AppCompatActivity {
     void handleIntent(Intent intent) {
         if (intent==null) return;
         int tab = intent.getIntExtra("tab", -1);
-        if (tab >= 0 && tab <= 4) { switchTab(tab); return; }
+        if (tab >= 0 && tab <= 3) { switchTab(tab); return; }
         Uri d = intent.getData(); if (d==null) return;
         String rid = d.getQueryParameter("start"); if(rid==null) rid=d.getQueryParameter("routine");
         if (rid!=null) { try { int id=Integer.parseInt(rid); Models.Routine r=AppData.get(this).findRoutine(id); if(r!=null){Intent i=new Intent(this,RunRoutineActivity.class);i.putExtra("routine",r);startActivity(i);} } catch(Exception ignored){} }
     }
 
     void setupNav() {
-        int[] ids = {R.id.nav_today,R.id.nav_routines,R.id.nav_habits,R.id.nav_alarm,R.id.nav_mindset};
+        int[] ids = {R.id.nav_today,R.id.nav_routines,R.id.nav_habits,R.id.nav_alarm};
         for (int i=0;i<ids.length;i++) { final int idx=i; findViewById(ids[i]).setOnClickListener(v->switchTab(idx)); }
     }
 
@@ -64,15 +64,10 @@ public class MainActivity extends AppCompatActivity {
             case 1:f=new RoutinesFragment();break; 
             case 2:f=new HabitsFragment();break; 
             case 3:f=new AlarmFragment();break; 
-            case 4:{
-                HabitsFragment hf=new HabitsFragment();
-                android.os.Bundle args=new android.os.Bundle(); args.putInt("section",2); hf.setArguments(args);
-                f=hf;break;
-            }
             default:f=new TodayFragment();break; 
         }
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,f).commit();
-        int[] navIds={R.id.nav_today,R.id.nav_routines,R.id.nav_habits,R.id.nav_alarm,R.id.nav_mindset};
+        int[] navIds={R.id.nav_today,R.id.nav_routines,R.id.nav_habits,R.id.nav_alarm};
         int primary=getColor(R.color.primary); int muted=getColor(R.color.text_muted);
         for(int i=0;i<navIds.length;i++){
             LinearLayout nav=(LinearLayout)findViewById(navIds[i]);
