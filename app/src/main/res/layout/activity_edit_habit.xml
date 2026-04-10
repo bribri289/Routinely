@@ -8,7 +8,7 @@
         android:orientation="horizontal" android:gravity="center_vertical"
         android:padding="12dp" android:background="@color/bg2">
         <Button android:id="@+id/btn_back" android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:text="Cancel"
+            android:layout_height="wrap_content" android:text="\u2190 Cancel"
             android:background="@android:color/transparent" android:textColor="@color/text_secondary"
             android:textSize="14sp"/>
         <TextView android:id="@+id/tv_title" android:layout_width="0dp"
@@ -177,7 +177,7 @@
 
             <!-- Delete -->
             <Button android:id="@+id/btn_delete" android:layout_width="match_parent"
-                android:layout_height="52dp" android:text="Delete Habit"
+                android:layout_height="52dp" android:text="\uD83D\uDDD1 Delete Habit"
                 android:background="@drawable/btn_danger_bg" android:textColor="@color/text_primary"
                 android:textSize="14sp"/>
         </LinearLayout>

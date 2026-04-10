@@ -209,7 +209,7 @@ public class HabitsFragment extends Fragment {
         }
 
         List<Models.Habit> sorted = new ArrayList<>(db.habits);
-        if (curTab == 2) sorted.sort((a, b2) -> b2.streak - a.streak);
+        if (curTab == 2) sorted.sort((a, b2) -> Integer.compare(b2.streak, a.streak));
 
         for (Models.Habit h : sorted) {
             boolean doneOnDate = isDoneOnDate(h, selectedDate);
