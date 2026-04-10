@@ -233,10 +233,12 @@ public class MissionActivity extends AppCompatActivity {
             if(shakeListener!=null) sensorMgr.unregisterListener(shakeListener);
             shakeListener=new SensorEventListener(){
                 public void onSensorChanged(SensorEvent e){
+                    // Skip the first event to establish a baseline reading
                     if(!shakeInitialized){lastX=e.values[0];lastY=e.values[1];lastZ=e.values[2];shakeInitialized=true;return;}
                     float dx=Math.abs(e.values[0]-lastX);
                     float dy=Math.abs(e.values[1]-lastY);
                     float dz=Math.abs(e.values[2]-lastZ);
+                    // Sum of absolute per-axis acceleration deltas (m/s²); threshold ~15 detects vigorous shakes
                     if(dx+dy+dz>SHAKE_THRESHOLD){
                         shakeCount=Math.min(shakeCount+1,target);
                         runOnUiThread(()->{

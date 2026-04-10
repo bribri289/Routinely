@@ -185,7 +185,7 @@ public class BarcodeScanActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        cameraExecutor.shutdown();
+        cameraExecutor.shutdownNow();
         scanner.close();
         super.onDestroy();
     }
