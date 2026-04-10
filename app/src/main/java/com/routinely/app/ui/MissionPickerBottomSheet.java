@@ -21,11 +21,11 @@ public class MissionPickerBottomSheet extends BottomSheetDialogFragment {
         bind(v,R.id.brain_row_color, Models.Mission.MEMORY,false);
         bind(v,R.id.brain_row_typing,Models.Mission.TYPING,false);
         bind(v,R.id.brain_row_math,  Models.Mission.MATH,  false);
-        bind(v,R.id.body_row_step,   Models.Mission.STEPS, true);
+        bind(v,R.id.body_row_step,   Models.Mission.STEPS, false);
         bind(v,R.id.body_row_qr,     Models.Mission.BARCODE,false);
         bind(v,R.id.body_row_shake,  Models.Mission.SHAKE, false);
         bind(v,R.id.body_row_photo,  Models.Mission.PHOTO, false);
-        bind(v,R.id.body_row_squat,  Models.Mission.SQUATS,true);
+        bind(v,R.id.body_row_squat,  Models.Mission.SQUATS,false);
         return v;
     }
 
