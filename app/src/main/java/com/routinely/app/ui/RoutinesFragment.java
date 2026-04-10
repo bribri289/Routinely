@@ -123,46 +123,15 @@ public class RoutinesFragment extends Fragment {
         div.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1));
         root.addView(div);
 
-        // Steps list
+        // Steps list (wrapped in a scrollable container that updates when steps change)
         ScrollView scroll = new ScrollView(getContext());
         scroll.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1));
         LinearLayout stepsList = new LinearLayout(getContext());
         stepsList.setOrientation(LinearLayout.VERTICAL);
         stepsList.setPadding(16, 8, 16, 80);
 
-        if (r.steps.isEmpty()) {
-            TextView empty = new TextView(getContext()); empty.setText("No steps yet. Tap Edit to add steps.");
-            empty.setTextColor(0xFF6B7280); empty.setTextSize(14); empty.setGravity(android.view.Gravity.CENTER); empty.setPadding(32, 64, 32, 64);
-            stepsList.addView(empty);
-        } else {
-            for (int i = 0; i < r.steps.size(); i++) {
-                Models.RoutineStep step = r.steps.get(i);
-                LinearLayout card = new LinearLayout(getContext()); card.setOrientation(LinearLayout.HORIZONTAL);
-                card.setBackgroundResource(R.drawable.card_bg); card.setGravity(android.view.Gravity.CENTER_VERTICAL);
-                card.setPadding(16, 14, 16, 14);
-                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                lp.setMargins(0, 0, 0, 8); card.setLayoutParams(lp);
+        buildSummaryStepCards(r, stepsList, dialog, tvSub);
 
-                // Icon
-                TextView tvEmoji = new TextView(getContext()); tvEmoji.setText(step.emoji);
-                tvEmoji.setTextSize(22); tvEmoji.setPadding(0, 0, 14, 0); card.addView(tvEmoji);
-                // Name + duration
-                LinearLayout col = new LinearLayout(getContext()); col.setOrientation(LinearLayout.VERTICAL);
-                col.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
-                TextView tvStepName = new TextView(getContext()); tvStepName.setText(step.name);
-                tvStepName.setTextColor(0xFFFFFFFF); tvStepName.setTextSize(15); col.addView(tvStepName);
-                int sm = step.durationSeconds / 60;
-                String durStr = sm > 0 ? sm + " min" : step.durationSeconds + "s";
-                TextView tvDur = new TextView(getContext()); tvDur.setText(durStr);
-                tvDur.setTextColor(0xFF9CA3AF); tvDur.setTextSize(12); col.addView(tvDur);
-                card.addView(col);
-                // Step number badge
-                TextView tvNum = new TextView(getContext()); tvNum.setText(String.valueOf(i + 1));
-                tvNum.setTextColor(0xFF6B7280); tvNum.setTextSize(12); card.addView(tvNum);
-
-                stepsList.addView(card);
-            }
-        }
         scroll.addView(stepsList);
         root.addView(scroll);
 
@@ -182,6 +151,249 @@ public class RoutinesFragment extends Fragment {
 
         dialog.setContentView(root);
         dialog.show();
+    }
+
+    /** Build (or rebuild) the step cards inside the summary list. */
+    void buildSummaryStepCards(Models.Routine r, LinearLayout stepsList, android.app.Dialog parentDialog, TextView tvSub) {
+        stepsList.removeAllViews();
+        if (r.steps.isEmpty()) {
+            TextView empty = new TextView(getContext()); empty.setText("No steps yet. Tap Edit to add steps.");
+            empty.setTextColor(0xFF6B7280); empty.setTextSize(14); empty.setGravity(android.view.Gravity.CENTER); empty.setPadding(32, 64, 32, 64);
+            stepsList.addView(empty);
+            return;
+        }
+        for (int i = 0; i < r.steps.size(); i++) {
+            Models.RoutineStep step = r.steps.get(i);
+            LinearLayout card = new LinearLayout(getContext()); card.setOrientation(LinearLayout.HORIZONTAL);
+            card.setBackgroundResource(R.drawable.card_bg); card.setGravity(android.view.Gravity.CENTER_VERTICAL);
+            card.setPadding(16, 14, 16, 14);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            lp.setMargins(0, 0, 0, 8); card.setLayoutParams(lp);
+
+            // Icon
+            TextView tvEmoji = new TextView(getContext()); tvEmoji.setText(step.emoji);
+            tvEmoji.setTextSize(22); tvEmoji.setPadding(0, 0, 14, 0); card.addView(tvEmoji);
+            // Name + duration
+            LinearLayout col = new LinearLayout(getContext()); col.setOrientation(LinearLayout.VERTICAL);
+            col.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+            TextView tvStepName = new TextView(getContext()); tvStepName.setText(step.name);
+            tvStepName.setTextColor(0xFFFFFFFF); tvStepName.setTextSize(15); col.addView(tvStepName);
+            int sm = step.durationSeconds / 60;
+            String durStr = sm > 0 ? sm + " min" : step.durationSeconds + "s";
+            TextView tvDur = new TextView(getContext()); tvDur.setText(durStr);
+            tvDur.setTextColor(0xFF9CA3AF); tvDur.setTextSize(12); col.addView(tvDur);
+            card.addView(col);
+            // Step number badge
+            TextView tvNum = new TextView(getContext()); tvNum.setText(String.valueOf(i + 1));
+            tvNum.setTextColor(0xFF6B7280); tvNum.setTextSize(12); card.addView(tvNum);
+
+            // Tapping a step card opens the step edit popup
+            final int stepIdx = i;
+            card.setOnClickListener(x -> showStepEditPopup(r, stepIdx, parentDialog, stepsList, tvSub));
+            stepsList.addView(card);
+        }
+    }
+
+    /** Full step edit popup modal. */
+    void showStepEditPopup(Models.Routine r, int stepIdx, android.app.Dialog summaryDialog, LinearLayout stepsList, TextView tvSub) {
+        if (stepIdx < 0 || stepIdx >= r.steps.size()) return;
+        Models.RoutineStep step = r.steps.get(stepIdx);
+        AppData db = AppData.get(requireContext());
+
+        android.app.Dialog popup = new android.app.Dialog(requireContext(), R.style.FullScreenDialog);
+        ScrollView sv = new ScrollView(getContext());
+        sv.setBackgroundColor(0xFF111827);
+        LinearLayout root = new LinearLayout(getContext());
+        root.setOrientation(LinearLayout.VERTICAL);
+        root.setPadding(20, 48, 20, 32);
+        root.setBackgroundColor(0xFF111827);
+
+        // Header
+        LinearLayout hdr = new LinearLayout(getContext()); hdr.setOrientation(LinearLayout.HORIZONTAL); hdr.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        hdr.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        TextView tvBack = new TextView(getContext()); tvBack.setText("✕"); tvBack.setTextColor(0xFF9CA3AF); tvBack.setTextSize(20); tvBack.setPadding(0,0,16,0); tvBack.setOnClickListener(x -> popup.dismiss()); hdr.addView(tvBack);
+        TextView tvTitle = new TextView(getContext()); tvTitle.setText("Edit Step"); tvTitle.setTextColor(0xFFFFFFFF); tvTitle.setTextSize(17); tvTitle.setTypeface(null, android.graphics.Typeface.BOLD);
+        LinearLayout.LayoutParams titleLp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1); tvTitle.setLayoutParams(titleLp); hdr.addView(tvTitle);
+        root.addView(hdr);
+        addPopupSpace(root, 20);
+
+        // Icon + Name row
+        addPopupLabel(root, "STEP NAME");
+        LinearLayout nameRow = new LinearLayout(getContext()); nameRow.setOrientation(LinearLayout.HORIZONTAL); nameRow.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        nameRow.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        android.widget.EditText etEmoji = makeEditText(step.emoji, 56, 52, 24); etEmoji.setGravity(android.view.Gravity.CENTER);
+        float densityEm = getResources().getDisplayMetrics().density;
+        LinearLayout.LayoutParams emojiLp = new LinearLayout.LayoutParams((int)(56*densityEm), (int)(52*densityEm)); emojiLp.setMarginEnd((int)(10*densityEm)); etEmoji.setLayoutParams(emojiLp);
+        nameRow.addView(etEmoji);
+        android.widget.EditText etName = makeEditText(step.name, 0, 52, 15);
+        etName.setHint("Step name"); etName.setHintTextColor(0xFF6B7280);
+        LinearLayout.LayoutParams nameLp = new LinearLayout.LayoutParams(0, (int)(52*densityEm), 1); etName.setLayoutParams(nameLp);
+        // Auto-icon on name change
+        etName.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) {
+                String cur = etEmoji.getText().toString().trim();
+                if (cur.isEmpty() || cur.equals("✅")) {
+                    etEmoji.setText(EditRoutineActivity.autoIconForStep(etName.getText().toString()));
+                }
+            }
+        });
+        nameRow.addView(etName);
+        root.addView(nameRow);
+        addPopupSpace(root, 14);
+
+        // Duration stepper
+        addPopupLabel(root, "DURATION (minutes)");
+        final int[] durHolder = {Math.max(0, step.durationSeconds / 60)};
+        LinearLayout durRow = new LinearLayout(getContext()); durRow.setOrientation(LinearLayout.HORIZONTAL); durRow.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        durRow.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        Button btnMinus = makePopupButton("–", R.drawable.btn_secondary_bg);
+        TextView tvDurVal = new TextView(getContext()); tvDurVal.setText(String.valueOf(durHolder[0])); tvDurVal.setTextColor(0xFFFFFFFF); tvDurVal.setTextSize(20); tvDurVal.setTypeface(null, android.graphics.Typeface.BOLD);
+        tvDurVal.setGravity(android.view.Gravity.CENTER);
+        LinearLayout.LayoutParams durValLp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1); tvDurVal.setLayoutParams(durValLp);
+        Button btnPlus = makePopupButton("+", R.drawable.btn_primary_bg);
+        btnMinus.setOnClickListener(x -> { if (durHolder[0] > 0) { durHolder[0]--; tvDurVal.setText(String.valueOf(durHolder[0])); } });
+        btnPlus.setOnClickListener(x -> { durHolder[0]++; tvDurVal.setText(String.valueOf(durHolder[0])); });
+        durRow.addView(btnMinus); durRow.addView(tvDurVal); durRow.addView(btnPlus);
+        root.addView(durRow);
+        addPopupSpace(root, 14);
+
+        // Description
+        addPopupLabel(root, "DESCRIPTION");
+        android.widget.EditText etDesc = makeEditText(step.description, 0, -1, 14); etDesc.setHint("Add a description..."); etDesc.setHintTextColor(0xFF6B7280); etDesc.setMinLines(3);
+        etDesc.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        root.addView(etDesc);
+        addPopupSpace(root, 14);
+
+        // Recurrence
+        addPopupLabel(root, "RECURRENCE");
+        // Quick-select
+        LinearLayout quickRow = new LinearLayout(getContext()); quickRow.setOrientation(LinearLayout.HORIZONTAL);
+        quickRow.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        TextView btnRDaily = makeRecChip("Daily"); LinearLayout.LayoutParams qLp = new LinearLayout.LayoutParams(0,36,1); qLp.setMarginEnd(6); btnRDaily.setLayoutParams(qLp);
+        TextView btnRWeekdays = makeRecChip("Weekdays"); LinearLayout.LayoutParams qLp2 = new LinearLayout.LayoutParams(0,36,1); qLp2.setMarginEnd(6); btnRWeekdays.setLayoutParams(qLp2);
+        TextView btnRWeekends = makeRecChip("Weekends"); btnRWeekends.setLayoutParams(new LinearLayout.LayoutParams(0,36,1));
+        quickRow.addView(btnRDaily); quickRow.addView(btnRWeekdays); quickRow.addView(btnRWeekends);
+        root.addView(quickRow);
+        addPopupSpace(root, 8);
+
+        // Day toggles
+        LinearLayout daysRow = new LinearLayout(getContext()); daysRow.setOrientation(LinearLayout.HORIZONTAL); daysRow.setGravity(android.view.Gravity.CENTER);
+        daysRow.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        boolean[] recDays = java.util.Arrays.copyOf(step.repeatDays, 7);
+        String[] dayLabels = {"M","T","W","T","F","S","S"};
+        float density = getResources().getDisplayMetrics().density;
+        int chipSz = (int)(34*density);
+        TextView[] dayChips = new TextView[7];
+        for (int d = 0; d < 7; d++) {
+            final int di = d;
+            TextView chip = new TextView(getContext()); chip.setText(dayLabels[d]); chip.setTextSize(11); chip.setGravity(android.view.Gravity.CENTER);
+            chip.setTextColor(recDays[di]?0xFFFFFFFF:0xFF6B7280);
+            chip.setBackground(requireContext().getDrawable(recDays[di]?R.drawable.circle_primary:R.drawable.circle_bg3));
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(chipSz, chipSz); lp.setMargins(4,4,4,4); chip.setLayoutParams(lp);
+            chip.setOnClickListener(x -> { recDays[di]=!recDays[di]; chip.setBackground(requireContext().getDrawable(recDays[di]?R.drawable.circle_primary:R.drawable.circle_bg3)); chip.setTextColor(recDays[di]?0xFFFFFFFF:0xFF6B7280); });
+            dayChips[d] = chip; daysRow.addView(chip);
+        }
+        root.addView(daysRow);
+        // Quick-select logic
+        Runnable refreshChips = () -> {
+            for (int d = 0; d < 7; d++) { boolean on = recDays[d]; dayChips[d].setBackground(requireContext().getDrawable(on?R.drawable.circle_primary:R.drawable.circle_bg3)); dayChips[d].setTextColor(on?0xFFFFFFFF:0xFF6B7280); }
+        };
+        btnRDaily.setOnClickListener(x -> { java.util.Arrays.fill(recDays,true); refreshChips.run(); });
+        btnRWeekdays.setOnClickListener(x -> { boolean[] wk={true,true,true,true,true,false,false}; System.arraycopy(wk,0,recDays,0,7); refreshChips.run(); });
+        btnRWeekends.setOnClickListener(x -> { boolean[] we={false,false,false,false,false,true,true}; System.arraycopy(we,0,recDays,0,7); refreshChips.run(); });
+        addPopupSpace(root, 14);
+
+        // Linked habit
+        addPopupLabel(root, "LINKED HABIT");
+        android.widget.Spinner spinHabit = new android.widget.Spinner(getContext()); spinHabit.setBackground(requireContext().getDrawable(R.drawable.input_bg));
+        java.util.List<String> hl = new java.util.ArrayList<>(); hl.add("No habit"); java.util.List<Integer> hi = new java.util.ArrayList<>(); hi.add(0);
+        for (Models.Habit h : db.habits) { hl.add(h.emoji+" "+h.name); hi.add(h.id); }
+        android.widget.ArrayAdapter<String> haAdapter = new android.widget.ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, hl);
+        haAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); spinHabit.setAdapter(haAdapter);
+        for (int j=0;j<hi.size();j++) if(hi.get(j)==step.linkedHabitId){ spinHabit.setSelection(j); break; }
+        LinearLayout.LayoutParams spinLp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int)(48*density));
+        spinHabit.setLayoutParams(spinLp); root.addView(spinHabit);
+        addPopupSpace(root, 14);
+
+        // Best Streak display
+        addPopupLabel(root, "BEST STREAK");
+        TextView tvStreak = new TextView(getContext());
+        tvStreak.setText("🏆 " + step.bestStreak + " day" + (step.bestStreak != 1 ? "s" : ""));
+        tvStreak.setTextColor(0xFFF59E0B); tvStreak.setTextSize(16); tvStreak.setTypeface(null, android.graphics.Typeface.BOLD);
+        tvStreak.setPadding(0, 4, 0, 4); root.addView(tvStreak);
+        addPopupSpace(root, 24);
+
+        // Save button
+        Button btnSave = new Button(getContext()); btnSave.setText("Save Step");
+        btnSave.setTextColor(0xFFFFFFFF); btnSave.setTextSize(15); btnSave.setTypeface(null, android.graphics.Typeface.BOLD);
+        btnSave.setBackground(requireContext().getDrawable(R.drawable.btn_primary_bg));
+        LinearLayout.LayoutParams saveLp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int)(52*density)); saveLp.setMargins(0,0,0,16); btnSave.setLayoutParams(saveLp);
+        btnSave.setOnClickListener(x -> {
+            String nm = etName.getText().toString().trim(); if (!nm.isEmpty()) step.name = nm;
+            String em = etEmoji.getText().toString().trim(); if (!em.isEmpty()) step.emoji = em;
+            step.description = etDesc.getText().toString();
+            step.durationSeconds = Math.max(60, durHolder[0] * 60);
+            System.arraycopy(recDays, 0, step.repeatDays, 0, 7);
+            // Infer recurrenceType from pattern
+            boolean allOn = true; for (boolean b : recDays) if (!b) { allOn = false; break; }
+            boolean wk = recDays[0]&&recDays[1]&&recDays[2]&&recDays[3]&&recDays[4]&&!recDays[5]&&!recDays[6];
+            boolean we = !recDays[0]&&!recDays[1]&&!recDays[2]&&!recDays[3]&&!recDays[4]&&recDays[5]&&recDays[6];
+            step.recurrenceType = allOn?"daily":wk?"weekdays":we?"weekends":"custom_days";
+            int selHabit = spinHabit.getSelectedItemPosition(); step.linkedHabitId = hi.get(selHabit);
+            // Save to db
+            for (int idx2=0;idx2<db.routines.size();idx2++) { if(db.routines.get(idx2).id==r.id){ db.routines.set(idx2,r); break; } }
+            db.save();
+            popup.dismiss();
+            // Refresh summary list
+            tvSub.setText(r.steps.size() + " steps · " + r.getTotalMinutes() + " min");
+            buildSummaryStepCards(r, stepsList, summaryDialog, tvSub);
+        });
+        root.addView(btnSave);
+
+        sv.addView(root);
+        popup.setContentView(sv);
+        popup.show();
+    }
+
+    // ── Helper builders for programmatic popup UI ──────────────────────────
+
+    android.widget.EditText makeEditText(String text, int widthDp, int heightDp, int textSizeSp) {
+        android.widget.EditText et = new android.widget.EditText(getContext());
+        et.setText(text); et.setTextColor(0xFFFFFFFF); et.setTextSize(textSizeSp);
+        et.setBackground(requireContext().getDrawable(R.drawable.input_bg));
+        et.setPadding(20, 12, 20, 12);
+        float d = getResources().getDisplayMetrics().density;
+        int w = widthDp > 0 ? (int)(widthDp*d) : LinearLayout.LayoutParams.MATCH_PARENT;
+        int h = heightDp > 0 ? (int)(heightDp*d) : LinearLayout.LayoutParams.WRAP_CONTENT;
+        et.setLayoutParams(new LinearLayout.LayoutParams(w, h));
+        return et;
+    }
+
+    Button makePopupButton(String text, int bgRes) {
+        Button btn = new Button(getContext()); btn.setText(text); btn.setTextColor(0xFFFFFFFF); btn.setTextSize(20);
+        btn.setBackground(requireContext().getDrawable(bgRes)); btn.setPadding(0,0,0,0);
+        float d = getResources().getDisplayMetrics().density;
+        btn.setLayoutParams(new LinearLayout.LayoutParams((int)(44*d),(int)(44*d)));
+        return btn;
+    }
+
+    TextView makeRecChip(String label) {
+        TextView tv = new TextView(getContext()); tv.setText(label); tv.setTextSize(12);
+        tv.setGravity(android.view.Gravity.CENTER); tv.setBackground(requireContext().getDrawable(R.drawable.chip_bg));
+        tv.setTextColor(0xFF9CA3AF); return tv;
+    }
+
+    void addPopupLabel(LinearLayout root, String text) {
+        TextView tv = new TextView(getContext()); tv.setText(text); tv.setTextColor(0xFF6B7280); tv.setTextSize(10);
+        tv.setLetterSpacing(0.08f); tv.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        lp.setMargins(0,0,0,6); tv.setLayoutParams(lp); root.addView(tv);
+    }
+
+    void addPopupSpace(LinearLayout root, int dpHeight) {
+        View v = new View(getContext()); float d = getResources().getDisplayMetrics().density;
+        v.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int)(dpHeight*d)));
+        root.addView(v);
     }
 
     void showOverflow(Models.Routine r, View fragmentView, AppData db){

@@ -29,48 +29,49 @@
         android:background="@drawable/input_bg" android:padding="10dp" android:textSize="13sp"
         android:layout_marginBottom="10dp" android:minLines="2"/>
 
-    <!-- Duration: H M S -->
+    <!-- Duration stepper (minutes) -->
     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:text="DURATION" android:textColor="@color/text_muted" android:textSize="10sp"
+        android:text="DURATION (minutes)" android:textColor="@color/text_muted" android:textSize="10sp"
         android:letterSpacing="0.08" android:layout_marginBottom="6dp"/>
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
         android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="10dp">
-        <EditText android:id="@+id/et_step_hours" android:layout_width="56dp" android:layout_height="44dp"
-            android:inputType="number" android:textColor="@color/text_primary" android:background="@drawable/input_bg"
-            android:padding="8dp" android:textSize="16sp" android:gravity="center" android:hint="0"/>
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="h" android:textColor="@color/text_muted" android:textSize="13sp" android:layout_marginStart="4dp" android:layout_marginEnd="10dp"/>
-        <EditText android:id="@+id/et_step_mins" android:layout_width="56dp" android:layout_height="44dp"
-            android:inputType="number" android:textColor="@color/text_primary" android:background="@drawable/input_bg"
-            android:padding="8dp" android:textSize="16sp" android:gravity="center" android:hint="5"/>
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="m" android:textColor="@color/text_muted" android:textSize="13sp" android:layout_marginStart="4dp" android:layout_marginEnd="10dp"/>
-        <EditText android:id="@+id/et_step_secs" android:layout_width="56dp" android:layout_height="44dp"
-            android:inputType="number" android:textColor="@color/text_primary" android:background="@drawable/input_bg"
-            android:padding="8dp" android:textSize="16sp" android:gravity="center" android:hint="0"/>
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="s" android:textColor="@color/text_muted" android:textSize="13sp" android:layout_marginStart="4dp"/>
+        <Button android:id="@+id/btn_dur_minus" android:layout_width="44dp" android:layout_height="44dp"
+            android:text="–" android:textSize="22sp" android:textColor="@color/text_primary"
+            android:background="@drawable/btn_secondary_bg" android:padding="0dp"/>
+        <TextView android:id="@+id/tv_dur_value" android:layout_width="0dp" android:layout_height="44dp"
+            android:layout_weight="1" android:text="5" android:textColor="@color/text_primary"
+            android:textSize="18sp" android:fontFamily="sans-serif-medium"
+            android:gravity="center" android:layout_marginStart="8dp" android:layout_marginEnd="8dp"/>
+        <Button android:id="@+id/btn_dur_plus" android:layout_width="44dp" android:layout_height="44dp"
+            android:text="+" android:textSize="22sp" android:textColor="@color/text_primary"
+            android:background="@drawable/btn_primary_bg" android:padding="0dp"/>
     </LinearLayout>
 
-    <!-- Recurrence -->
+    <!-- Recurrence: quick-select + day toggles -->
     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:text="RECURRENCE" android:textColor="@color/text_muted" android:textSize="10sp"
         android:letterSpacing="0.08" android:layout_marginBottom="6dp"/>
-    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp">
-        <Spinner android:id="@+id/spinner_recurrence" android:layout_width="0dp" android:layout_height="44dp"
-            android:layout_weight="1" android:background="@drawable/input_bg"
-            android:popupBackground="@color/card2" android:layout_marginEnd="8dp"/>
-        <EditText android:id="@+id/et_step_interval" android:layout_width="56dp" android:layout_height="44dp"
-            android:inputType="number" android:textColor="@color/text_primary" android:background="@drawable/input_bg"
-            android:padding="8dp" android:textSize="14sp" android:gravity="center" android:hint="1"
-            android:visibility="gone"/>
+    <!-- Quick-select row -->
+    <LinearLayout android:id="@+id/recurrence_quick_row" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:orientation="horizontal"
+        android:layout_marginBottom="8dp">
+        <TextView android:id="@+id/btn_rec_daily" android:layout_width="0dp" android:layout_height="36dp"
+            android:layout_weight="1" android:text="Daily" android:textSize="12sp"
+            android:gravity="center" android:background="@drawable/chip_bg"
+            android:textColor="@color/text_secondary" android:layout_marginEnd="6dp"/>
+        <TextView android:id="@+id/btn_rec_weekdays" android:layout_width="0dp" android:layout_height="36dp"
+            android:layout_weight="1" android:text="Weekdays" android:textSize="12sp"
+            android:gravity="center" android:background="@drawable/chip_bg"
+            android:textColor="@color/text_secondary" android:layout_marginEnd="6dp"/>
+        <TextView android:id="@+id/btn_rec_weekends" android:layout_width="0dp" android:layout_height="36dp"
+            android:layout_weight="1" android:text="Weekends" android:textSize="12sp"
+            android:gravity="center" android:background="@drawable/chip_bg"
+            android:textColor="@color/text_secondary"/>
     </LinearLayout>
-
-    <!-- Day chips (shown for custom days) -->
+    <!-- Day toggle chips (M T W T F S S) - always visible -->
     <LinearLayout android:id="@+id/step_days_row" android:layout_width="match_parent"
         android:layout_height="wrap_content" android:orientation="horizontal"
-        android:layout_marginBottom="8dp" android:visibility="gone"/>
+        android:gravity="center" android:layout_marginBottom="8dp"/>
 
     <!-- Linked habit -->
     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"

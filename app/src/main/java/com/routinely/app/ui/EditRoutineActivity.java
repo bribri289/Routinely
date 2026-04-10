@@ -149,38 +149,43 @@ public class EditRoutineActivity extends AppCompatActivity {
             EditText etName=item.findViewById(R.id.et_step_name); etName.setText(step.name);
             EditText etDesc=item.findViewById(R.id.et_step_desc); etDesc.setText(step.description);
 
-            // Duration: hours, minutes, seconds
-            int h=step.durationSeconds/3600;
-            int m=(step.durationSeconds%3600)/60;
-            int s=step.durationSeconds%60;
-            EditText etH=item.findViewById(R.id.et_step_hours); etH.setText(String.valueOf(h));
-            EditText etM=item.findViewById(R.id.et_step_mins); etM.setText(String.valueOf(m));
-            EditText etS=item.findViewById(R.id.et_step_secs); etS.setText(String.valueOf(s));
+            // Duration stepper: display minutes (rounded)
+            int durMins = Math.max(0, step.durationSeconds / 60);
+            final int[] durHolder = {durMins};
+            TextView tvDur = item.findViewById(R.id.tv_dur_value);
+            tvDur.setText(String.valueOf(durHolder[0]));
+            item.findViewById(R.id.btn_dur_minus).setOnClickListener(v -> {
+                if (durHolder[0] > 0) { durHolder[0]--; tvDur.setText(String.valueOf(durHolder[0])); step.durationSeconds=Math.max(60,durHolder[0]*60); updateEndTimeButton(btnStartRoutineNow); }
+            });
+            item.findViewById(R.id.btn_dur_plus).setOnClickListener(v -> {
+                durHolder[0]++; tvDur.setText(String.valueOf(durHolder[0])); step.durationSeconds=Math.max(60,durHolder[0]*60); updateEndTimeButton(btnStartRoutineNow);
+            });
+            // Store reference so collectStepFields can read it
+            tvDur.setTag(durHolder);
 
-            // Recurrence
-            Spinner recSpin=item.findViewById(R.id.spinner_recurrence);
-            String[] recTypes={"Daily","Weekdays","Weekends","Every N days","Every N weeks","Every N months","Custom days"};
-            ArrayAdapter<String> ra=new ArrayAdapter<>(this,android.R.layout.simple_spinner_item,recTypes);
-            ra.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); recSpin.setAdapter(ra);
-            int recIdx=recurrenceIndex(step.recurrenceType);
-            recSpin.setSelection(recIdx);
+            // Auto-icon: when step name loses focus, suggest icon if emoji field is default
+            etName.setOnFocusChangeListener((v, hasFocus) -> {
+                if (!hasFocus) {
+                    String cur = etEmoji.getText().toString().trim();
+                    if (cur.isEmpty() || cur.equals("✅")) {
+                        String suggested = autoIconForStep(etName.getText().toString());
+                        etEmoji.setText(suggested);
+                    }
+                }
+            });
 
-            // Custom interval
-            EditText etInterval=item.findViewById(R.id.et_step_interval); etInterval.setText(String.valueOf(step.customInterval));
-
-            // Day chips for custom
-            LinearLayout stepDays=item.findViewById(R.id.step_days_row);
+            // Recurrence day chips (always visible)
+            LinearLayout stepDays = item.findViewById(R.id.step_days_row);
             buildStepDayChips(stepDays, step);
 
-            recSpin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
-                public void onItemSelected(AdapterView<?> p,View v,int pos,long id){
-                    stepDays.setVisibility(pos==6?View.VISIBLE:View.GONE);
-                    etInterval.setVisibility((pos==3||pos==4||pos==5)?View.VISIBLE:View.GONE);
-                }
-                public void onNothingSelected(AdapterView<?> p){}
-            });
-            stepDays.setVisibility(recIdx==6?View.VISIBLE:View.GONE);
-            etInterval.setVisibility((recIdx==3||recIdx==4||recIdx==5)?View.VISIBLE:View.GONE);
+            // Quick-select recurrence buttons
+            TextView btnDaily = item.findViewById(R.id.btn_rec_daily);
+            TextView btnWeekdays = item.findViewById(R.id.btn_rec_weekdays);
+            TextView btnWeekends = item.findViewById(R.id.btn_rec_weekends);
+            applyQuickSelect(step, stepDays, btnDaily, btnWeekdays, btnWeekends);
+            btnDaily.setOnClickListener(v -> { java.util.Arrays.fill(step.repeatDays,true); step.recurrenceType="daily"; buildStepDayChips(stepDays,step); applyQuickSelect(step,stepDays,btnDaily,btnWeekdays,btnWeekends); });
+            btnWeekdays.setOnClickListener(v -> { step.repeatDays=new boolean[]{true,true,true,true,true,false,false}; step.recurrenceType="weekdays"; buildStepDayChips(stepDays,step); applyQuickSelect(step,stepDays,btnDaily,btnWeekdays,btnWeekends); });
+            btnWeekends.setOnClickListener(v -> { step.repeatDays=new boolean[]{false,false,false,false,false,true,true}; step.recurrenceType="weekends"; buildStepDayChips(stepDays,step); applyQuickSelect(step,stepDays,btnDaily,btnWeekdays,btnWeekends); });
 
             // Habit link
             Spinner hs=item.findViewById(R.id.spinner_habit);
@@ -202,6 +207,21 @@ public class EditRoutineActivity extends AppCompatActivity {
             stepsContainer.addView(item);
         }
     }
+
+    /** Highlight the active quick-select button based on current repeatDays pattern. */
+    void applyQuickSelect(Models.RoutineStep step, LinearLayout daysRow, TextView btnDaily, TextView btnWeekdays, TextView btnWeekends) {
+        boolean isDaily = step.recurrenceType.equals("daily") || (allTrue(step.repeatDays));
+        boolean isWeekdays = step.recurrenceType.equals("weekdays");
+        boolean isWeekends = step.recurrenceType.equals("weekends");
+        btnDaily.setBackground(getDrawable(isDaily ? R.drawable.chip_bg_active : R.drawable.chip_bg));
+        btnWeekdays.setBackground(getDrawable(isWeekdays ? R.drawable.chip_bg_active : R.drawable.chip_bg));
+        btnWeekends.setBackground(getDrawable(isWeekends ? R.drawable.chip_bg_active : R.drawable.chip_bg));
+        btnDaily.setTextColor(isDaily ? 0xFFFFFFFF : 0xFF6B7280);
+        btnWeekdays.setTextColor(isWeekdays ? 0xFFFFFFFF : 0xFF6B7280);
+        btnWeekends.setTextColor(isWeekends ? 0xFFFFFFFF : 0xFF6B7280);
+    }
+
+    boolean allTrue(boolean[] arr) { for (boolean b : arr) if (!b) return false; return true; }
 
     void buildStepDayChips(LinearLayout row, Models.RoutineStep step){
         row.removeAllViews();
@@ -225,25 +245,47 @@ public class EditRoutineActivity extends AppCompatActivity {
             EditText n=item.findViewById(R.id.et_step_name); if(n!=null&&!n.getText().toString().isEmpty())step.name=n.getText().toString();
             EditText d=item.findViewById(R.id.et_step_desc); if(d!=null)step.description=d.getText().toString();
             EditText em=item.findViewById(R.id.et_step_emoji); if(em!=null&&!em.getText().toString().isEmpty())step.emoji=em.getText().toString();
-            EditText etH=item.findViewById(R.id.et_step_hours);
-            EditText etM=item.findViewById(R.id.et_step_mins);
-            EditText etS=item.findViewById(R.id.et_step_secs);
-            try{
-                int h=etH!=null?Integer.parseInt(etH.getText().toString()):0;
-                int m=etM!=null?Integer.parseInt(etM.getText().toString()):0;
-                int s=etS!=null?Integer.parseInt(etS.getText().toString()):0;
-                step.durationSeconds=h*3600+m*60+s;
-                if(step.durationSeconds<=0)step.durationSeconds=60;
-            }catch(Exception ignored){}
-            Spinner recSpin=item.findViewById(R.id.spinner_recurrence);
-            if(recSpin!=null){
-                String[] types={"daily","weekdays","weekends","every_n_days","every_n_weeks","every_n_months","custom_days"};
-                int pos=recSpin.getSelectedItemPosition();
-                step.recurrenceType=pos<types.length?types[pos]:"daily";
+            // Duration stepper: read minutes from tv_dur_value tag
+            TextView tvDur=item.findViewById(R.id.tv_dur_value);
+            if(tvDur!=null){
+                Object tag=tvDur.getTag();
+                int mins=0;
+                if(tag instanceof int[]) mins=Math.max(0,((int[])tag)[0]);
+                else try{mins=Math.max(0,Integer.parseInt(tvDur.getText().toString()));}catch(Exception ignored){}
+                step.durationSeconds=Math.max(60,mins*60);
             }
-            EditText etInt=item.findViewById(R.id.et_step_interval);
-            try{if(etInt!=null)step.customInterval=Math.max(1,Integer.parseInt(etInt.getText().toString()));}catch(Exception ignored){}
+            // Recurrence type is managed by the day-chip click listeners directly on step.recurrenceType
+            // If none of the quick-select matched, infer from repeatDays
+            if(!step.recurrenceType.equals("daily")&&!step.recurrenceType.equals("weekdays")&&!step.recurrenceType.equals("weekends")){
+                step.recurrenceType="custom_days";
+            }
         }
+    }
+
+    /** Suggest an emoji icon based on common step title keywords. */
+    static String autoIconForStep(String name) {
+        if (name == null) return "✅";
+        String lower = name.toLowerCase();
+        if (lower.contains("brush") || lower.contains("teeth")) return "🪥";
+        if (lower.contains("shower") || lower.contains("bath")) return "🚿";
+        if (lower.contains("wash") || lower.contains("face")) return "🧼";
+        if (lower.contains("skincare") || lower.contains("moistur")) return "✨";
+        if (lower.contains("water") || lower.contains("drink")) return "💧";
+        if (lower.contains("coffee") || lower.contains("tea")) return "☕";
+        if (lower.contains("eat") || lower.contains("breakfast") || lower.contains("lunch") || lower.contains("dinner") || lower.contains("meal") || lower.contains("food")) return "🍽️";
+        if (lower.contains("exercise") || lower.contains("workout") || lower.contains("gym") || lower.contains("run") || lower.contains("jog")) return "🏋️";
+        if (lower.contains("yoga") || lower.contains("stretch") || lower.contains("meditat")) return "🧘";
+        if (lower.contains("walk") || lower.contains("steps")) return "🚶";
+        if (lower.contains("read") || lower.contains("book") || lower.contains("study")) return "📖";
+        if (lower.contains("journal") || lower.contains("write") || lower.contains("diary")) return "📝";
+        if (lower.contains("plan") || lower.contains("review") || lower.contains("goal")) return "📋";
+        if (lower.contains("sleep") || lower.contains("nap") || lower.contains("rest")) return "😴";
+        if (lower.contains("vitamin") || lower.contains("supplement") || lower.contains("pill") || lower.contains("medicine")) return "💊";
+        if (lower.contains("clean") || lower.contains("tidy") || lower.contains("organiz")) return "🧹";
+        if (lower.contains("phone") || lower.contains("email") || lower.contains("message")) return "📱";
+        if (lower.contains("music") || lower.contains("podcast")) return "🎵";
+        if (lower.contains("gratitude") || lower.contains("affirmation")) return "🙏";
+        return "✅";
     }
 
     int recurrenceIndex(String type){
