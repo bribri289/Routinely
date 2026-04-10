@@ -85,7 +85,7 @@ public class RoutinesFragment extends Fragment {
 
     /** Show a step summary card list. Tapping a step opens the edit screen. */
     void showStepSummary(Models.Routine r) {
-        android.app.Dialog dialog = new android.app.Dialog(requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_NoActionBar_FullScreen);
+        android.app.Dialog dialog = new android.app.Dialog(requireContext(), R.style.FullScreenDialog);
         LinearLayout root = new LinearLayout(getContext());
         root.setOrientation(LinearLayout.VERTICAL);
         root.setBackgroundColor(0xFF111827);
