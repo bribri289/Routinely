@@ -50,6 +50,8 @@ public class Models {
         public int customInterval=1;
         public int linkedHabitId=0;
         public int durationMinutes=0; // legacy compat
+        public int bestStreak=0;   // longest consecutive completion streak
+        public int currentStreak=0; // streak currently being tracked
 
         public String getDurationString(){
             int h=durationSeconds/3600;

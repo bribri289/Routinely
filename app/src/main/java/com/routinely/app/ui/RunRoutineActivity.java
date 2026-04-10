@@ -194,7 +194,18 @@ public class RunRoutineActivity extends AppCompatActivity {
         runPanel.setAlpha(0f); runPanel.animate().alpha(1f).setDuration(300).start();
         ((TextView)findViewById(R.id.tv_step_emoji)).setText(step.emoji);
         ((TextView)findViewById(R.id.tv_step_name)).setText(step.name);
+        ((TextView)findViewById(R.id.tv_step_subtitle)).setText(String.format("Step %d of %d", idx+1, routine.steps.size()));
         ((TextView)findViewById(R.id.tv_step_description)).setText(step.description);
+        // Next Up preview
+        View nextUpPanel = findViewById(R.id.next_up_panel);
+        if (idx+1 < routine.steps.size()) {
+            Models.RoutineStep nextStep = routine.steps.get(idx+1);
+            ((TextView)findViewById(R.id.tv_next_up_emoji)).setText(nextStep.emoji);
+            ((TextView)findViewById(R.id.tv_next_up_name)).setText(nextStep.name);
+            nextUpPanel.setVisibility(View.VISIBLE);
+        } else {
+            nextUpPanel.setVisibility(View.GONE);
+        }
         secTotal=step.durationSeconds>0?step.durationSeconds:(step.durationMinutes>0?step.durationMinutes*60:300);
         secLeft=secTotal; paused=false; overtime=false; overtimeSec=0;
         updateTimer(); startTimer();
@@ -279,6 +290,17 @@ public class RunRoutineActivity extends AppCompatActivity {
         overtime=false;
         Models.RoutineStep step=routine.steps.get(curStep);
         if(step.linkedHabitId!=0){Models.Habit h=db.findHabit(step.linkedHabitId);if(h!=null&&!h.completedToday){h.completedToday=true;h.streak++;db.save();}}
+        // Track best streak for this step
+        step.currentStreak++;
+        if(step.currentStreak > step.bestStreak) step.bestStreak = step.currentStreak;
+        // Persist streak update back to the stored routine
+        for(int i=0;i<db.routines.size();i++){
+            if(db.routines.get(i).id==routine.id){
+                for(Models.RoutineStep s:db.routines.get(i).steps){if(s.id==step.id){s.currentStreak=step.currentStreak;s.bestStreak=step.bestStreak;break;}}
+                break;
+            }
+        }
+        db.save();
         startStep(curStep+1);
     }
 
