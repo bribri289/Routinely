@@ -1,7 +1,8 @@
 package com.routinely.app.ui;
 import android.content.Intent;
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.*;
 import android.view.*;
@@ -18,7 +19,14 @@ public class MissionActivity extends AppCompatActivity {
     boolean preview=false;
     int shakeCount=0;
     SensorManager sensorMgr;
-    android.hardware.Sensor accel;
+    Sensor accel;
+    // Shake tracking
+    SensorEventListener shakeListener;
+    float lastX=0,lastY=0,lastZ=0;
+    boolean shakeInitialized=false;
+    static final float SHAKE_THRESHOLD=15f;
+    // Barcode
+    static final int REQ_BARCODE_DISMISS=301;
 
     @SuppressWarnings("unchecked")
     @Override protected void onCreate(Bundle b){
@@ -29,11 +37,25 @@ public class MissionActivity extends AppCompatActivity {
         preview=getIntent().getBooleanExtra("preview",false);
         if(missions==null||missions.isEmpty()){finish();return;}
         sensorMgr=(SensorManager)getSystemService(SENSOR_SERVICE);
-        if(sensorMgr!=null) accel=sensorMgr.getDefaultSensor(android.hardware.Sensor.TYPE_ACCELEROMETER);
+        if(sensorMgr!=null) accel=sensorMgr.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         showMission(0);
     }
 
+    @Override protected void onPause(){
+        super.onPause();
+        if(shakeListener!=null&&sensorMgr!=null) sensorMgr.unregisterListener(shakeListener);
+    }
+
+    @Override protected void onResume(){
+        super.onResume();
+        // Re-register shake listener if we're on a shake mission
+        if(shakeListener!=null&&sensorMgr!=null&&accel!=null)
+            sensorMgr.registerListener(shakeListener,accel,SensorManager.SENSOR_DELAY_GAME);
+    }
+
     void showMission(int idx){
+        // Unregister any previous shake listener when moving between missions
+        if(shakeListener!=null&&sensorMgr!=null){sensorMgr.unregisterListener(shakeListener);shakeListener=null;}
         curIdx=idx;
         if(idx>=missions.size()){onAllComplete();return;}
         Models.Mission m=missions.get(idx);
@@ -195,7 +217,7 @@ public class MissionActivity extends AppCompatActivity {
     }
 
     void buildShake(LinearLayout l, Models.Mission m){
-        shakeCount=0;
+        shakeCount=0; shakeInitialized=false;
         final int target=m.targetCount;
         TextView tvCount=new TextView(this);
         tvCount.setText("0 / "+target);
@@ -205,16 +227,42 @@ public class MissionActivity extends AppCompatActivity {
         lp.setMargins(0,24,0,8); tvCount.setLayoutParams(lp); l.addView(tvCount);
         ProgressBar pb=new ProgressBar(this,null,android.R.attr.progressBarStyleHorizontal); pb.setMax(target); pb.setProgress(0);
         lp=new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,24); lp.setMargins(0,8,0,24); pb.setLayoutParams(lp); l.addView(pb);
-        addLabel(l,"Shake your phone vigorously!\n(Tap button to simulate)");
-        Button sim=new Button(this); sim.setText("Shake! (tap to simulate)"); sim.setBackground(getDrawable(R.drawable.btn_primary_bg)); sim.setTextColor(0xFFFFFFFF);
-        lp=new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,120); lp.setMargins(0,8,0,0); sim.setLayoutParams(lp);
-        sim.setOnClickListener(v->{
-            shakeCount=Math.min(shakeCount+3,target);
-            tvCount.setText(shakeCount+" / "+target);
-            pb.setProgress(shakeCount);
-            if(shakeCount>=target) showMission(curIdx+1);
-        });
-        l.addView(sim);
+        addLabel(l,"Shake your phone vigorously!");
+        if(accel!=null){
+            // Real accelerometer shake detection
+            if(shakeListener!=null) sensorMgr.unregisterListener(shakeListener);
+            shakeListener=new SensorEventListener(){
+                public void onSensorChanged(SensorEvent e){
+                    if(!shakeInitialized){lastX=e.values[0];lastY=e.values[1];lastZ=e.values[2];shakeInitialized=true;return;}
+                    float dx=Math.abs(e.values[0]-lastX);
+                    float dy=Math.abs(e.values[1]-lastY);
+                    float dz=Math.abs(e.values[2]-lastZ);
+                    if(dx+dy+dz>SHAKE_THRESHOLD){
+                        shakeCount=Math.min(shakeCount+1,target);
+                        runOnUiThread(()->{
+                            tvCount.setText(shakeCount+" / "+target);
+                            pb.setProgress(shakeCount);
+                            if(shakeCount>=target){sensorMgr.unregisterListener(shakeListener);showMission(curIdx+1);}
+                        });
+                    }
+                    lastX=e.values[0]; lastY=e.values[1]; lastZ=e.values[2];
+                }
+                public void onAccuracyChanged(Sensor s,int a){}
+            };
+            sensorMgr.registerListener(shakeListener,accel,SensorManager.SENSOR_DELAY_GAME);
+        } else {
+            // Fallback simulation button if no accelerometer
+            addLabel(l,"(No accelerometer detected — tap button)");
+            Button sim=new Button(this); sim.setText("Shake! (tap to simulate)"); sim.setBackground(getDrawable(R.drawable.btn_primary_bg)); sim.setTextColor(0xFFFFFFFF);
+            lp=new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,120); lp.setMargins(0,8,0,0); sim.setLayoutParams(lp);
+            sim.setOnClickListener(v->{
+                shakeCount=Math.min(shakeCount+3,target);
+                tvCount.setText(shakeCount+" / "+target);
+                pb.setProgress(shakeCount);
+                if(shakeCount>=target) showMission(curIdx+1);
+            });
+            l.addView(sim);
+        }
     }
 
     void buildCount(LinearLayout l, Models.Mission m){
@@ -234,12 +282,12 @@ public class MissionActivity extends AppCompatActivity {
         String walkTo=m.barcodeLabel.isEmpty()?"the registered item":m.barcodeLabel;
         addLabel(l,"Walk to: "+walkTo);
         String regText=m.registeredBarcode.isEmpty()
-            ?"No specific barcode registered — any scan accepted"
-            :"Target: "+m.barcodeLabel;
+            ?"No specific barcode registered — any scan will be accepted"
+            :"Target barcode: "+m.barcodeLabel;
         addLabel(l,regText);
         // Status
         TextView tvStatus=new TextView(this);
-        tvStatus.setText("Waiting for scan...");
+        tvStatus.setText("Tap the button to open the scanner");
         tvStatus.setTextColor(0xFF9CA3AF);
         tvStatus.setTextSize(14);
         tvStatus.setGravity(android.view.Gravity.CENTER);
@@ -252,42 +300,15 @@ public class MissionActivity extends AppCompatActivity {
         LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,130);
         lp.setMargins(0,16,0,0); btn.setLayoutParams(lp);
         btn.setOnClickListener(v->{
-            // Try ZXing barcode scanner
-            Intent scanIntent=new Intent("com.google.zxing.client.android.SCAN");
-            scanIntent.putExtra("SCAN_MODE","QR_CODE_MODE,PRODUCT_MODE,CODE_128,CODE_39,EAN_13,EAN_8,DATA_MATRIX");
-            try {
-                startActivityForResult(scanIntent, 301);
-            } catch(android.content.ActivityNotFoundException e) {
-                // ZXing not installed - use camera and manual entry fallback
-                tvStatus.setText("Install Barcode Scanner app, or use manual entry below");
-                tvStatus.setTextColor(0xFFF59E0B);
-                // Show manual entry as fallback
-                EditText et=new EditText(this);
-                et.setHint("Type barcode manually");
-                et.setTextColor(0xFFFFFFFF);
-                et.setHintTextColor(0xFF6B7280);
-                et.setBackground(getDrawable(R.drawable.input_bg));
-                et.setPadding(20,14,20,14);
-                LinearLayout.LayoutParams elp=new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
-                elp.setMargins(0,8,0,8); et.setLayoutParams(elp);
-                l.addView(et);
-                Button confirmBtn=new Button(this);
-                confirmBtn.setText("Confirm");
-                confirmBtn.setBackground(getDrawable(R.drawable.btn_primary_bg));
-                confirmBtn.setTextColor(0xFFFFFFFF);
-                LinearLayout.LayoutParams clp=new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,120);
-                clp.setMargins(0,4,0,0); confirmBtn.setLayoutParams(clp);
-                confirmBtn.setOnClickListener(cv->{
-                    String code=et.getText().toString().trim();
-                    if(m.registeredBarcode.isEmpty()||code.equals(m.registeredBarcode)) showMission(curIdx+1);
-                    else Toast.makeText(this,"Wrong code! Try again.",Toast.LENGTH_SHORT).show();
-                });
-                l.addView(confirmBtn);
-                btn.setVisibility(android.view.View.GONE);
+            Intent scanIntent=new Intent(this,BarcodeScanActivity.class);
+            scanIntent.putExtra(BarcodeScanActivity.EXTRA_PROMPT,
+                m.barcodeLabel.isEmpty()?"Scan the registered item":"Scan: "+m.barcodeLabel);
+            if(!m.registeredBarcode.isEmpty()){
+                scanIntent.putExtra(BarcodeScanActivity.EXTRA_TARGET_VALUE,m.registeredBarcode);
             }
+            startActivityForResult(scanIntent,REQ_BARCODE_DISMISS);
         });
         l.addView(btn);
-        // Store reference for result
         barcodeTarget=m.registeredBarcode;
     }
 
@@ -310,16 +331,13 @@ public class MissionActivity extends AppCompatActivity {
         if(req==201&&res==RESULT_OK){
             // Photo taken
             showMission(curIdx+1);
-        } else if(req==301&&res==RESULT_OK&&data!=null){
-            // Barcode scanned
-            String scanned=data.getStringExtra("SCAN_RESULT");
+        } else if(req==REQ_BARCODE_DISMISS&&res==RESULT_OK&&data!=null){
+            // CameraX + ML Kit barcode result
+            String scanned=data.getStringExtra(BarcodeScanActivity.EXTRA_BARCODE_VALUE);
             if(scanned!=null){
-                if(barcodeTarget==null||barcodeTarget.isEmpty()||scanned.equals(barcodeTarget)){
-                    Toast.makeText(this,"Barcode scanned! ✓",Toast.LENGTH_SHORT).show();
-                    showMission(curIdx+1);
-                } else {
-                    Toast.makeText(this,"Wrong barcode! Walk to the registered item.",Toast.LENGTH_LONG).show();
-                }
+                // If a target was set, BarcodeScanActivity already validated it before returning OK
+                Toast.makeText(this,"Barcode matched! ✓",Toast.LENGTH_SHORT).show();
+                showMission(curIdx+1);
             }
         }
     }

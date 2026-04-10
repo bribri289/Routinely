@@ -8,6 +8,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.routinely.app.R;
 import com.routinely.app.data.*;
 import com.routinely.app.receivers.AlarmReceiver;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AlarmFragment extends Fragment {
     @Override public View onCreateView(LayoutInflater inf, ViewGroup c, Bundle b) {
@@ -25,27 +27,25 @@ public class AlarmFragment extends Fragment {
         LinearLayout list=v.findViewById(R.id.alarm_list); list.removeAllViews();
         LayoutInflater inf=LayoutInflater.from(getContext());
         if(db.alarms.isEmpty()){
-            buildEmptyCard(list); return;
+            buildEmptyState(list); return;
         }
-        for(Models.Alarm a:db.alarms){
+        // Sort: enabled alarms first, then disabled
+        List<Models.Alarm> sorted=new ArrayList<>(db.alarms);
+        sorted.sort((a1,a2)->Boolean.compare(!a1.enabled,!a2.enabled));
+        for(Models.Alarm a:sorted){
             View item=inf.inflate(R.layout.item_alarm,list,false);
             bindAlarmItem(item,a,v,db);
             list.addView(item);
         }
     }
 
-    void buildEmptyCard(LinearLayout list){
-        // Show styled empty-state card with day initials + 5:45 AM placeholder
-        View item=LayoutInflater.from(getContext()).inflate(R.layout.item_alarm,list,false);
-        // Days dots
-        buildDayDots(item.findViewById(R.id.days_dots_row),new boolean[]{false,false,false,false,false,true,true});
-        ((TextView)item.findViewById(R.id.tv_time)).setText("5:45 AM");
-        ((TextView)item.findViewById(R.id.tv_label)).setText("No upcoming alarms");
-        ((TextView)item.findViewById(R.id.tv_days)).setText("");
-        Switch sw=item.findViewById(R.id.sw_enabled); sw.setChecked(false); sw.setEnabled(false);
-        item.findViewById(R.id.btn_overflow).setVisibility(View.INVISIBLE);
-        item.setOnClickListener(x->startActivity(new Intent(getActivity(),EditAlarmActivity.class)));
-        list.addView(item);
+    void buildEmptyState(LinearLayout list){
+        TextView tv=new TextView(getContext());
+        tv.setText("No alarms yet\nTap + to add one");
+        tv.setTextColor(0xFF9CA3AF); tv.setTextSize(16);
+        tv.setGravity(android.view.Gravity.CENTER);
+        tv.setPadding(24,80,24,80);
+        list.addView(tv);
     }
 
     void bindAlarmItem(View item, Models.Alarm a, View fragmentView, AppData db){
