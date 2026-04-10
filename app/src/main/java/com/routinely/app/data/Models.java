@@ -78,6 +78,12 @@ public class Models {
         public List<int[]> reminderTimes=new ArrayList<>(); // each int[2] = {hour, minute}
         public List<HabitLog> logs=new ArrayList<>();
         public String createdDate="";
+        // Identity template
+        public String identityWhen="";
+        public String identityWhere="";
+        public String identityResult="";
+        // Goal type: 0=reps, 1=measurement, 2=time
+        public int goalType=0;
 
         public List<int[]> getEffectiveReminderTimes(){
             if(reminderTimes!=null&&!reminderTimes.isEmpty()) return reminderTimes;
