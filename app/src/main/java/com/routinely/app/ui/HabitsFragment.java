@@ -466,13 +466,6 @@ public class HabitsFragment extends Fragment {
         container.removeAllViews();
         container.setPadding(dpToPx(16), dpToPx(16), dpToPx(16), dpToPx(16));
 
-        // Advance daily lesson if needed
-        String today = todayStr();
-        if (!today.equals(db.dailyLessonDate)) {
-            if (!db.dailyLessonDate.isEmpty()) db.dailyLessonIndex++;
-            db.dailyLessonDate = today;
-            db.save();
-        }
         int lessonIdx = db.dailyLessonIndex % MindsetData.DAILY_LESSONS.length;
         String lessonTitle = MindsetData.DAILY_LESSONS[lessonIdx][0];
         String lessonBody = MindsetData.DAILY_LESSONS[lessonIdx][1];
@@ -531,7 +524,12 @@ public class HabitsFragment extends Fragment {
         tvTap.setTextSize(13);
         card.addView(tvTap);
 
-        card.setOnClickListener(x -> showMindsetReading(lessonTitle, lessonBody));
+        card.setOnClickListener(x -> showMindsetReading(lessonTitle, lessonBody, () -> {
+            db.dailyLessonIndex++;
+            db.save();
+            container.setTag(null);
+            buildMindsetSection(container, db);
+        }));
         container.addView(card);
 
         // Library / Favorites tabs
@@ -681,7 +679,16 @@ public class HabitsFragment extends Fragment {
                     artCard.addView(tvTime);
                 }
 
-                artCard.setOnClickListener(x -> showMindsetReading(artTitle, artBody));
+                // Tappable "Read ›" call-to-action
+                TextView tvReadCta = new TextView(getContext());
+                tvReadCta.setText("Read ›");
+                tvReadCta.setTextColor(0xFF6755C8);
+                tvReadCta.setTextSize(12);
+                tvReadCta.setTypeface(null, Typeface.BOLD);
+                tvReadCta.setPadding(0, dpToPx(8), 0, 0);
+                artCard.addView(tvReadCta);
+
+                artCard.setOnClickListener(x -> showMindsetReading(artTitle, artBody, null));
                 container.addView(artCard);
             }
         }
@@ -741,12 +748,21 @@ public class HabitsFragment extends Fragment {
             titleRow.addView(favBtn);
             artCard.addView(titleRow);
 
-            artCard.setOnClickListener(x -> { if (body != null) showMindsetReading(favTitle, body); });
+            // Tappable "Read ›" call-to-action
+            TextView tvReadCta = new TextView(getContext());
+            tvReadCta.setText("Read ›");
+            tvReadCta.setTextColor(0xFF6755C8);
+            tvReadCta.setTextSize(12);
+            tvReadCta.setTypeface(null, Typeface.BOLD);
+            tvReadCta.setPadding(0, dpToPx(8), 0, 0);
+            artCard.addView(tvReadCta);
+
+            artCard.setOnClickListener(x -> { if (body != null) showMindsetReading(favTitle, body, null); });
             container.addView(artCard);
         }
     }
 
-    void showMindsetReading(String title, String body) {
+    void showMindsetReading(String title, String body, Runnable onMarkAsRead) {
         android.app.Dialog dialog = new android.app.Dialog(requireContext(), android.R.style.Theme_Material_Light_NoActionBar_Fullscreen);
         LinearLayout root = new LinearLayout(getContext());
         root.setOrientation(LinearLayout.VERTICAL);
@@ -811,6 +827,31 @@ public class HabitsFragment extends Fragment {
 
         scroll.addView(content);
         root.addView(scroll);
+
+        // "Mark as Read" button — only shown for the daily lesson
+        if (onMarkAsRead != null) {
+            View bottomDivider = new View(getContext());
+            bottomDivider.setBackgroundColor(0xFFE5DCC8);
+            bottomDivider.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 1));
+            root.addView(bottomDivider);
+
+            TextView btnMark = new TextView(getContext());
+            btnMark.setText("✓  Mark as Read");
+            btnMark.setTextColor(0xFFFFFFFF);
+            btnMark.setTextSize(15);
+            btnMark.setTypeface(null, Typeface.BOLD);
+            btnMark.setGravity(android.view.Gravity.CENTER);
+            btnMark.setBackgroundResource(R.drawable.chip_bg_active);
+            LinearLayout.LayoutParams btnLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dpToPx(56));
+            btnLp.setMargins(dpToPx(16), dpToPx(12), dpToPx(16), dpToPx(24));
+            btnMark.setLayoutParams(btnLp);
+            btnMark.setOnClickListener(x -> {
+                dialog.dismiss();
+                onMarkAsRead.run();
+            });
+            root.addView(btnMark);
+        }
+
         dialog.setContentView(root);
         dialog.show();
     }
