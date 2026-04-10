@@ -8,8 +8,7 @@
             android:background="@drawable/card_bg"
             android:orientation="vertical"
             android:padding="16dp"
-            android:layout_marginBottom="20dp"
-            android:alpha="0">
+            android:layout_marginBottom="20dp">
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:text="✨ TODAY'S MINDSET"
                 android:textColor="@color/primary" android:textSize="10sp"

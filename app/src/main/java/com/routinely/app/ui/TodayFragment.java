@@ -3,7 +3,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.*;
-import android.view.animation.AlphaAnimation;
 import android.widget.*;
 import androidx.fragment.app.Fragment;
 import com.routinely.app.R;
@@ -65,15 +64,10 @@ public class TodayFragment extends Fragment {
         String message = MotivationalMessages.MESSAGES[msgIdx];
         TextView tvMsg = v.findViewById(R.id.tv_motivational_message);
         tvMsg.setText(message);
-        // Fade-in animation: view starts at alpha=0 and animates to alpha=1.
-        // setFillAfter(true) preserves the animation's final state (alpha=1) after it completes.
+        // Fade-in animation using ViewPropertyAnimator which updates the actual alpha property.
         View card = v.findViewById(R.id.card_motivational);
         card.setAlpha(0f);
-        AlphaAnimation fadeIn = new AlphaAnimation(0f, 1f);
-        fadeIn.setDuration(800);
-        fadeIn.setStartOffset(300);
-        fadeIn.setFillAfter(true);
-        card.startAnimation(fadeIn);
+        card.animate().alpha(1f).setDuration(800).setStartDelay(300).start();
     }
 
     void buildHabitsStrip(View v, AppData db) {
