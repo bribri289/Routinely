@@ -20,6 +20,9 @@ public class AppData {
     public String userName = "";
     public String userEmail = "";
     public int nextId = 1;
+    public int dailyLessonIndex = 0;
+    public String dailyLessonDate = "";
+    public List<String> favoriteLessons = new ArrayList<>();
 
     private AppData(Context ctx) {
         prefs = ctx.getApplicationContext().getSharedPreferences(PREFS, Context.MODE_PRIVATE);
@@ -42,6 +45,9 @@ public class AppData {
             .putString("userName", userName)
             .putString("userEmail", userEmail)
             .putInt("nextId", nextId)
+            .putInt("dailyLessonIndex", dailyLessonIndex)
+            .putString("dailyLessonDate", dailyLessonDate)
+            .putString("favoriteLessons", gson.toJson(favoriteLessons))
             .apply();
     }
 
@@ -50,17 +56,23 @@ public class AppData {
         String hj=prefs.getString("habits",null);
         String aj=prefs.getString("alarms",null);
         String acj=prefs.getString("activities",null);
+        String flj=prefs.getString("favoriteLessons",null);
         Type rl=new TypeToken<List<Models.Routine>>(){}.getType();
         Type hl=new TypeToken<List<Models.Habit>>(){}.getType();
         Type al=new TypeToken<List<Models.Alarm>>(){}.getType();
         Type acl=new TypeToken<List<Models.RecentActivity>>(){}.getType();
+        Type fll=new TypeToken<List<String>>(){}.getType();
         if(rj!=null) routines=gson.fromJson(rj,rl);
         if(hj!=null) habits=gson.fromJson(hj,hl);
         if(aj!=null) alarms=gson.fromJson(aj,al);
         if(acj!=null) activities=gson.fromJson(acj,acl);
+        if(flj!=null) favoriteLessons=gson.fromJson(flj,fll);
+        if(favoriteLessons==null) favoriteLessons=new ArrayList<>();
         userName=prefs.getString("userName","");
         userEmail=prefs.getString("userEmail","");
         nextId=prefs.getInt("nextId",1);
+        dailyLessonIndex=prefs.getInt("dailyLessonIndex",0);
+        dailyLessonDate=prefs.getString("dailyLessonDate","");
     }
 
     public Models.Routine findRoutine(int id){for(Models.Routine r:routines)if(r.id==id)return r;return null;}

@@ -2,29 +2,184 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:orientation="vertical" android:background="@color/bg">
-    <LinearLayout android:layout_width="match_parent" android:layout_height="56dp" android:orientation="horizontal" android:gravity="center_vertical" android:padding="12dp" android:background="@color/bg2">
-        <Button android:id="@+id/btn_back" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="← Cancel" android:background="@android:color/transparent" android:textColor="@color/text_secondary" android:textSize="14sp"/>
-        <TextView android:id="@+id/tv_title" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:textColor="@color/text_primary" android:textSize="17sp" android:fontFamily="sans-serif-medium" android:gravity="center"/>
-        <Button android:id="@+id/btn_save" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Save" android:background="@android:color/transparent" android:textColor="@color/primary" android:textSize="15sp"/>
+
+    <!-- Header -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="56dp"
+        android:orientation="horizontal" android:gravity="center_vertical"
+        android:padding="12dp" android:background="@color/bg2">
+        <Button android:id="@+id/btn_back" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:text="\u2190 Cancel"
+            android:background="@android:color/transparent" android:textColor="@color/text_secondary"
+            android:textSize="14sp"/>
+        <TextView android:id="@+id/tv_title" android:layout_width="0dp"
+            android:layout_height="wrap_content" android:layout_weight="1"
+            android:textColor="@color/text_primary" android:textSize="17sp"
+            android:fontFamily="sans-serif-medium" android:gravity="center"/>
+        <Button android:id="@+id/btn_save" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:text="Save"
+            android:background="@android:color/transparent" android:textColor="@color/primary"
+            android:textSize="15sp"/>
     </LinearLayout>
+
     <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="20dp">
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="16dp">
-                <EditText android:id="@+id/et_emoji" android:layout_width="56dp" android:layout_height="52dp" android:background="@drawable/input_bg" android:textSize="24sp" android:gravity="center" android:padding="4dp" android:layout_marginEnd="10dp"/>
-                <EditText android:id="@+id/et_name" android:layout_width="0dp" android:layout_height="52dp" android:layout_weight="1" android:hint="Habit name" android:textColor="@color/text_primary" android:textColorHint="@color/text_muted" android:background="@drawable/input_bg" android:padding="14dp" android:textSize="15sp"/>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:padding="20dp">
+
+            <!-- Emoji + Name row -->
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:layout_marginBottom="16dp">
+                <EditText android:id="@+id/et_emoji" android:layout_width="56dp"
+                    android:layout_height="52dp" android:background="@drawable/input_bg"
+                    android:textSize="24sp" android:gravity="center" android:padding="4dp"
+                    android:layout_marginEnd="10dp"/>
+                <EditText android:id="@+id/et_name" android:layout_width="0dp"
+                    android:layout_height="52dp" android:layout_weight="1"
+                    android:hint="Habit name" android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_muted" android:background="@drawable/input_bg"
+                    android:padding="14dp" android:textSize="15sp"/>
             </LinearLayout>
-            <EditText android:id="@+id/et_category" android:layout_width="match_parent" android:layout_height="48dp" android:hint="Category (e.g. Health, Mind, Body)" android:textColor="@color/text_primary" android:textColorHint="@color/text_muted" android:background="@drawable/input_bg" android:padding="14dp" android:textSize="14sp" android:layout_marginBottom="16dp"/>
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="REPEAT DAYS" android:textColor="@color/text_muted" android:textSize="11sp" android:layout_marginBottom="8dp"/>
-            <LinearLayout android:id="@+id/days_row" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="16dp"/>
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="REMINDER TIME" android:textColor="@color/text_muted" android:textSize="11sp" android:layout_marginBottom="8dp"/>
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp">
-                <Switch android:id="@+id/sw_reminder" android:layout_width="wrap_content" android:layout_height="wrap_content" android:thumbTint="@color/primary" android:trackTint="#3F3F46" android:layout_marginEnd="12dp"/>
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Enable reminder" android:textColor="@color/text_secondary" android:textSize="14sp"/>
+
+            <!-- Identity-Based Habit Template -->
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="IDENTITY STATEMENT" android:textColor="@color/text_muted"
+                android:textSize="11sp" android:layout_marginBottom="8dp"/>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:background="@drawable/card_bg"
+                android:padding="14dp" android:layout_marginBottom="16dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:layout_marginBottom="8dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="when  " android:textColor="@color/text_secondary" android:textSize="13sp"/>
+                    <EditText android:id="@+id/et_identity_when" android:layout_width="0dp"
+                        android:layout_height="38dp" android:layout_weight="1"
+                        android:hint="e.g. I wake up" android:textColor="@color/text_primary"
+                        android:textColorHint="@color/text_muted" android:background="@drawable/input_bg"
+                        android:padding="8dp" android:textSize="13sp"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:layout_marginBottom="8dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="where " android:textColor="@color/text_secondary" android:textSize="13sp"/>
+                    <EditText android:id="@+id/et_identity_where" android:layout_width="0dp"
+                        android:layout_height="38dp" android:layout_weight="1"
+                        android:hint="e.g. at my desk" android:textColor="@color/text_primary"
+                        android:textColorHint="@color/text_muted" android:background="@drawable/input_bg"
+                        android:padding="8dp" android:textSize="13sp"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="so that " android:textColor="@color/text_secondary" android:textSize="13sp"/>
+                    <EditText android:id="@+id/et_identity_result" android:layout_width="0dp"
+                        android:layout_height="38dp" android:layout_weight="1"
+                        android:hint="e.g. I feel energized" android:textColor="@color/text_primary"
+                        android:textColorHint="@color/text_muted" android:background="@drawable/input_bg"
+                        android:padding="8dp" android:textSize="13sp"/>
+                </LinearLayout>
             </LinearLayout>
-            <TimePicker android:id="@+id/time_picker" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp" android:timePickerMode="spinner"/>
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="LINK TO ROUTINE" android:textColor="@color/text_muted" android:textSize="11sp" android:layout_marginBottom="8dp"/>
-            <Spinner android:id="@+id/spinner_routine" android:layout_width="match_parent" android:layout_height="48dp" android:background="@drawable/input_bg" android:popupBackground="@color/card2" android:layout_marginBottom="20dp"/>
-            <Button android:id="@+id/btn_delete" android:layout_width="match_parent" android:layout_height="52dp" android:text="🗑 Delete Habit" android:background="@drawable/btn_danger_bg" android:textColor="@color/text_primary" android:textSize="14sp"/>
+
+            <!-- Recurrence Section -->
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="REPEAT DAYS" android:textColor="@color/text_muted"
+                android:textSize="11sp" android:layout_marginBottom="8dp"/>
+
+            <!-- Quick selects -->
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:layout_marginBottom="8dp">
+                <TextView android:id="@+id/btn_daily" android:layout_width="wrap_content"
+                    android:layout_height="32dp" android:text="Daily"
+                    android:textColor="@color/text_primary" android:textSize="12sp"
+                    android:gravity="center" android:background="@drawable/chip_bg"
+                    android:paddingStart="14dp" android:paddingEnd="14dp"
+                    android:layout_marginEnd="8dp"/>
+                <TextView android:id="@+id/btn_weekdays" android:layout_width="wrap_content"
+                    android:layout_height="32dp" android:text="Weekdays"
+                    android:textColor="@color/text_primary" android:textSize="12sp"
+                    android:gravity="center" android:background="@drawable/chip_bg"
+                    android:paddingStart="14dp" android:paddingEnd="14dp"
+                    android:layout_marginEnd="8dp"/>
+                <TextView android:id="@+id/btn_weekends" android:layout_width="wrap_content"
+                    android:layout_height="32dp" android:text="Weekends"
+                    android:textColor="@color/text_primary" android:textSize="12sp"
+                    android:gravity="center" android:background="@drawable/chip_bg"
+                    android:paddingStart="14dp" android:paddingEnd="14dp"/>
+            </LinearLayout>
+
+            <!-- Day chips S M T W T F S -->
+            <LinearLayout android:id="@+id/days_row" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:orientation="horizontal"
+                android:layout_marginBottom="20dp"/>
+
+            <!-- Reminders -->
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:text="REMINDERS"
+                    android:textColor="@color/text_muted" android:textSize="11sp"/>
+                <Switch android:id="@+id/sw_reminder" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:thumbTint="@color/primary"
+                    android:trackTint="#3F3F46"/>
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/reminders_section" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:orientation="vertical"
+                android:background="@drawable/card_bg" android:padding="14dp"
+                android:layout_marginBottom="16dp" android:visibility="gone">
+                <LinearLayout android:id="@+id/reminders_list" android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:orientation="vertical"/>
+                <TextView android:id="@+id/btn_add_reminder" android:layout_width="match_parent"
+                    android:layout_height="40dp" android:text="+ Add Reminder"
+                    android:textColor="@color/primary" android:textSize="14sp"
+                    android:gravity="center" android:background="@drawable/chip_bg"
+                    android:layout_marginTop="8dp" android:fontFamily="sans-serif-medium"/>
+            </LinearLayout>
+
+            <!-- Link to Routine -->
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="LINK TO ROUTINE" android:textColor="@color/text_muted"
+                android:textSize="11sp" android:layout_marginBottom="8dp"/>
+            <Spinner android:id="@+id/spinner_routine" android:layout_width="match_parent"
+                android:layout_height="48dp" android:background="@drawable/input_bg"
+                android:popupBackground="@color/card2" android:layout_marginBottom="20dp"/>
+
+            <!-- Daily Goal Type -->
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="DAILY GOAL TYPE" android:textColor="@color/text_muted"
+                android:textSize="11sp" android:layout_marginBottom="8dp"/>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:layout_marginBottom="8dp">
+                <TextView android:id="@+id/btn_goal_reps" android:layout_width="0dp"
+                    android:layout_height="36dp" android:layout_weight="1" android:text="Reps"
+                    android:textColor="#FFFFFF" android:textSize="13sp" android:gravity="center"
+                    android:background="@drawable/chip_bg_active" android:layout_marginEnd="6dp"/>
+                <TextView android:id="@+id/btn_goal_measure" android:layout_width="0dp"
+                    android:layout_height="36dp" android:layout_weight="1" android:text="Measure"
+                    android:textColor="@color/text_primary" android:textSize="13sp" android:gravity="center"
+                    android:background="@drawable/chip_bg" android:layout_marginEnd="6dp"/>
+                <TextView android:id="@+id/btn_goal_time" android:layout_width="0dp"
+                    android:layout_height="36dp" android:layout_weight="1" android:text="Time"
+                    android:textColor="@color/text_primary" android:textSize="13sp" android:gravity="center"
+                    android:background="@drawable/chip_bg"/>
+            </LinearLayout>
+            <TextView android:id="@+id/tv_goal_label" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:textColor="@color/text_muted"
+                android:textSize="12sp" android:layout_marginBottom="8dp"
+                android:text="Reps (times per day)"/>
+            <EditText android:id="@+id/et_daily_target" android:layout_width="120dp"
+                android:layout_height="48dp" android:hint="1"
+                android:textColor="@color/text_primary" android:textColorHint="@color/text_muted"
+                android:background="@drawable/input_bg" android:padding="14dp"
+                android:textSize="15sp" android:inputType="number"
+                android:layout_marginBottom="24dp"/>
+
+            <!-- Delete -->
+            <Button android:id="@+id/btn_delete" android:layout_width="match_parent"
+                android:layout_height="52dp" android:text="\uD83D\uDDD1 Delete Habit"
+                android:background="@drawable/btn_danger_bg" android:textColor="@color/text_primary"
+                android:textSize="14sp"/>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
