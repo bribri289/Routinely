@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="#000000">
+
+    <!-- CameraX PreviewView -->
+    <androidx.camera.view.PreviewView
+        android:id="@+id/camera_preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <!-- Scanning overlay -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <!-- Instructions at top -->
+        <TextView
+            android:id="@+id/tv_scan_instruction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Point camera at barcode"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:background="#88000000"
+            android:padding="12dp"
+            android:layout_marginBottom="32dp"/>
+
+        <!-- Scan frame box -->
+        <FrameLayout
+            android:layout_width="280dp"
+            android:layout_height="200dp">
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/barcode_scan_frame"/>
+        </FrameLayout>
+
+        <!-- Status text -->
+        <TextView
+            android:id="@+id/tv_scan_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Scanning..."
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:background="#88000000"
+            android:padding="10dp"
+            android:layout_marginTop="24dp"/>
+    </LinearLayout>
+
+    <!-- Bottom controls -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal"
+        android:padding="24dp"
+        android:background="#88000000"
+        android:gravity="center">
+
+        <!-- Torch toggle -->
+        <Button
+            android:id="@+id/btn_torch"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="🔦 Torch"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/btn_secondary_bg"
+            android:layout_marginEnd="16dp"/>
+
+        <!-- Cancel -->
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="48dp"
+            android:text="Cancel"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/btn_secondary_bg"/>
+    </LinearLayout>
+
+</FrameLayout>

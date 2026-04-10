@@ -8,10 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.routinely.app.R;
 import com.routinely.app.data.*;
-import com.routinely.app.receivers.AlarmReceiver;
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
-import java.util.*;
+import com.routinely.app.receivers.AlarmReceiver;import java.util.*;
 
 public class EditAlarmActivity extends AppCompatActivity {
     AppData db; Models.Alarm alarm; boolean isNew=false;
@@ -348,12 +345,15 @@ public class EditAlarmActivity extends AppCompatActivity {
                 ImageView iv=findViewById(R.id.iv_wallpaper_preview); if(iv!=null){iv.setImageURI(null);iv.setVisibility(View.GONE);}
             }
         }
-        com.google.zxing.integration.android.IntentResult scanResult=
-            com.google.zxing.integration.android.IntentIntegrator.parseActivityResult(req,res,data);
-        if(scanResult!=null&&scanResult.getContents()!=null&&pendingBarcodeMission!=null){
-            pendingBarcodeMission.registeredBarcode=scanResult.getContents();
-            if(pendingBarcodeTv!=null){pendingBarcodeTv.setText("Registered: "+scanResult.getContents());pendingBarcodeTv.setTextColor(0xFF10B981);}
-            Toast.makeText(this,"Barcode registered!",Toast.LENGTH_SHORT).show();
+        // CameraX + ML Kit barcode registration (request 501)
+        if(req==501&&res==RESULT_OK&&data!=null&&pendingBarcodeMission!=null){
+            String scanned=data.getStringExtra(BarcodeScanActivity.EXTRA_BARCODE_VALUE);
+            if(scanned!=null&&!scanned.isEmpty()){
+                pendingBarcodeMission.registeredBarcode=scanned;
+                String label=pendingBarcodeMission.barcodeLabel.isEmpty()?scanned:pendingBarcodeMission.barcodeLabel;
+                if(pendingBarcodeTv!=null){pendingBarcodeTv.setText("✓ Registered: "+label);pendingBarcodeTv.setTextColor(0xFF10B981);}
+                Toast.makeText(this,"Barcode registered!",Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -385,20 +385,15 @@ public class EditAlarmActivity extends AppCompatActivity {
         EditText et=new EditText(this); et.setHint("Label"); et.setTextColor(0xFFFFFFFF); et.setHintTextColor(0xFF6B7280); et.setBackground(getDrawable(R.drawable.input_bg)); et.setPadding(20,14,20,14); et.setText(m.barcodeLabel);
         et.addTextChangedListener(new android.text.TextWatcher(){public void beforeTextChanged(CharSequence s,int a,int b,int c){}public void onTextChanged(CharSequence s,int a,int b,int c){m.barcodeLabel=s.toString();}public void afterTextChanged(android.text.Editable s){}});
         LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT); lp.setMargins(0,4,0,8); et.setLayoutParams(lp); l.addView(et);
-        TextView tvReg=new TextView(this); tvReg.setText(m.registeredBarcode.isEmpty()?"Not registered":"Registered"); tvReg.setTextColor(m.registeredBarcode.isEmpty()?0xFFF59E0B:0xFF10B981); tvReg.setTextSize(12); l.addView(tvReg);
-        Button btn=new Button(this); btn.setText("Scan to register"); btn.setBackground(getDrawable(R.drawable.chip_bg_active)); btn.setTextColor(0xFFFFFFFF); btn.setTextSize(12);
+        TextView tvReg=new TextView(this);
+        tvReg.setText(m.registeredBarcode.isEmpty()?"Not registered yet":"✓ Registered: "+m.barcodeLabel);
+        tvReg.setTextColor(m.registeredBarcode.isEmpty()?0xFFF59E0B:0xFF10B981); tvReg.setTextSize(12); l.addView(tvReg);
+        Button btn=new Button(this); btn.setText("📷 Scan to Register"); btn.setBackground(getDrawable(R.drawable.btn_primary_bg)); btn.setTextColor(0xFFFFFFFF); btn.setTextSize(12);
         btn.setOnClickListener(v->{
-            try{
-                pendingBarcodeMission=m; pendingBarcodeTv=tvReg;
-                Intent scanIntent=new Intent(this,com.journeyapps.barcodescanner.CaptureActivity.class);
-                scanIntent.putExtra("PROMPT_MESSAGE","Scan item barcode to register");
-                startActivityForResult(scanIntent,501);
-            }catch(Exception e){
-                android.app.AlertDialog.Builder d=new android.app.AlertDialog.Builder(this);
-                d.setTitle("Register barcode"); EditText input=new EditText(this); input.setHint("Enter barcode value");
-                d.setView(input); d.setPositiveButton("Register",(dlg,w)->{m.registeredBarcode=input.getText().toString().trim();tvReg.setText("Registered");tvReg.setTextColor(0xFF10B981);});
-                d.setNegativeButton("Cancel",null); d.show();
-            }
+            pendingBarcodeMission=m; pendingBarcodeTv=tvReg;
+            Intent scanIntent=new Intent(this,BarcodeScanActivity.class);
+            scanIntent.putExtra(BarcodeScanActivity.EXTRA_PROMPT,"Scan item barcode to register it");
+            startActivityForResult(scanIntent,501);
         });
         l.addView(btn);
     }

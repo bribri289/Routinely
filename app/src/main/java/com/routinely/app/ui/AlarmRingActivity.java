@@ -133,15 +133,16 @@ public class AlarmRingActivity extends AppCompatActivity {
         if(alarm.preventSnooze){
             btnSnooze.setVisibility(View.GONE);
         } else {
+            int snoozeMin=alarm.snoozeMinutes>0?alarm.snoozeMinutes:5;
             int remaining=alarm.maxSnoozes-alarm.snoozeCount;
-            btnSnooze.setText("Snooze 5 min ("+remaining+" left)");
+            btnSnooze.setText("Snooze "+snoozeMin+" min ("+remaining+" left)");
             btnSnooze.setEnabled(remaining>0);
             if(remaining<=0) btnSnooze.setAlpha(0.4f);
             btnSnooze.setOnClickListener(v->{
                 alarm.snoozeCount++; db.save();
-                com.routinely.app.receivers.AlarmReceiver.snooze(this,alarm,5);
+                com.routinely.app.receivers.AlarmReceiver.snooze(this,alarm,snoozeMin);
                 stopAlarmService(); finish();
-                Toast.makeText(this,"Snoozed — alarm in 5 minutes",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,"Snoozed — alarm in "+snoozeMin+" minutes",Toast.LENGTH_SHORT).show();
             });
         }
     }

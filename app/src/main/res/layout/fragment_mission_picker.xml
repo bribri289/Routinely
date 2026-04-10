@@ -80,8 +80,7 @@
 
     <LinearLayout android:id="@+id/body_row_step" android:layout_width="match_parent"
         android:layout_height="52dp" android:orientation="horizontal"
-        android:gravity="center_vertical" android:paddingStart="20dp" android:paddingEnd="20dp"
-        android:alpha="0.6">
+        android:gravity="center_vertical" android:paddingStart="20dp" android:paddingEnd="20dp">
         <TextView android:layout_width="36dp" android:layout_height="36dp"
             android:text="👣" android:textSize="20sp" android:gravity="center"
             android:background="@drawable/card_bg2" android:layout_marginEnd="14dp"/>
@@ -91,11 +90,6 @@
         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:text="HOT" android:textColor="#FFFFFF" android:textSize="10sp"
             android:background="@drawable/chip_bg_red" android:paddingStart="6dp"
-            android:paddingEnd="6dp" android:paddingTop="3dp" android:paddingBottom="3dp"
-            android:layout_marginEnd="8dp"/>
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="PRO" android:textColor="#FFFFFF" android:textSize="10sp"
-            android:background="@drawable/chip_bg_green" android:paddingStart="6dp"
             android:paddingEnd="6dp" android:paddingTop="3dp" android:paddingBottom="3dp"/>
     </LinearLayout>
 
@@ -134,18 +128,13 @@
 
     <LinearLayout android:id="@+id/body_row_squat" android:layout_width="match_parent"
         android:layout_height="52dp" android:orientation="horizontal"
-        android:gravity="center_vertical" android:paddingStart="20dp" android:paddingEnd="20dp"
-        android:alpha="0.6">
+        android:gravity="center_vertical" android:paddingStart="20dp" android:paddingEnd="20dp">
         <TextView android:layout_width="36dp" android:layout_height="36dp"
             android:text="🦵" android:textSize="20sp" android:gravity="center"
             android:background="@drawable/card_bg2" android:layout_marginEnd="14dp"/>
         <TextView android:layout_width="0dp" android:layout_height="wrap_content"
             android:layout_weight="1" android:text="Squat"
             android:textColor="@color/text_primary" android:textSize="15sp"/>
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="PRO" android:textColor="#FFFFFF" android:textSize="10sp"
-            android:background="@drawable/chip_bg_green" android:paddingStart="6dp"
-            android:paddingEnd="6dp" android:paddingTop="3dp" android:paddingBottom="3dp"/>
     </LinearLayout>
 
 </LinearLayout>
