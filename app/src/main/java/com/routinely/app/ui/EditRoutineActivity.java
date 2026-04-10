@@ -214,8 +214,7 @@ public class EditRoutineActivity extends AppCompatActivity {
             TextView tvSName=new TextView(this); tvSName.setText(step.name);
             tvSName.setTextColor(0xFFFFFFFF); tvSName.setTextSize(15);
             tvSName.setTypeface(null,android.graphics.Typeface.BOLD); col.addView(tvSName);
-            int sm=step.durationSeconds/60;
-            String durStr=sm>0?sm+" min":step.durationSeconds+"s";
+            String durStr=formatDuration(step.durationSeconds);
             TextView tvDur2=new TextView(this); tvDur2.setText(durStr);
             tvDur2.setTextColor(0xFF9CA3AF); tvDur2.setTextSize(12); col.addView(tvDur2);
             // Optional description snippet
@@ -264,16 +263,15 @@ public class EditRoutineActivity extends AppCompatActivity {
             EditText etName=item.findViewById(R.id.et_step_name); etName.setText(step.name);
             EditText etDesc=item.findViewById(R.id.et_step_desc); etDesc.setText(step.description);
 
-            // Duration stepper: display minutes (rounded)
-            int durMins=Math.max(0,step.durationSeconds/60);
-            final int[] durHolder={durMins};
+            // Duration stepper: display MM:SS (step by 30 seconds)
+            final int[] durHolder={Math.max(0,step.durationSeconds)};
             TextView tvDur=item.findViewById(R.id.tv_dur_value);
-            tvDur.setText(String.valueOf(durHolder[0]));
+            tvDur.setText(formatDuration(durHolder[0]));
             item.findViewById(R.id.btn_dur_minus).setOnClickListener(v->{
-                if(durHolder[0]>0){durHolder[0]--;tvDur.setText(String.valueOf(durHolder[0]));step.durationSeconds=durHolder[0]*60;updateEndTimeButton(btnStartRoutineNow);}
+                if(durHolder[0]>=30){durHolder[0]-=30;tvDur.setText(formatDuration(durHolder[0]));step.durationSeconds=durHolder[0];updateEndTimeButton(btnStartRoutineNow);}
             });
             item.findViewById(R.id.btn_dur_plus).setOnClickListener(v->{
-                durHolder[0]++;tvDur.setText(String.valueOf(durHolder[0]));step.durationSeconds=durHolder[0]*60;updateEndTimeButton(btnStartRoutineNow);
+                durHolder[0]+=30;tvDur.setText(formatDuration(durHolder[0]));step.durationSeconds=durHolder[0];updateEndTimeButton(btnStartRoutineNow);
             });
             tvDur.setTag(durHolder);
 
@@ -385,16 +383,16 @@ public class EditRoutineActivity extends AppCompatActivity {
         addPopupSpace(root,14);
 
         // Duration stepper
-        addPopupLabel(root,"DURATION (minutes)");
-        final int[] durHolder={Math.max(0,step.durationSeconds/60)};
+        addPopupLabel(root,"DURATION (MM:SS)");
+        final int[] durHolder={Math.max(0,step.durationSeconds)};
         LinearLayout durRow=new LinearLayout(this); durRow.setOrientation(LinearLayout.HORIZONTAL); durRow.setGravity(android.view.Gravity.CENTER_VERTICAL);
         durRow.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT));
         Button btnMinus=makePopupIconButton("–",R.drawable.btn_secondary_bg);
-        TextView tvDurVal=new TextView(this); tvDurVal.setText(String.valueOf(durHolder[0])); tvDurVal.setTextColor(0xFFFFFFFF); tvDurVal.setTextSize(20); tvDurVal.setTypeface(null,android.graphics.Typeface.BOLD);
+        TextView tvDurVal=new TextView(this); tvDurVal.setText(formatDuration(durHolder[0])); tvDurVal.setTextColor(0xFFFFFFFF); tvDurVal.setTextSize(20); tvDurVal.setTypeface(null,android.graphics.Typeface.BOLD);
         tvDurVal.setGravity(android.view.Gravity.CENTER); tvDurVal.setLayoutParams(new LinearLayout.LayoutParams(0,LinearLayout.LayoutParams.WRAP_CONTENT,1));
         Button btnPlus=makePopupIconButton("+",R.drawable.btn_primary_bg);
-        btnMinus.setOnClickListener(x->{if(durHolder[0]>0){durHolder[0]--;tvDurVal.setText(String.valueOf(durHolder[0]));}});
-        btnPlus.setOnClickListener(x->{durHolder[0]++;tvDurVal.setText(String.valueOf(durHolder[0]));});
+        btnMinus.setOnClickListener(x->{if(durHolder[0]>=30){durHolder[0]-=30;tvDurVal.setText(formatDuration(durHolder[0]));}});
+        btnPlus.setOnClickListener(x->{durHolder[0]+=30;tvDurVal.setText(formatDuration(durHolder[0]));});
         durRow.addView(btnMinus); durRow.addView(tvDurVal); durRow.addView(btnPlus);
         root.addView(durRow);
         addPopupSpace(root,14);
@@ -469,7 +467,7 @@ public class EditRoutineActivity extends AppCompatActivity {
             String nm=etName2.getText().toString().trim(); if(!nm.isEmpty()) step.name=nm;
             String em=etEmoji2.getText().toString().trim(); if(!em.isEmpty()) step.emoji=em;
             step.description=etDesc2.getText().toString();
-            step.durationSeconds=Math.max(0,durHolder[0]*60);
+            step.durationSeconds=Math.max(0,durHolder[0]);
             System.arraycopy(recDays,0,step.repeatDays,0,7);
             boolean allOn=true; for(boolean bb:recDays) if(!bb){allOn=false;break;}
             boolean wk=recDays[0]&&recDays[1]&&recDays[2]&&recDays[3]&&recDays[4]&&!recDays[5]&&!recDays[6];
@@ -581,14 +579,13 @@ public class EditRoutineActivity extends AppCompatActivity {
             EditText n=item.findViewById(R.id.et_step_name); if(n!=null&&!n.getText().toString().isEmpty())step.name=n.getText().toString();
             EditText d=item.findViewById(R.id.et_step_desc); if(d!=null)step.description=d.getText().toString();
             EditText em=item.findViewById(R.id.et_step_emoji); if(em!=null&&!em.getText().toString().isEmpty())step.emoji=em.getText().toString();
-            // Duration stepper: read minutes from tv_dur_value tag
+            // Duration stepper: read total seconds from tv_dur_value tag
             TextView tvDur=item.findViewById(R.id.tv_dur_value);
             if(tvDur!=null){
                 Object tag=tvDur.getTag();
-                int mins=0;
-                if(tag instanceof int[]) mins=Math.max(0,((int[])tag)[0]);
-                else try{mins=Math.max(0,Integer.parseInt(tvDur.getText().toString()));}catch(Exception ignored){}
-                step.durationSeconds=Math.max(0,mins*60);
+                int secs=0;
+                if(tag instanceof int[]) secs=Math.max(0,((int[])tag)[0]);
+                step.durationSeconds=secs;
             }
             // Recurrence type is managed by the day-chip click listeners directly on step.recurrenceType
             // If none of the quick-select matched, infer from repeatDays
@@ -596,6 +593,13 @@ public class EditRoutineActivity extends AppCompatActivity {
                 step.recurrenceType="custom_days";
             }
         }
+    }
+
+    /** Format a duration in total seconds as M:SS (e.g. 90 → "1:30"). */
+    static String formatDuration(int totalSeconds) {
+        int mins = totalSeconds / 60;
+        int secs = totalSeconds % 60;
+        return String.format(java.util.Locale.US, "%d:%02d", mins, secs);
     }
 
     /** Suggest an emoji icon based on common step title keywords. */
