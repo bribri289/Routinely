@@ -194,7 +194,7 @@ public class RunRoutineActivity extends AppCompatActivity {
         runPanel.setAlpha(0f); runPanel.animate().alpha(1f).setDuration(300).start();
         ((TextView)findViewById(R.id.tv_step_emoji)).setText(step.emoji);
         ((TextView)findViewById(R.id.tv_step_name)).setText(step.name);
-        ((TextView)findViewById(R.id.tv_step_subtitle)).setText("Step "+(idx+1)+" of "+routine.steps.size());
+        ((TextView)findViewById(R.id.tv_step_subtitle)).setText(String.format("Step %d of %d", idx+1, routine.steps.size()));
         ((TextView)findViewById(R.id.tv_step_description)).setText(step.description);
         // Next Up preview
         View nextUpPanel = findViewById(R.id.next_up_panel);

@@ -16,6 +16,12 @@ public class EditRoutineActivity extends AppCompatActivity {
     public static final int MODE_VIEW   = 2;
     public static final String EXTRA_MODE = "mode";
 
+    /** Reusable day-pattern arrays for recurrence quick-select. */
+    static final boolean[] WEEKDAYS_PATTERN = {true,true,true,true,true,false,false};
+    static final boolean[] WEEKENDS_PATTERN = {false,false,false,false,false,true,true};
+    /** Max characters shown in step description preview in VIEW mode. */
+    static final int DESC_PREVIEW_LEN = 50;
+
     AppData db; Models.Routine routine; boolean isNew=false;
     int mode = MODE_EDIT;
     LinearLayout stepsContainer;
@@ -214,7 +220,9 @@ public class EditRoutineActivity extends AppCompatActivity {
             tvDur2.setTextColor(0xFF9CA3AF); tvDur2.setTextSize(12); col.addView(tvDur2);
             // Optional description snippet
             if(step.description!=null&&!step.description.isEmpty()){
-                String snip=step.description.length()>50?step.description.substring(0,47)+"…":step.description;
+                String snip=step.description.length()>DESC_PREVIEW_LEN
+                    ?step.description.substring(0,DESC_PREVIEW_LEN)+"…"
+                    :step.description;
                 TextView tvSnip=new TextView(this); tvSnip.setText(snip);
                 tvSnip.setTextColor(0xFF6B7280); tvSnip.setTextSize(11); col.addView(tvSnip);
             }
@@ -262,10 +270,10 @@ public class EditRoutineActivity extends AppCompatActivity {
             TextView tvDur=item.findViewById(R.id.tv_dur_value);
             tvDur.setText(String.valueOf(durHolder[0]));
             item.findViewById(R.id.btn_dur_minus).setOnClickListener(v->{
-                if(durHolder[0]>0){durHolder[0]--;tvDur.setText(String.valueOf(durHolder[0]));step.durationSeconds=Math.max(60,durHolder[0]*60);updateEndTimeButton(btnStartRoutineNow);}
+                if(durHolder[0]>0){durHolder[0]--;tvDur.setText(String.valueOf(durHolder[0]));step.durationSeconds=durHolder[0]*60;updateEndTimeButton(btnStartRoutineNow);}
             });
             item.findViewById(R.id.btn_dur_plus).setOnClickListener(v->{
-                durHolder[0]++;tvDur.setText(String.valueOf(durHolder[0]));step.durationSeconds=Math.max(60,durHolder[0]*60);updateEndTimeButton(btnStartRoutineNow);
+                durHolder[0]++;tvDur.setText(String.valueOf(durHolder[0]));step.durationSeconds=durHolder[0]*60;updateEndTimeButton(btnStartRoutineNow);
             });
             tvDur.setTag(durHolder);
 
@@ -289,8 +297,8 @@ public class EditRoutineActivity extends AppCompatActivity {
             TextView btnWeekends=item.findViewById(R.id.btn_rec_weekends);
             applyQuickSelect(step,stepDays,btnDaily,btnWeekdays,btnWeekends);
             btnDaily.setOnClickListener(v->{java.util.Arrays.fill(step.repeatDays,true);step.recurrenceType="daily";buildStepDayChips(stepDays,step);applyQuickSelect(step,stepDays,btnDaily,btnWeekdays,btnWeekends);});
-            btnWeekdays.setOnClickListener(v->{step.repeatDays=new boolean[]{true,true,true,true,true,false,false};step.recurrenceType="weekdays";buildStepDayChips(stepDays,step);applyQuickSelect(step,stepDays,btnDaily,btnWeekdays,btnWeekends);});
-            btnWeekends.setOnClickListener(v->{step.repeatDays=new boolean[]{false,false,false,false,false,true,true};step.recurrenceType="weekends";buildStepDayChips(stepDays,step);applyQuickSelect(step,stepDays,btnDaily,btnWeekdays,btnWeekends);});
+            btnWeekdays.setOnClickListener(v->{step.repeatDays=java.util.Arrays.copyOf(WEEKDAYS_PATTERN,7);step.recurrenceType="weekdays";buildStepDayChips(stepDays,step);applyQuickSelect(step,stepDays,btnDaily,btnWeekdays,btnWeekends);});
+            btnWeekends.setOnClickListener(v->{step.repeatDays=java.util.Arrays.copyOf(WEEKENDS_PATTERN,7);step.recurrenceType="weekends";buildStepDayChips(stepDays,step);applyQuickSelect(step,stepDays,btnDaily,btnWeekdays,btnWeekends);});
 
             // Habit link
             Spinner hs=item.findViewById(R.id.spinner_habit);
@@ -427,8 +435,8 @@ public class EditRoutineActivity extends AppCompatActivity {
         root.addView(daysRow2);
         Runnable refreshChips=()->{for(int d2=0;d2<7;d2++){boolean on=recDays[d2];dayChips[d2].setBackground(getDrawable(on?R.drawable.circle_primary:R.drawable.circle_bg3));dayChips[d2].setTextColor(on?0xFFFFFFFF:0xFF6B7280);}};
         btnRDaily.setOnClickListener(x->{java.util.Arrays.fill(recDays,true);refreshChips.run();});
-        btnRWeekdays.setOnClickListener(x->{boolean[] wk={true,true,true,true,true,false,false};System.arraycopy(wk,0,recDays,0,7);refreshChips.run();});
-        btnRWeekends.setOnClickListener(x->{boolean[] we={false,false,false,false,false,true,true};System.arraycopy(we,0,recDays,0,7);refreshChips.run();});
+        btnRWeekdays.setOnClickListener(x->{System.arraycopy(WEEKDAYS_PATTERN,0,recDays,0,7);refreshChips.run();});
+        btnRWeekends.setOnClickListener(x->{System.arraycopy(WEEKENDS_PATTERN,0,recDays,0,7);refreshChips.run();});
         addPopupSpace(root,14);
 
         // Linked habit
@@ -461,7 +469,7 @@ public class EditRoutineActivity extends AppCompatActivity {
             String nm=etName2.getText().toString().trim(); if(!nm.isEmpty()) step.name=nm;
             String em=etEmoji2.getText().toString().trim(); if(!em.isEmpty()) step.emoji=em;
             step.description=etDesc2.getText().toString();
-            step.durationSeconds=Math.max(60,durHolder[0]*60);
+            step.durationSeconds=Math.max(0,durHolder[0]*60);
             System.arraycopy(recDays,0,step.repeatDays,0,7);
             boolean allOn=true; for(boolean bb:recDays) if(!bb){allOn=false;break;}
             boolean wk=recDays[0]&&recDays[1]&&recDays[2]&&recDays[3]&&recDays[4]&&!recDays[5]&&!recDays[6];
@@ -580,7 +588,7 @@ public class EditRoutineActivity extends AppCompatActivity {
                 int mins=0;
                 if(tag instanceof int[]) mins=Math.max(0,((int[])tag)[0]);
                 else try{mins=Math.max(0,Integer.parseInt(tvDur.getText().toString()));}catch(Exception ignored){}
-                step.durationSeconds=Math.max(60,mins*60);
+                step.durationSeconds=Math.max(0,mins*60);
             }
             // Recurrence type is managed by the day-chip click listeners directly on step.recurrenceType
             // If none of the quick-select matched, infer from repeatDays
